@@ -5,7 +5,7 @@ LD = ld
 CFLAGS = -m32 -ffreestanding -nostdlib -Iinclude
 ASFLAGS = -felf32
 LDFLAGS = -m elf_i386 -T linker.ld
-SRC = kernel/kernel.c kernel/other.c
+SRC = $(shell find kernel -name "*.c")
 OBJ = $(SRC:.c=.o)
 
 all: kernel.bin
@@ -27,7 +27,7 @@ iso: kernel.bin
 	grub-mkrescue -o trace.iso iso/
 
 clean:
-	rm -f *.o kernel/*.o kernel.bin
+	rm -f *.o $(OBJ) kernel.bin
 	rm -rf iso
 	rm trace.iso
 
