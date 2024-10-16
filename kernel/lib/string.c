@@ -21,9 +21,7 @@ void *memmove(void *dest, const void *src, size_t n) {
     } else {
         d += n;
         s += n;
-        while (n--) {
-            *(--d) = *(--s);
-        }
+        while (n--) { *(--d) = *(--s); }
     }
     return dest;
 }
@@ -50,9 +48,7 @@ size_t strlen(const char *s) {
 
 char *strcat(char *dest, const char *src) {
     char *ptr = dest;
-    while (*ptr) {
-        ptr++;
-    }
+    while (*ptr) { ptr++; }
     while ((*ptr++ = *src++)) {}
     return dest;
 }

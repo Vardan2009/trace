@@ -209,7 +209,8 @@ int scanf(const char *format, ...) {
                 case 's': {
                     char *str = va_arg(args, char *);
                     int j = 0;
-                    while (buffer[j] && buffer[j] != ' ' && j < sizeof(buffer) - 1) {
+                    while (buffer[j] && buffer[j] != ' ' &&
+                           j < sizeof(buffer) - 1) {
                         str[j] = buffer[j];
                         j++;
                     }
@@ -220,10 +221,9 @@ int scanf(const char *format, ...) {
                     int *num = va_arg(args, int *);
                     *num = 0;
                     int sign = 1;
-                    if (buffer[0] == '-') {
-                        sign = -1;
-                    }
-                    for (int j = (sign == -1) ? 1 : 0; buffer[j] >= '0' && buffer[j] <= '9'; j++) {
+                    if (buffer[0] == '-') { sign = -1; }
+                    for (int j = (sign == -1) ? 1 : 0;
+                         buffer[j] >= '0' && buffer[j] <= '9'; j++) {
                         *num = *num * 10 + (buffer[j] - '0');
                     }
                     *num *= sign;
@@ -242,8 +242,7 @@ int scanf(const char *format, ...) {
                     *ch = buffer[0];
                     break;
                 }
-                default:
-                    break;
+                default: break;
             }
         }
     }

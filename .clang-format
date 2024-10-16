@@ -1,7 +1,7 @@
 BasedOnStyle: Google
 IndentWidth: 4
 UseTab: Never
-ColumnLimit: 0
+ColumnLimit: 80
 AllowShortBlocksOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: Inline
