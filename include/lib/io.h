@@ -5,8 +5,8 @@
 
 #define COM1 0x3F8
 
-extern inline void outb(uint16_t, uint8_t);
-extern inline uint8_t inb(uint16_t);
+void outb(uint16_t port, uint8_t value);
+uint8_t inb(uint16_t port);
 
 int is_transmit_empty();
 void serial_write(char);

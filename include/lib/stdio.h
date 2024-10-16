@@ -29,6 +29,8 @@ extern char *vmem;
 extern unsigned char color;
 extern int curx, cury;
 
+void putb();
+
 void putc(char);
 void puts(const char *);
 
@@ -40,10 +42,11 @@ void printf(const char *, ...);
 void clear_screen(void);
 
 void increment();
+void decrement();
 void shift_down();
 
 void set_color(unsigned char, unsigned char);
 
-char getc();
+int scanf(const char *format, ...);
 
 #endif  // STDIO_H

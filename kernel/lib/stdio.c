@@ -12,6 +12,11 @@ void increment(void) {
     }
 }
 
+void decrement(void) {
+    curx--;
+    if (curx < 0) curx = 0;
+}
+
 void shift_down(void) {
     cury++;
     if (cury >= WH) {
@@ -26,6 +31,12 @@ void shift_down(void) {
             vmem[(WH - 1) * WW * 2 + x + 1] = 0x07;
         }
     }
+}
+
+void putb() {
+    decrement();
+    putc(' ');
+    decrement();
 }
 
 void putc(char c) {
@@ -157,6 +168,86 @@ void printf(const char *format, ...) {
     va_end(args);
 }
 
-char getc() {
-    return scank().chr;
+int scanf(const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+
+    char buffer[256];
+    int i = 0;
+
+    while (1) {
+        uint8_t k = get_scancode();
+        if (k == 0x2a) {
+            shifted = 1;
+            continue;
+        }
+        if (k == 0xaa) {
+            shifted = 0;
+            continue;
+        }
+        if (k == 0x0e) {
+            i--;
+            putb();
+            continue;
+        }
+        key sk = getk(k);
+        char c = shifted ? sk.shifted_char : sk.chr;
+        if (c == '\0') continue;
+        if (c == '\n' || i >= sizeof(buffer) - 1) {
+            putc('\n');
+            break;
+        }
+        buffer[i++] = c;
+        putc(c);
+    }
+    buffer[i] = '\0';
+
+    for (const char *p = format; *p != '\0'; p++) {
+        if (*p == '%') {
+            p++;
+            switch (*p) {
+                case 's': {
+                    char *str = va_arg(args, char *);
+                    int j = 0;
+                    while (buffer[j] && buffer[j] != ' ' && j < sizeof(buffer) - 1) {
+                        str[j] = buffer[j];
+                        j++;
+                    }
+                    str[j] = '\0';
+                    break;
+                }
+                case 'd': {
+                    int *num = va_arg(args, int *);
+                    *num = 0;
+                    int sign = 1;
+                    if (buffer[0] == '-') {
+                        sign = -1;
+                    }
+                    for (int j = (sign == -1) ? 1 : 0; buffer[j] >= '0' && buffer[j] <= '9'; j++) {
+                        *num = *num * 10 + (buffer[j] - '0');
+                    }
+                    *num *= sign;
+                    break;
+                }
+                case 'u': {
+                    unsigned int *num = va_arg(args, unsigned int *);
+                    *num = 0;
+                    for (int j = 0; buffer[j] >= '0' && buffer[j] <= '9'; j++) {
+                        *num = *num * 10 + (buffer[j] - '0');
+                    }
+                    break;
+                }
+                case 'c': {
+                    char *ch = va_arg(args, char *);
+                    *ch = buffer[0];
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+    }
+
+    va_end(args);
+    return 1;
 }
