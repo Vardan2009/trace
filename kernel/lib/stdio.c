@@ -2,6 +2,8 @@
 
 char *vmem = (char *)0xb8000;
 int curx = 0, cury = 0;
+unsigned char fg = COLOR_LGRAY;
+unsigned char bg = COLOR_BLACK;
 unsigned char color = 0x07;
 
 void increment(void) {
@@ -74,8 +76,20 @@ void clear_screen() {
     cury = 0;
 }
 
-void set_color(unsigned char fg, unsigned char bg) {
+void set_color(unsigned char _fg, unsigned char _bg) {
+    fg = _fg;
+    bg = _bg;
     color = (bg << 4) | (fg & 0x0F);
+}
+
+void set_color_fg(unsigned char _fg) {
+    fg = _fg;
+    color = (COLOR_BLACK << 4) | (fg & 0x0F);
+}
+
+void set_color_bg(unsigned char _bg) {
+    bg = _bg;
+    color = (COLOR_BLACK << 4) | (fg & 0x0F);
 }
 
 void printi(int value) {

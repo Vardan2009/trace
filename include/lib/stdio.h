@@ -30,6 +30,8 @@
 
 extern char *vmem;
 extern unsigned char color;
+extern unsigned char fg;
+extern unsigned char bg;
 extern int curx, cury;
 
 void putb();
@@ -49,6 +51,8 @@ void decrement();
 void shift_down();
 
 void set_color(unsigned char, unsigned char);
+void set_color_fg(unsigned char);
+void set_color_bg(unsigned char);
 void set_cur_pos(uint16_t);
 
 void scanl(char *, unsigned int);
