@@ -84,12 +84,12 @@ void set_color(unsigned char _fg, unsigned char _bg) {
 
 void set_color_fg(unsigned char _fg) {
     fg = _fg;
-    color = (COLOR_BLACK << 4) | (fg & 0x0F);
+    color = (bg << 4) | (fg & 0x0F);
 }
 
 void set_color_bg(unsigned char _bg) {
     bg = _bg;
-    color = (COLOR_BLACK << 4) | (fg & 0x0F);
+    color = (bg << 4) | (fg & 0x0F);
 }
 
 void printi(int value) {
