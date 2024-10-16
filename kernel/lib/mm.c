@@ -34,7 +34,7 @@ void* malloc(size_t size) {
 }
 
 void free(void* ptr) {
-    if(!ptr) return;
+    if (!ptr) return;
 
     uintptr_t address = (uintptr_t)ptr;
     if (address < (uintptr_t)memory_pool || address >= (uintptr_t)(memory_pool + MEMORY_POOL_SIZE)) return;
