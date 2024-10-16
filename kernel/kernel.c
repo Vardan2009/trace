@@ -12,7 +12,7 @@ void kernel_main(void) {
     printf("Hello, %s! Input an integer\n-> ");
     scanf("%d", &age);
 
-    printf("%d is a cool number", age);
+    printf("%d is a cool number\n%d in hex is 0x%x", age, age, age);
 
     serial_write_str("Hello, COM1!");
     while (1)
