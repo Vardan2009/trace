@@ -1,12 +1,12 @@
 #include "lib/stdio.h"
 
-char *vmem = (char*) 0xb8000;
+char *vmem = (char *)0xb8000;
 int curx = 0, cury = 0;
 unsigned char color = 0x07;
 
 void increment(void) {
     curx++;
-    if(curx >= WW) {
+    if (curx >= WW) {
         curx = 0;
         shift_down();
     }
@@ -14,14 +14,14 @@ void increment(void) {
 
 void shift_down(void) {
     cury++;
-    if(cury >= WH) {
+    if (cury >= WH) {
         cury = WH - 1;
-        for(int y = 1; y < WH; y++) {
-            for(int x = 0; x < WW * 2; x++) {
+        for (int y = 1; y < WH; y++) {
+            for (int x = 0; x < WW * 2; x++) {
                 vmem[(y - 1) * WW * 2 + x] = vmem[y * WW * 2 + x];
             }
         }
-        for(int x = 0; x < WW * 2; x += 2) {
+        for (int x = 0; x < WW * 2; x += 2) {
             vmem[(WH - 1) * WW * 2 + x] = ' ';
             vmem[(WH - 1) * WW * 2 + x + 1] = 0x07;
         }
@@ -29,7 +29,7 @@ void shift_down(void) {
 }
 
 void putc(char c) {
-    if(c == '\n') {
+    if (c == '\n') {
         curx = 0;
         shift_down();
     } else {
@@ -41,8 +41,8 @@ void putc(char c) {
 
 void puts(const char *message) {
     int i = 0;
-    while(message[i]) {
-        if(message[i] == '\n') {
+    while (message[i]) {
+        if (message[i] == '\n') {
             curx = 0;
             shift_down();
             i++;
@@ -53,9 +53,9 @@ void puts(const char *message) {
 }
 
 void clear_screen() {
-    for(int i = 0; i < WW * WH * 2; i += 2) {
+    for (int i = 0; i < WW * WH * 2; i += 2) {
         vmem[i] = ' ';
-        vmem[i + 1] = 0x07; 
+        vmem[i + 1] = 0x07;
     }
     curx = 0;
     cury = 0;
@@ -70,7 +70,7 @@ void printi(int value) {
         putc('-');
         value = -value;
     }
-    
+
     char buffer[20];
     int i = 0;
 
@@ -150,7 +150,8 @@ void printf(const char *format, ...) {
                     putc(*p);
                     break;
             }
-        } else putc(*p);
+        } else
+            putc(*p);
     }
 
     va_end(args);

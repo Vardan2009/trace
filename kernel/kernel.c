@@ -7,5 +7,6 @@ void kernel_main(void) {
     printf("Char: %c\n", getc());
 
     serial_write_str("Hello, COM1!");
-    while(1) if(serial_received()) putc(serial_read());
+    while (1)
+        if (serial_received()) putc(serial_read());
 }

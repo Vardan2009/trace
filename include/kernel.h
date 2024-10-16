@@ -3,11 +3,11 @@
 
 #include <stdint.h>
 
-#include "lib/stdio.h"
 #include "lib/io.h"
 #include "lib/mm.h"
+#include "lib/stdio.h"
 #include "lib/string.h"
 
 void kernel_main(void);
 
-#endif // KERNEL_H
+#endif  // KERNEL_H

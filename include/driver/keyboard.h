@@ -1,8 +1,8 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include "../lib/io.h"
 

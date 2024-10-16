@@ -17,4 +17,4 @@ void serial_init();
 int serial_received();
 char serial_read();
 
-#endif // IO_H
+#endif  // IO_H

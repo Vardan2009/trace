@@ -38,7 +38,7 @@ int strcmp(const char *s1, const char *s2) {
 
 char *strcpy(char *dest, const char *src) {
     char *ptr = dest;
-    while ((*ptr++ = *src++)) { }
+    while ((*ptr++ = *src++)) {}
     return dest;
 }
 
@@ -53,6 +53,6 @@ char *strcat(char *dest, const char *src) {
     while (*ptr) {
         ptr++;
     }
-    while ((*ptr++ = *src++)) { }
+    while ((*ptr++ = *src++)) {}
     return dest;
 }
