@@ -17,6 +17,7 @@ void increment(void) {
 void decrement(void) {
     curx--;
     if (curx < 0) curx = 0;
+    vmem[cury * VGA_WIDTH * 2 + curx * 2 + 1] = 0x07;
 }
 
 void shift_down(void) {

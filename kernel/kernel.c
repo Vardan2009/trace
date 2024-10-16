@@ -14,7 +14,7 @@ void kernel_main(void) {
 
     int num;
 
-    printf("Hello, %s! Input an integer\n-> ");
+    printf("Hello, %s! Input an integer\n-> ", name);
     set_color_fg(COLOR_LYELLOW);
 
     scanf("%d", &num);
