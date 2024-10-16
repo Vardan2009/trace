@@ -24,9 +24,15 @@ void kernel_main(void) {
     set_color_fg(COLOR_WHITE);
 
     serial_write_str("Hello, COM1!");
-    printf("Sent message to COM1\nListening for data in COM1...\n-> ");
+    printf(
+        "Sent message to COM1\nListening for data and writing to COM1.\n"
+        "Received text will be visible here. Keyboard input will be redirected "
+        "to "
+        "COM1\n-> ");
 
     set_color_fg(COLOR_LYELLOW);
-    while (1)
+    while (1) {
         if (serial_received()) putc(serial_read());
+        if (kbdata_avail()) serial_write(scank().chr);
+    }
 }
