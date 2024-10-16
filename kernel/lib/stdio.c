@@ -170,14 +170,10 @@ void printf(const char *format, ...) {
     va_end(args);
 }
 
-int scanf(const char *format, ...) {
-    va_list args;
-    va_start(args, format);
-
-    char buffer[256];
+void scanl(char *buffer, unsigned int size) {
     int i = 0;
 
-    while (1) {
+    while (true) {
         uint8_t k = get_scancode();
         if (k == 0x2a) {
             shifted = 1;
@@ -188,14 +184,16 @@ int scanf(const char *format, ...) {
             continue;
         }
         if (k == 0x0e) {
-            i--;
-            putb();
+            if (i > 0) {
+                i--;
+                putb();
+            }
             continue;
         }
         key sk = getk(k);
         char c = shifted ? sk.shifted_char : sk.chr;
         if (c == '\0') continue;
-        if (c == '\n' || i >= sizeof(buffer) - 1) {
+        if (c == '\n' || i >= size - 1) {
             putc('\n');
             break;
         }
@@ -203,6 +201,14 @@ int scanf(const char *format, ...) {
         putc(c);
     }
     buffer[i] = '\0';
+}
+
+int scanf(const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+
+    char buffer[256];
+    scanl(buffer, 256);
 
     for (const char *p = format; *p != '\0'; p++) {
         if (*p == '%') {

@@ -12,9 +12,10 @@ void kernel_main(void) {
     printf("Hello, %s! Input an integer\n-> ");
     scanf("%d", &age);
 
-    printf("%d is a cool number\n%d in hex is 0x%x", age, age, age);
+    printf("%d is a cool number\n%d in hex is 0x%x\n", age, age, age);
 
     serial_write_str("Hello, COM1!");
+    printf("Sent message to COM1\nListening for data in COM1...\n-> ");
     while (1)
         if (serial_received()) putc(serial_read());
 }

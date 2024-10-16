@@ -2,6 +2,7 @@
 #define STDIO_H
 
 #include <stdarg.h>
+#include <stdbool.h>
 
 #include "driver/keyboard.h"
 
@@ -49,6 +50,8 @@ void shift_down();
 
 void set_color(unsigned char, unsigned char);
 void set_cur_pos(uint16_t);
+
+void scanl(char *, unsigned int);
 
 int scanf(const char *, ...);
 
