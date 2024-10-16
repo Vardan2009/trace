@@ -6,7 +6,7 @@ unsigned char color = 0x07;
 
 void increment(void) {
     curx++;
-    if (curx >= WW) {
+    if (curx >= VGA_WIDTH) {
         curx = 0;
         shift_down();
     }
@@ -19,16 +19,16 @@ void decrement(void) {
 
 void shift_down(void) {
     cury++;
-    if (cury >= WH) {
-        cury = WH - 1;
-        for (int y = 1; y < WH; y++) {
-            for (int x = 0; x < WW * 2; x++) {
-                vmem[(y - 1) * WW * 2 + x] = vmem[y * WW * 2 + x];
+    if (cury >= VGA_HEIGHT) {
+        cury = VGA_HEIGHT - 1;
+        for (int y = 1; y < VGA_HEIGHT; y++) {
+            for (int x = 0; x < VGA_WIDTH * 2; x++) {
+                vmem[(y - 1) * VGA_WIDTH * 2 + x] = vmem[y * VGA_WIDTH * 2 + x];
             }
         }
-        for (int x = 0; x < WW * 2; x += 2) {
-            vmem[(WH - 1) * WW * 2 + x] = ' ';
-            vmem[(WH - 1) * WW * 2 + x + 1] = 0x07;
+        for (int x = 0; x < VGA_WIDTH * 2; x += 2) {
+            vmem[(VGA_HEIGHT - 1) * VGA_WIDTH * 2 + x] = ' ';
+            vmem[(VGA_HEIGHT - 1) * VGA_WIDTH * 2 + x + 1] = 0x07;
         }
     }
 }
@@ -37,6 +37,7 @@ void putb() {
     decrement();
     putc(' ');
     decrement();
+    set_cur_pos(cury * VGA_WIDTH + curx);
 }
 
 void putc(char c) {
@@ -44,10 +45,11 @@ void putc(char c) {
         curx = 0;
         shift_down();
     } else {
-        vmem[cury * WW * 2 + curx * 2] = c;
-        vmem[cury * WW * 2 + curx * 2 + 1] = color;
+        vmem[cury * VGA_WIDTH * 2 + curx * 2] = c;
+        vmem[cury * VGA_WIDTH * 2 + curx * 2 + 1] = color;
         increment();
     }
+    set_cur_pos(cury * VGA_WIDTH + curx);
 }
 
 void puts(const char *message) {
@@ -64,7 +66,7 @@ void puts(const char *message) {
 }
 
 void clear_screen() {
-    for (int i = 0; i < WW * WH * 2; i += 2) {
+    for (int i = 0; i < VGA_WIDTH * VGA_HEIGHT * 2; i += 2) {
         vmem[i] = ' ';
         vmem[i + 1] = 0x07;
     }
@@ -249,4 +251,11 @@ int scanf(const char *format, ...) {
 
     va_end(args);
     return 1;
+}
+
+void set_cur_pos(uint16_t position) {
+    outb(VGA_CTRL_REG, 0x0F);
+    outb(VGA_DATA_REG, (uint8_t)(position & 0xFF));
+    outb(VGA_CTRL_REG, 0x0E);
+    outb(VGA_DATA_REG, (uint8_t)((position >> 8) & 0xFF));
 }

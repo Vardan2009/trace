@@ -5,8 +5,10 @@
 
 #include "driver/keyboard.h"
 
-#define WW 80
-#define WH 25
+#define VGA_WIDTH 80
+#define VGA_HEIGHT 25
+#define VGA_CTRL_REG 0x3D4
+#define VGA_DATA_REG 0x3D5
 
 #define COLOR_BLACK 0x0
 #define COLOR_BLUE 0x1
@@ -46,7 +48,8 @@ void decrement();
 void shift_down();
 
 void set_color(unsigned char, unsigned char);
+void set_cur_pos(uint16_t);
 
-int scanf(const char *format, ...);
+int scanf(const char *, ...);
 
 #endif  // STDIO_H
