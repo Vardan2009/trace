@@ -64,3 +64,94 @@ void clear_screen() {
 void set_color(unsigned char fg, unsigned char bg) {
     color = (bg << 4) | (fg & 0x0F);
 }
+
+void printi(int value) {
+    if (value < 0) {
+        putc('-');
+        value = -value;
+    }
+    
+    char buffer[20];
+    int i = 0;
+
+    do {
+        buffer[i++] = (value % 10) + '0';
+        value /= 10;
+    } while (value > 0);
+
+    while (i > 0) putc(buffer[--i]);
+}
+
+void printui(unsigned int value) {
+    char buffer[20];
+    int i = 0;
+
+    do {
+        buffer[i++] = (value % 10) + '0';
+        value /= 10;
+    } while (value > 0);
+
+    while (i > 0) putc(buffer[--i]);
+}
+
+void printhx(unsigned int value) {
+    char buffer[20];
+    int i = 0;
+
+    if (value == 0) {
+        putc('0');
+        return;
+    }
+
+    while (value > 0) {
+        int digit = value % 16;
+        buffer[i++] = (digit < 10) ? (digit + '0') : (digit - 10 + 'a');
+        value /= 16;
+    }
+
+    while (i > 0) putc(buffer[--i]);
+}
+
+void printf(const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+
+    for (const char *p = format; *p != '\0'; p++) {
+        if (*p == '%') {
+            p++;
+            switch (*p) {
+                case 's': {
+                    char *str = va_arg(args, char *);
+                    puts(str);
+                    break;
+                }
+                case 'd': {
+                    int num = va_arg(args, int);
+                    printi(num);
+                    break;
+                }
+                case 'u': {
+                    unsigned int num = va_arg(args, unsigned int);
+                    printui(num);
+                    break;
+                }
+                case 'c': {
+                    int num = va_arg(args, int);
+                    putc((char)num);
+                    break;
+                }
+                case 'x': {
+                    unsigned int num = va_arg(args, unsigned int);
+                    printhx(num);
+                    break;
+                }
+                default:
+                    putc('%');
+                    putc(*p);
+                    break;
+            }
+        } else putc(*p);
+    }
+
+    va_end(args);
+}

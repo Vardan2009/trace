@@ -1,6 +1,8 @@
 #ifndef STDIO_H
 #define STDIO_H
 
+#include <stdarg.h>
+
 #define WW 80
 #define WH 25
 
@@ -27,7 +29,11 @@ extern int curx, cury;
 
 void putc(char );
 void puts(const char *);
-// void printf(const char *, ...);
+
+void printi(int);
+void printui(unsigned int);
+void printhx(unsigned int);
+void printf(const char *, ...);
 
 void clear_screen(void);
 

@@ -12,9 +12,12 @@ void kernel_main(void) {
     strcat(buffer, " ");
     strcat(buffer, str2);
 
-    puts(buffer);
-
-    puts("\nData received from COM1:\n");
+    printf("Message: %s\n", buffer);
+    printf("The answer is %d\n", 42);
+    printf("Unsigned number: %u\n", 12345u);
+    printf("Negative number: %d\n", -123);
+    printf("Character: %c\n", 'A');
+    printf("Hexadecimal: %x\n", 255);
 
     serial_write_str("Hello, COM1!");
     while(1) {
