@@ -5,6 +5,7 @@
 
 #include "lib/stdio.h"
 #include "lib/io.h"
+#include "lib/mm.h"
 
 void kernel_main(void);
 
