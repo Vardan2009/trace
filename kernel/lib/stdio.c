@@ -155,3 +155,7 @@ void printf(const char *format, ...) {
 
     va_end(args);
 }
+
+char getc() {
+    return scank().chr;
+}

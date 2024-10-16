@@ -3,6 +3,8 @@
 
 #include <stdarg.h>
 
+#include "driver/keyboard.h"
+
 #define WW 80
 #define WH 25
 
@@ -27,7 +29,7 @@ extern char *vmem;
 extern unsigned char color;
 extern int curx, cury;
 
-void putc(char );
+void putc(char);
 void puts(const char *);
 
 void printi(int);
@@ -41,5 +43,7 @@ void increment();
 void shift_down();
 
 void set_color(unsigned char, unsigned char);
+
+char getc();
 
 #endif  // STDIO_H
