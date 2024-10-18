@@ -2,6 +2,8 @@
 void kernel_main(void) {
     printf("Initializing GDT...\n");
     init_gdt();
+    printf("Initializing IDT...\n");
+    init_idt();
 
     malloc_init();
     serial_init();

@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "gdt.h"
+#include "idt.h"
 #include "lib/io.h"
 #include "lib/mm.h"
 #include "lib/stdio.h"
