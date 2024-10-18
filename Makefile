@@ -1,7 +1,7 @@
 CC = gcc
 AS = nasm
 LD = ld
-VM = qemu-system-x86_64
+VM = qemu-system-i386
 
 CFLAGS = -m32 -ffreestanding -nostdlib -Iinclude
 ASFLAGS = -felf32
@@ -37,7 +37,4 @@ clean:
 test-qemu:
 	$(VM) $(VMFLAGS)
 
-full:
-	make iso
-	make test-qemu
-	make clean
+full: iso test-qemu clean
