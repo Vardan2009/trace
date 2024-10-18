@@ -1,6 +1,8 @@
 #include "kernel.h"
-
 void kernel_main(void) {
+    printf("Initializing GDT...\n");
+    init_gdt();
+
     malloc_init();
     serial_init();
 
