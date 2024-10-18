@@ -1,7 +1,7 @@
 CC = gcc
 AS = nasm
 LD = ld
-VM = qemu-system-i386
+VM = qemu-system-x86_64
 
 CFLAGS = -m32 -ffreestanding -nostdlib -Iinclude
 ASFLAGS = -felf32
