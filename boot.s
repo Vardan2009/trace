@@ -26,3 +26,9 @@ gdt_flush:
     jmp 0x08:.flush
 .flush:
     ret
+
+global tss_flush
+tss_flush:
+    mov ax, 0x2b
+    ltr ax
+    ret
