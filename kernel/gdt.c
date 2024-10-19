@@ -28,7 +28,7 @@ void init_gdt() {
     // task state segment
     write_tss(5, 0x10, 0x0);
 
-    gdt_flush(&gdt_ptr);
+    gdt_flush((uint32_t)&gdt_ptr);
     tss_flush();
 }
 
