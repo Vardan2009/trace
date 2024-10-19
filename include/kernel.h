@@ -9,6 +9,7 @@
 #include "lib/mm.h"
 #include "lib/stdio.h"
 #include "lib/string.h"
+#include "timer.h"
 
 void kernel_main(void);
 

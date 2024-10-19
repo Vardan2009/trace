@@ -1,9 +1,12 @@
 #include "kernel.h"
+
 void kernel_main(void) {
     printf("Initializing GDT...\n");
     init_gdt();
     printf("Initializing IDT...\n");
     init_idt();
+    printf("Initializing PIT...\n");
+    init_timer();
 
     malloc_init();
     serial_init();
