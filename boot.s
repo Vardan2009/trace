@@ -1,186 +1,68 @@
-bits 32
+MBOOT_PAGE_ALIGN equ 1 << 0
+MBOOT_MEM_INFO equ 1 << 1
+MBOOT_USE_GFX equ 0
+
+MBOOT_MAGIC equ 0x1badb002
+MBOOT_FLAGS equ MBOOT_PAGE_ALIGN | MBOOT_MEM_INFO | MBOOT_USE_GFX
+MBOOT_CHECKSUM equ -(MBOOT_MAGIC + MBOOT_FLAGS)
 
 section .multiboot
-align 4
-    dd 0x1badb002
-    dd 0x00000003
-    dd -(0x1badb002 + 0x00000003)
+ALIGN 4
+    DD MBOOT_MAGIC
+    DD MBOOT_FLAGS
+    DD MBOOT_CHECKSUM
+    DD 0, 0, 0, 0, 0
+
+    DD 0
+    DD 800
+    DD 600
+    DD 32
+
+SECTION .bss
+ALIGN 16
+stack_bottom:
+    RESB 16384 * 8
+stack_top:
+
+section .boot
+
+global _start
+_start:
+    MOV ecx, (initial_page_dir - 0xc0000000)
+    MOV cr3, ecx
+
+    MOV ecx, cr4
+    OR ecx, 0x10
+    MOV cr4, ecx
+
+    MOV ecx, cr0
+    OR ecx, 0x80000000
+    MOV cr0, ecx
+
+    JMP higher_half
 
 section .text
-global _start
-extern kernel_main
+higher_half:
+    MOV esp, stack_top
+    PUSH ebx
+    PUSH eax
+    XOR ebp, ebp
+    extern kernel_main
+    CALL kernel_main
 
-_start:
-    cli
-    push ebx
-    push eax
-    call kernel_main
+halt:
     hlt
+    JMP halt
 
-global gdt_flush
-gdt_flush:
-    mov eax, [esp + 4]
-    lgdt [eax]
+section .data
+align 4096
+global initial_page_dir
+initial_page_dir:
+    DD 10000011b
+    TIMES 768-1 DD 0
 
-    mov eax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
-    jmp 0x08:.flush
-.flush:
-    ret
-
-global tss_flush
-tss_flush:
-    mov ax, 0x2b
-    ltr ax
-    ret
-
-global idt_flush
-idt_flush:
-    mov eax, [esp + 4]
-    lidt [eax]
-    sti
-    ret
-
-%macro ISR_NOERRCODE 1
-    global isr%1
-    isr%1:
-        cli
-        push long 0
-        push long %1
-        jmp isr_common_stub
-%endmacro
-
-%macro ISR_ERRCODE 1
-    global isr%1
-    isr%1:
-        cli
-        push long %1
-        jmp isr_common_stub
-%endmacro
-
-%macro IRQ 2
-    global irq%1
-    irq%1:
-        cli
-        push long 0
-        push long %2
-        jmp irq_common_stub
-%endmacro
-
-ISR_NOERRCODE 0
-ISR_NOERRCODE 1
-ISR_NOERRCODE 2
-ISR_NOERRCODE 3
-ISR_NOERRCODE 4
-ISR_NOERRCODE 5
-ISR_NOERRCODE 6
-ISR_NOERRCODE 7
-
-ISR_ERRCODE   8
-ISR_NOERRCODE 9 
-ISR_ERRCODE   10
-ISR_ERRCODE   11
-ISR_ERRCODE   12
-ISR_ERRCODE   13
-ISR_ERRCODE   14
-ISR_NOERRCODE 15
-ISR_NOERRCODE 16
-ISR_NOERRCODE 17
-ISR_NOERRCODE 18
-ISR_NOERRCODE 19
-ISR_NOERRCODE 20
-ISR_NOERRCODE 21
-ISR_NOERRCODE 22
-ISR_NOERRCODE 23
-ISR_NOERRCODE 24
-ISR_NOERRCODE 25
-ISR_NOERRCODE 26
-ISR_NOERRCODE 27
-ISR_NOERRCODE 28
-ISR_NOERRCODE 29
-ISR_NOERRCODE 30
-ISR_NOERRCODE 31
-
-ISR_NOERRCODE 128
-ISR_NOERRCODE 177
-
-IRQ   0,    32
-IRQ   1,    33
-IRQ   2,    34
-IRQ   3,    35
-IRQ   4,    36
-IRQ   5,    37
-IRQ   6,    38
-IRQ   7,    39
-IRQ   8,    40
-IRQ   9,    41
-IRQ  10,    42
-IRQ  11,    43
-IRQ  12,    44
-IRQ  13,    45
-IRQ  14,    46
-IRQ  15,    47
-
-extern isr_handler
-isr_common_stub:
-    pusha
-    mov eax, ds
-    push eax
-    mov eax, cr2
-    push eax
-
-    mov ax, 0x10
-
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-
-    push esp
-    call isr_handler
-
-    add esp, 8
-    pop ebx
-
-    mov ds, bx
-    mov es, bx
-    mov fs, bx 
-    mov gs, bx
-
-    popa
-    add esp, 8
-    sti
-    iret
-
-extern irq_handler
-irq_common_stub:
-    pusha
-    mov eax,ds
-    PUSH eax
-    MOV eax, cr2
-    PUSH eax
-
-    MOV ax, 0x10
-    MOV ds, ax
-    MOV es, ax
-    MOV fs, ax
-    MOV gs, ax
-
-    PUSH esp
-    CALL irq_handler
-
-    ADD esp, 8
-    POP ebx
-    MOV ds, bx
-    MOV es, bx
-    MOV fs, bx
-    MOV gs, bx
-
-    POPA
-    ADD esp, 8
-    STI
-    IRET
+    DD (0 << 22) | 10000011b
+    DD (1 << 22) | 10000011b
+    DD (2 << 22) | 10000011b
+    DD (3 << 22) | 10000011b
+    TIMES 256-4 DD 0

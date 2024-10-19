@@ -8,7 +8,7 @@ void kernel_main(uint32_t magic, multiboot_info *boot_info) {
     init_timer();
     init_keyboard();
 
-    init_memory(boot_info);
+    // init_memory(boot_info);
 
     serial_init();
 

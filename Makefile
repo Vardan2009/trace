@@ -16,11 +16,17 @@ all: kernel.bin
 boot.o: boot.s
 	$(AS) $(ASFLAGS) -o boot.o boot.s
 
+gdt.o: gdt.s
+	$(AS) $(ASFLAGS) -o gdt.o gdt.s
+
+idt.o: idt.s
+	$(AS) $(ASFLAGS) -o idt.o idt.s
+
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-kernel.bin: boot.o $(OBJ)
-	$(LD) $(LDFLAGS) -o kernel.bin boot.o $(OBJ)
+kernel.bin: boot.o gdt.o idt.o $(OBJ)
+	$(LD) $(LDFLAGS) -o kernel.bin boot.o gdt.o idt.o $(OBJ)
 	mkdir -p iso/boot
 	cp kernel.bin iso/boot/kernel.bin
 
