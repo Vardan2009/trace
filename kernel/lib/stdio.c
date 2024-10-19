@@ -47,7 +47,9 @@ void putc(char c) {
     if (c == '\n') {
         curx = 0;
         shift_down();
-    } else {
+    } else if (c == '\b')
+        putb();
+    else {
         vmem[cury * VGA_WIDTH * 2 + curx * 2] = c;
         vmem[cury * VGA_WIDTH * 2 + curx * 2 + 1] = color;
         increment();
@@ -184,29 +186,18 @@ void printf(const char *format, ...) {
 
     va_end(args);
 }
-
 void scanl(char *buffer, unsigned int size) {
     int i = 0;
 
     while (true) {
-        uint8_t k = get_scancode();
-        if (k == 0x2a) {
-            shifted = 1;
-            continue;
-        }
-        if (k == 0xaa) {
-            shifted = 0;
-            continue;
-        }
-        if (k == 0x0e) {
+        char c = kb_readc();
+        if (c == '\b') {
             if (i > 0) {
-                i--;
                 putb();
+                i--;
             }
             continue;
         }
-        key sk = getk(k);
-        char c = shifted ? sk.shifted_char : sk.chr;
         if (c == '\0') continue;
         if (c == '\n' || i >= size - 1) {
             putc('\n');

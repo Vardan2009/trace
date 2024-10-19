@@ -33,8 +33,9 @@ void init_idt() {
     outb(0x21, 0x0);
     outb(0xa1, 0x0);
 
-    // 08 = 0000 1000
-    // 8e = 1000 1110
+// 08 = 0000 1000
+// 8e = 1000 1110
+#pragma region idt_gates
     set_idt_gate(0, (uint32_t)isr0, 0x08, 0x8E);
     set_idt_gate(1, (uint32_t)isr1, 0x08, 0x8E);
     set_idt_gate(2, (uint32_t)isr2, 0x08, 0x8E);
@@ -87,6 +88,7 @@ void init_idt() {
 
     set_idt_gate(128, (uint32_t)isr128, 0x08, 0x8E);
     set_idt_gate(177, (uint32_t)isr177, 0x08, 0x8E);
+#pragma endregion idt_gates
 
     idt_flush((uint32_t)&idt_ptr);
 }
