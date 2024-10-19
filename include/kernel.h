@@ -6,11 +6,12 @@
 #include "gdt.h"
 #include "idt.h"
 #include "lib/io.h"
-#include "lib/mm.h"
 #include "lib/stdio.h"
 #include "lib/string.h"
+#include "mem.h"
+#include "multiboot.h"
 #include "timer.h"
 
-void kernel_main(void);
+void kernel_main(uint32_t, multiboot_info*);
 
 #endif  // KERNEL_H

@@ -2,22 +2,14 @@
 
 #include "driver/keyboard.h"
 
-void kernel_main(void) {
-    printf("Initializing GDT...\n");
+void kernel_main(uint32_t magic, multiboot_info *boot_info) {
     init_gdt();
-    printf("Initializing IDT...\n");
     init_idt();
-    printf("Initializing PIT...\n");
     init_timer();
-    printf("Initializing Keyboard Driver...");
     init_keyboard();
 
-    printf("\nName: ");
-    const char *t;
-    scanf("%s", t);
-    printf("Hello, %s\n", t);
+    init_memory(boot_info);
 
-    malloc_init();
     serial_init();
 
     serial_write_str("Hello, COM1!");
