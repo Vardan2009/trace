@@ -8,7 +8,10 @@ void kernel_main(uint32_t magic, multiboot_info *boot_info) {
     init_timer();
     init_keyboard();
 
-    // init_memory(boot_info);
+    uint32_t mod1 = *(uint32_t *)(boot_info->mods_addr + 4);
+    uint32_t phys_alloc_start = (mod1 + 0xfff) & ~0xfff;
+
+    init_memory(boot_info->mem_upper * 1024, phys_alloc_start);
 
     serial_init();
 

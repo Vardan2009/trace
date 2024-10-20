@@ -1,6 +1,6 @@
 #include "lib/stdio.h"
 
-char *vmem = (char *)0xb8000;
+char *vmem = (char *)0xc00b8000;
 int curx = 0, cury = 0;
 unsigned char fg = COLOR_LGRAY;
 unsigned char bg = COLOR_BLACK;
