@@ -2,6 +2,8 @@
 
 #include "driver/keyboard.h"
 
+extern void syscalls_test();
+
 void kernel_main(uint32_t magic, multiboot_info *boot_info) {
     init_gdt();
     init_idt();
@@ -15,6 +17,8 @@ void kernel_main(uint32_t magic, multiboot_info *boot_info) {
     init_kmalloc(0x1000);
 
     serial_init(IOPORT);
+
+    syscalls_test();
 
     serial_write_str(IOPORT, "Hello Serial!\n");
     printf(

@@ -13,6 +13,7 @@
 #include "lib/string.h"
 #include "mem.h"
 #include "multiboot.h"
+#include "syscalls.h"
 #include "timer.h"
 
 void kernel_main(uint32_t, multiboot_info*);

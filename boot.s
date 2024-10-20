@@ -54,6 +54,17 @@ halt:
     hlt
     JMP halt
 
+global syscalls_test
+string: db "Hello, TRACE!", 10, 0
+syscalls_test:
+    pusha
+    mov ebx, string
+    mov ecx, 14
+    mov eax, 0
+    int 0x80
+    popa
+    ret
+
 section .data
 align 4096
 global initial_page_dir

@@ -1,5 +1,7 @@
 #include "idt.h"
 
+#include "syscalls.h"
+
 extern void idt_flush();
 
 idt_entry_t idt_entries[256];
@@ -142,6 +144,8 @@ void isr_handler(int_regs* regs) {
                exception_messages[regs->int_no]);
         for (;;);
     }
+
+    if (regs->int_no == 0x80) handle_syscall(regs);
 }
 
 void* irq_routines[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};

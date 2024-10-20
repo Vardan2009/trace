@@ -3,6 +3,6 @@
 
 #include "idt.h"
 
-void handle_syscall(idt_regs*);
+void handle_syscall(int_regs*);
 
 #endif  // SYSCALLS_H
