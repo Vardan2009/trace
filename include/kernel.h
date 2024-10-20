@@ -1,6 +1,8 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
+#define IOPORT COM1
+
 #include <stdint.h>
 
 #include "gdt.h"

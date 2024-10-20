@@ -14,18 +14,18 @@ void kernel_main(uint32_t magic, multiboot_info *boot_info) {
     init_memory(boot_info->mem_upper * 1024, phys_alloc_start);
     init_kmalloc(0x1000);
 
-    serial_init();
+    serial_init(IOPORT);
 
-    serial_write_str("Hello, COM1!");
+    serial_write_str(IOPORT, "Hello Serial!\n");
     printf(
-        "Sent message to COM1\nListening for data and writing to COM1.\n"
+        "Sent message to Serial\n"
         "Received text will be visible here. Keyboard input will be redirected "
         "to "
-        "COM1\n-> ");
+        "Serial\n-> ");
 
     set_color_fg(COLOR_LYELLOW);
     while (1) {
-        if (serial_received()) putc(serial_read());
-        if (!kb_buf_empty()) serial_write(kb_readc());
+        if (serial_received(IOPORT)) putc(serial_read(IOPORT));
+        if (!kb_buf_empty(IOPORT)) serial_write(IOPORT, kb_readc());
     }
 }
