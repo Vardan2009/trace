@@ -12,6 +12,7 @@ void kernel_main(uint32_t magic, multiboot_info *boot_info) {
     uint32_t phys_alloc_start = (mod1 + 0xfff) & ~0xfff;
 
     init_memory(boot_info->mem_upper * 1024, phys_alloc_start);
+    init_kmalloc(0x1000);
 
     serial_init();
 

@@ -6,6 +6,7 @@
 #include "gdt.h"
 #include "idt.h"
 #include "lib/io.h"
+#include "lib/kmalloc.h"
 #include "lib/stdio.h"
 #include "lib/string.h"
 #include "mem.h"
