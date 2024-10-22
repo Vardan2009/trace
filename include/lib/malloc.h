@@ -14,7 +14,7 @@ typedef struct Block {
 static uint8_t memory_pool[MEMORY_POOL_SIZE];
 static bool memory_allocated[MEMORY_POOL_SIZE];
 
-void malloc_init();
+void init_malloc();
 void *malloc(size_t);
 void free(void *);
 

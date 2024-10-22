@@ -90,7 +90,7 @@ void mem_map_page(uint32_t vaddr, uint32_t physaddr, uint32_t flags) {
 void sync_page_dirs() {
     for (int i = 0; i < NUM_PAGES_DIRS; i++) {
         if (page_dir_used[i]) {
-            uint32_t *page_dir = *page_dirs[i];
+            uint32_t *page_dir = (uint32_t *)*page_dirs[i];
 
             for (int i = 768; i < 1023; i++)
                 page_dir[i] = initial_page_dir[i] & ~PAGE_FLAG_OWNER;

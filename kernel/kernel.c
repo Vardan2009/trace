@@ -15,7 +15,8 @@ void kernel_main(uint32_t magic, multiboot_info *boot_info) {
 
     init_memory(boot_info->mem_upper * 1024, phys_alloc_start);
     init_kmalloc(0x1000);
-    malloc_init();
+
+    init_malloc();
 
     serial_init(IOPORT);
 

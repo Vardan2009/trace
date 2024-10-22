@@ -4,7 +4,7 @@ static uint8_t memory_pool[MEMORY_POOL_SIZE];
 static Block* memory_blocks;
 static size_t total_blocks;
 
-void malloc_init() {
+void init_malloc() {
     total_blocks = MEMORY_POOL_SIZE / sizeof(Block);
     memory_blocks = (Block*)memory_pool;
 
