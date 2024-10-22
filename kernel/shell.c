@@ -3,8 +3,8 @@
 #include "lib/malloc.h"
 #include "lib/stdio.h"
 
-#define NSYSCALLS 3
-builtin_command_t builtin_commands[NSYSCALLS] = {
+#define NCMDS 3
+builtin_command_t builtin_commands[NCMDS] = {
     {"echo", "echo <text>", "prints given text to screen",
      &builtin_command_echo},
     {"clear", "clear", "clears screen", &builtin_command_clear},
@@ -48,7 +48,7 @@ void spltoks(const char *input, char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH],
 }
 
 void parse_command(char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH], int token_count) {
-    for (int i = 0; i < NSYSCALLS; ++i) {
+    for (int i = 0; i < NCMDS; ++i) {
         if (strcmp(builtin_commands[i].name, tokens[0]) == 0) {
             builtin_commands[i].exec(tokens, token_count);
             return;
