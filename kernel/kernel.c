@@ -1,37 +1,31 @@
 #include "kernel.h"
 
-#include "driver/keyboard.h"
-
-extern void syscalls_test();
-
 void kernel_main(uint32_t magic, multiboot_info *boot_info) {
-    init_gdt();
-    init_idt();
-    init_timer();
-    init_keyboard();
+    init_all(boot_info);
+    set_color_fg(COLOR_AQUA);
+    printf("TRACE Operating System (ver. %s)\n\n", TRACE_VER);
+    shell();
+}
 
+void init_all(multiboot_info *boot_info) {
+    set_color_fg(COLOR_DGRAY);
+    puts("Initializing TRACE\n");
+    init_gdt();
+    puts("GDT initialization successful\n");
+    init_idt();
+    puts("IDT initialization successful\n");
+    init_timer();
+    puts("Timer initialization successful\n");
+    init_keyboard();
+    puts("Keyboard driver initialization successful\n");
     uint32_t mod1 = *(uint32_t *)(boot_info->mods_addr + 4);
     uint32_t phys_alloc_start = (mod1 + 0xfff) & ~0xfff;
-
     init_memory(boot_info->mem_upper * 1024, phys_alloc_start);
     init_kmalloc(0x1000);
-
     init_malloc();
-
+    puts("Memory initialization successful\n");
     serial_init(IOPORT);
-
-    syscalls_test();
-
-    serial_write_str(IOPORT, "Hello Serial!\n");
-    printf(
-        "Sent message to Serial\n"
-        "Received text will be visible here. Keyboard input will be redirected "
-        "to "
-        "Serial\n-> ");
-
-    set_color_fg(COLOR_LYELLOW);
-    while (1) {
-        if (serial_received(IOPORT)) putc(serial_read(IOPORT));
-        if (!kb_buf_empty(IOPORT)) serial_write(IOPORT, kb_readc());
-    }
+    printf("Serial initialization successful on port 0x%x\n", IOPORT);
+    puts("Initialization done.\n");
+    set_color_fg(COLOR_WHITE);
 }
