@@ -3,8 +3,11 @@
 #include "lib/malloc.h"
 #include "lib/stdio.h"
 
-#define MAX_TOKENS 100
-#define MAX_TOKEN_LENGTH 256
+#define NSYSCALLS 2
+builtin_command_t builtin_commands[NSYSCALLS] = {
+    {"echo", "echo <text>", "prints given text to screen",
+     &builtin_command_echo},
+    {"clear", "clear", "clears screen", &builtin_command_clear}};
 
 const char *prompt() {
     static char input[512];
@@ -44,7 +47,14 @@ void spltoks(const char *input, char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH],
 }
 
 void parse_command(char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH], int token_count) {
-    printf(tokens[0]);
+    for (int i = 0; i < NSYSCALLS; ++i) {
+        if (strcmp(builtin_commands[i].name, tokens[0]) == 0) {
+            builtin_commands[i].exec(tokens, token_count);
+            return;
+        }
+    }
+    set_color(COLOR_WHITE, COLOR_RED);
+    printf("No such command `%s`\n", tokens[0]);
 }
 
 void shell() {
@@ -59,6 +69,8 @@ void shell() {
         if (!token_count) continue;
 
         parse_command(tokens, token_count);
+
+        set_color(COLOR_WHITE, COLOR_BLACK);
 
         if (curx != 0) putc('\n');
     }
