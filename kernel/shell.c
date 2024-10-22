@@ -43,14 +43,23 @@ void spltoks(const char *input, char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH],
     *token_count = token_index;
 }
 
+void parse_command(char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH], int token_count) {
+    printf(tokens[0]);
+}
+
 void shell() {
     while (true) {
         char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH];
-        int token_count;
+        int token_count = 0;
+        memset(tokens, 0, sizeof(tokens));
 
         const char *input = prompt();
         spltoks(input, tokens, &token_count);
 
-        printf("Executing command %s\n", tokens[0]);
+        if (!token_count) continue;
+
+        parse_command(tokens, token_count);
+
+        if (curx != 0) putc('\n');
     }
 }
