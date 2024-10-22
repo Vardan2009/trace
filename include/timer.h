@@ -6,6 +6,8 @@
 #include "idt.h"
 #include "lib/io.h"
 
+extern uint64_t ticks;
+
 void init_timer();
 void handle_timer(int_regs*);
 

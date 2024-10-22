@@ -9,6 +9,7 @@
 
 #include "gdt.h"
 #include "idt.h"
+#include "lib/console.h"
 #include "lib/io.h"
 #include "lib/kmalloc.h"
 #include "lib/malloc.h"
