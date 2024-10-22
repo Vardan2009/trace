@@ -4,5 +4,6 @@
 #include "timer.h"
 
 void delay(uint32_t);
+void prepare_shutdown();
 
 #endif  // CONSOLE_H

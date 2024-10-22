@@ -6,5 +6,6 @@
 
 DEFCMD(echo)
 DEFCMD(clear)
+DEFCMD(off)
 
 #endif  // BUILTIN_COMMANDS_H

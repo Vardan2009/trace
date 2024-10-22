@@ -3,11 +3,12 @@
 #include "lib/malloc.h"
 #include "lib/stdio.h"
 
-#define NSYSCALLS 2
+#define NSYSCALLS 3
 builtin_command_t builtin_commands[NSYSCALLS] = {
     {"echo", "echo <text>", "prints given text to screen",
      &builtin_command_echo},
-    {"clear", "clear", "clears screen", &builtin_command_clear}};
+    {"clear", "clear", "clears screen", &builtin_command_clear},
+    {"off", "off", "prepares system for power off", &builtin_command_off}};
 
 const char *prompt() {
     static char input[512];

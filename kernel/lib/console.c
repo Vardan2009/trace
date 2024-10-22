@@ -6,3 +6,7 @@ void delay(uint32_t ms) {
     uint32_t start_ticks = ticks;
     while (ticks - start_ticks < t) asm volatile("nop");
 }
+
+void prepare_shutdown() {
+    // stuff will be added here to prepare for shutdown
+}
