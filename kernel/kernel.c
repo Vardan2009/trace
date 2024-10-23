@@ -1,16 +1,14 @@
 #include "kernel.h"
 
-#include <multiboot.h>
-
 #include "driver/fs/iso9660.h"
 
-multiboot_info boot_info;
+multiboot_info mboot_info;
 
 void kernel_main(uint32_t magic, multiboot_info *b_inf) {
-    boot_info = *b_inf;
+    mboot_info = *b_inf;
     init_all();
 
-    iso9660_initialize(boot_info);
+    iso9660_initialize();
     printf("ISO9660 Boot Drive Number %x\n", iso9660_get_boot_drive_number());
 
     set_color_fg(COLOR_AQUA);
@@ -29,9 +27,9 @@ void init_all() {
     puts("Timer initialization successful\n");
     init_keyboard();
     puts("Keyboard driver initialization successful\n");
-    uint32_t mod1 = *(uint32_t *)(boot_info.mods_addr + 4);
+    uint32_t mod1 = *(uint32_t *)(mboot_info.mods_addr + 4);
     uint32_t phys_alloc_start = (mod1 + 0xfff) & ~0xfff;
-    init_memory(boot_info.mem_upper * 1024, phys_alloc_start);
+    init_memory(mboot_info.mem_upper * 1024, phys_alloc_start);
     init_kmalloc(0x1000);
     init_malloc();
     puts("Memory initialization successful\n");

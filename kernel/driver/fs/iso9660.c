@@ -1,13 +1,10 @@
 #include "driver/fs/iso9660.h"
 
 #include "lib/stdio.h"
+#include "multiboot.h"
 
-multiboot_info multiboot_inf;
-
-void iso9660_initialize(multiboot_info inf) {
-    multiboot_inf = inf;
-}
+void iso9660_initialize() {}
 
 uint8_t iso9660_get_boot_drive_number() {
-    return (multiboot_inf.boot_device >> 24) & 0xFF;
+    return (mboot_info.boot_device >> 24) & 0xFF;
 }

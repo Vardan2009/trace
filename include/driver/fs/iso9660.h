@@ -5,8 +5,7 @@
 
 #include "multiboot.h"
 
-void iso9660_initialize(multiboot_info);
-
+void iso9660_initialize();
 uint8_t iso9660_get_boot_drive_number();
 
 #endif  // ISO9660_H

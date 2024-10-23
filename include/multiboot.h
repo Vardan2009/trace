@@ -63,4 +63,6 @@ typedef struct {
     uint32_t type;
 } __attribute__((packed)) multiboot_mmap_entry;
 
+extern multiboot_info mboot_info;
+
 #endif  // MULTIBOOT_H
