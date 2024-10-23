@@ -26,6 +26,15 @@ void *memmove(void *dest, const void *src, size_t n) {
     return dest;
 }
 
+int strncmp(const char *s1, const char *s2, size_t n) {
+    while (n && *s1 && (*s1 == *s2)) {
+        s1++;
+        s2++;
+        n--;
+    }
+    return n == 0 ? 0 : *(unsigned char *)s1 - *(unsigned char *)s2;
+}
+
 int strcmp(const char *s1, const char *s2) {
     while (*s1 && (*s1 == *s2)) {
         s1++;

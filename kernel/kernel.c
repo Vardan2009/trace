@@ -1,13 +1,24 @@
 #include "kernel.h"
 
-void kernel_main(uint32_t magic, multiboot_info *boot_info) {
-    init_all(boot_info);
+#include <multiboot.h>
+
+#include "driver/fs/iso9660.h"
+
+multiboot_info boot_info;
+
+void kernel_main(uint32_t magic, multiboot_info *b_inf) {
+    boot_info = *b_inf;
+    init_all();
+
+    iso9660_initialize(boot_info);
+    printf("ISO9660 Boot Drive Number %x\n", iso9660_get_boot_drive_number());
+
     set_color_fg(COLOR_AQUA);
     printf("TRACE Operating System (ver. %s)\n\n", TRACE_VER);
     shell();
 }
 
-void init_all(multiboot_info *boot_info) {
+void init_all() {
     set_color_fg(COLOR_DGRAY);
     puts("Initializing TRACE\n");
     init_gdt();
@@ -18,9 +29,9 @@ void init_all(multiboot_info *boot_info) {
     puts("Timer initialization successful\n");
     init_keyboard();
     puts("Keyboard driver initialization successful\n");
-    uint32_t mod1 = *(uint32_t *)(boot_info->mods_addr + 4);
+    uint32_t mod1 = *(uint32_t *)(boot_info.mods_addr + 4);
     uint32_t phys_alloc_start = (mod1 + 0xfff) & ~0xfff;
-    init_memory(boot_info->mem_upper * 1024, phys_alloc_start);
+    init_memory(boot_info.mem_upper * 1024, phys_alloc_start);
     init_kmalloc(0x1000);
     init_malloc();
     puts("Memory initialization successful\n");
