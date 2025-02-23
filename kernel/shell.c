@@ -3,12 +3,15 @@
 #include "lib/malloc.h"
 #include "lib/stdio.h"
 
-#define NCMDS 3
+#define NCMDS 5
 builtin_command_t builtin_commands[NCMDS] = {
     {"echo", "echo <text>", "prints given text to screen",
      &builtin_command_echo},
     {"clear", "clear", "clears screen", &builtin_command_clear},
-    {"off", "off", "prepares system for power off", &builtin_command_off}};
+    {"off", "off", "prepares system for power off", &builtin_command_off},
+    {"serialw", "serialw <port> <text>", "writes data to serial port", &builtin_command_serialw},
+    {"serialr", "serialr <port>", "listens to data in serial port", &builtin_command_serialr}
+};
 
 const char *prompt() {
     static char input[512];

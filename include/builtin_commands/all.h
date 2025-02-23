@@ -7,5 +7,7 @@
 DEFCMD(echo)
 DEFCMD(clear)
 DEFCMD(off)
+DEFCMD(serialw)
+DEFCMD(serialr)
 
 #endif  // BUILTIN_COMMANDS_H
