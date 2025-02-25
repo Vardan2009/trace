@@ -1,6 +1,6 @@
 #include "kernel.h"
 
-#include "driver/fs/iso9660.h"
+#include "driver/diskio.h"
 
 multiboot_info mboot_info;
 
@@ -8,13 +8,12 @@ void kernel_main(uint32_t magic, multiboot_info *b_inf) {
     mboot_info = *b_inf;
     init_all();
 
-    iso9660_initialize();
-    printf("ISO9660 Boot Drive Number %x\n", iso9660_get_boot_drive_number());
-
     set_color_fg(COLOR_AQUA);
     printf("TRACE Operating System (ver. %s)\n\n", TRACE_VER);
     shell();
 }
+
+uint8_t buffer[512];
 
 void init_all() {
     set_color_fg(COLOR_DGRAY);
@@ -37,4 +36,11 @@ void init_all() {
     printf("Serial initialization successful on port 0x%x\n", IOPORT);
     puts("Initialization done.\n");
     set_color_fg(COLOR_WHITE);
+
+    printf("Reading Boot Sector in Hex...\n");
+    ata_read_sector(0, buffer);
+    printf("Printing Boot Sector in Hex...\n");
+    for (int i = 0; i < 512; i++)
+        printf("%x ", buffer[i]);  // Print sector data in hex
+    putc('\n');
 }
