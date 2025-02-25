@@ -37,7 +37,7 @@ void init_all() {
     puts("Initialization done.\n");
     set_color_fg(COLOR_WHITE);
 
-    printf("Reading Boot Sector in Hex...\n");
+    printf("Reading Boot Sector...\n");
     ata_read_sector(0, buffer);
     printf("Printing Boot Sector in Hex...\n");
     for (int i = 0; i < 512; i++)
