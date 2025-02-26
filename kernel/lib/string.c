@@ -72,3 +72,12 @@ int memcmp(const void *ptr1, const void *ptr2, size_t num) {
 
     return 0;
 }
+
+char *strchr(const char *str, int c) {
+    while (*str) {
+        if (*str == c) return (char *)str;
+        str++;
+    }
+    if (c == '\0') return (char *)str;
+    return NULL;
+}
