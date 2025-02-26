@@ -1,6 +1,6 @@
 #include "kernel.h"
 
-#include "driver/diskio.h"
+#include "driver/fs/iso9660.h"
 
 multiboot_info mboot_info;
 
@@ -13,7 +13,8 @@ void kernel_main(uint32_t magic, multiboot_info *b_inf) {
     shell();
 }
 
-uint8_t buffer[512];
+i9660_pvd_t pvd;
+char buffer[512];
 
 void init_all() {
     set_color_fg(COLOR_DGRAY);
@@ -36,11 +37,8 @@ void init_all() {
     printf("Serial initialization successful on port 0x%x\n", IOPORT);
     puts("Initialization done.\n");
     set_color_fg(COLOR_WHITE);
-
-    printf("Reading Boot Sector...\n");
-    ata_read_sector(0, buffer);
-    printf("Printing Boot Sector in Hex...\n");
-    for (int i = 0; i < 512; i++)
-        printf("%x ", buffer[i]);  // Print sector data in hex
-    putc('\n');
+    read_pvd(&pvd);
+    read_directory_from_path("/");
+    if(read_file_from_path("/HELLO.TXT", buffer, 512) != -1);
+        printf("%s\n", buffer);
 }
