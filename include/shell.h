@@ -17,6 +17,8 @@ typedef struct {
     builtin_command_func_ptr_t exec;
 } builtin_command_t;
 
+extern char user_pwd[256];
+
 void shell();
 
 #endif  // SHELL_H

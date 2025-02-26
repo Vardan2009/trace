@@ -41,8 +41,8 @@ void putc(char);
 void puts(const char *);
 
 void printi(int);
-void printui(unsigned int);
-void printhx(unsigned int);
+void printui(unsigned int, int, char);
+void printhx(unsigned int, int, char);
 void printf(const char *, ...);
 
 void clear_screen(void);

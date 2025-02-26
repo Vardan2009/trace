@@ -95,6 +95,11 @@ void set_color_bg(unsigned char _bg) {
     color = (bg << 4) | (fg & 0x0F);
 }
 
+#include <stdarg.h>
+
+void putc(char c); // Assume putc() is implemented
+void puts(const char *s); // Assume puts() is implemented
+
 void printi(int value) {
     if (value < 0) {
         putc('-');
@@ -112,7 +117,7 @@ void printi(int value) {
     while (i > 0) putc(buffer[--i]);
 }
 
-void printui(unsigned int value) {
+void printui(unsigned int value, int width, char padChar) {
     char buffer[20];
     int i = 0;
 
@@ -121,23 +126,26 @@ void printui(unsigned int value) {
         value /= 10;
     } while (value > 0);
 
+    while (i < width) buffer[i++] = padChar; // Apply padding
+
     while (i > 0) putc(buffer[--i]);
 }
 
-void printhx(unsigned int value) {
+void printhx(unsigned int value, int width, char padChar) {
     char buffer[20];
     int i = 0;
 
     if (value == 0) {
-        putc('0');
-        return;
+        buffer[i++] = '0';
+    } else {
+        while (value > 0) {
+            int digit = value % 16;
+            buffer[i++] = (digit < 10) ? (digit + '0') : (digit - 10 + 'a');
+            value /= 16;
+        }
     }
 
-    while (value > 0) {
-        int digit = value % 16;
-        buffer[i++] = (digit < 10) ? (digit + '0') : (digit - 10 + 'a');
-        value /= 16;
-    }
+    while (i < width) buffer[i++] = padChar; // Apply padding
 
     while (i > 0) putc(buffer[--i]);
 }
@@ -149,6 +157,21 @@ void printf(const char *format, ...) {
     for (const char *p = format; *p != '\0'; p++) {
         if (*p == '%') {
             p++;
+
+            // Parse flags and width
+            char padChar = ' ';
+            if (*p == '0') { // Check for zero-padding
+                padChar = '0';
+                p++;
+            }
+
+            int width = 0;
+            while (*p >= '0' && *p <= '9') { // Read width
+                width = width * 10 + (*p - '0');
+                p++;
+            }
+
+            // Handle specifier
             switch (*p) {
                 case 's': {
                     char *str = va_arg(args, char *);
@@ -157,12 +180,12 @@ void printf(const char *format, ...) {
                 }
                 case 'd': {
                     int num = va_arg(args, int);
-                    printi(num);
+                    printi(num); // No padding for signed integers
                     break;
                 }
                 case 'u': {
                     unsigned int num = va_arg(args, unsigned int);
-                    printui(num);
+                    printui(num, width, padChar);
                     break;
                 }
                 case 'c': {
@@ -172,7 +195,7 @@ void printf(const char *format, ...) {
                 }
                 case 'x': {
                     unsigned int num = va_arg(args, unsigned int);
-                    printhx(num);
+                    printhx(num, width, padChar);
                     break;
                 }
                 default:
@@ -180,12 +203,15 @@ void printf(const char *format, ...) {
                     putc(*p);
                     break;
             }
-        } else
+        } else {
             putc(*p);
+        }
     }
 
     va_end(args);
 }
+
+
 void scanl(char *buffer, unsigned int size) {
     int i = 0;
 

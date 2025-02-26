@@ -13,9 +13,6 @@ void kernel_main(uint32_t magic, multiboot_info *b_inf) {
     shell();
 }
 
-i9660_pvd_t pvd;
-char buffer[512];
-
 void init_all() {
     set_color_fg(COLOR_DGRAY);
     puts("Initializing TRACE\n");
@@ -38,7 +35,4 @@ void init_all() {
     puts("Initialization done.\n");
     set_color_fg(COLOR_WHITE);
     read_pvd(&pvd);
-    read_directory_from_path("/");
-    if(read_file_from_path("/HELLO.TXT", buffer, 512) != -1);
-        printf("%s\n", buffer);
 }

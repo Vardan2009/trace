@@ -103,7 +103,7 @@ void get_file_identifier(iso9660_dir_record_t *record, char *dest, int dest_size
 int compare_file_identifier(iso9660_dir_record_t *record, const char *name);
 iso9660_dir_record_t *find_directory_record(uint32_t extent, uint32_t length, const char *name);
 void print_dir_record(iso9660_dir_record_t *record);
-
+iso9660_dir_record_t *dir_from_path(const char *path) ;
 void read_directory_from_path(const char *path);
 int read_file_from_path(const char *path, uint8_t *buffer, uint32_t buffer_size);
 void read_pvd(i9660_pvd_t *);

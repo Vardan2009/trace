@@ -4,6 +4,8 @@
 #include "lib/stdio.h"
 #include "lib/path.h"
 
+i9660_pvd_t pvd;
+
 void read_pvd(i9660_pvd_t *pvd) {
 	uint8_t sector_buffer[ATA_SECTOR_SIZE];
     uint8_t *pvd_bytes = (uint8_t *)pvd;
@@ -120,7 +122,7 @@ void print_dir_record(iso9660_dir_record_t *record) {
     }
     char filename[256];
     get_file_identifier(record, filename, sizeof(filename));
-    printf("%s%s\n", filename, (record->file_flags & 2) ? "/" : "");
+    printf("%s%s ", filename, (record->file_flags & 2) ? "/" : "");
 }
 
 void read_directory_from_path(const char *path) {
@@ -128,7 +130,6 @@ void read_directory_from_path(const char *path) {
 	if(!current) return;
     uint32_t dir_extent = current->extent_lba_lsb;
     uint32_t dir_length = current->data_length_lsb;
-    printf("Directory listing for '%s':\n", path);
     process_directory(dir_extent, dir_length, print_dir_record);
 }
 

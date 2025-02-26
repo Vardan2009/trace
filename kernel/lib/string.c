@@ -1,4 +1,5 @@
 #include "lib/string.h"
+#include "lib/malloc.h"
 
 void *memset(void *s, int c, size_t n) {
     unsigned char *ptr = s;
@@ -49,6 +50,20 @@ char *strcpy(char *dest, const char *src) {
     return dest;
 }
 
+
+char *strncpy(char *dest, const char *src, size_t n) {
+    char *ptr = dest;
+    while (n > 0 && *src) {
+        *ptr++ = *src++;
+        --n;
+    }
+    while (n > 0) { 
+        *ptr++ = '\0';
+        --n;
+    }
+    return dest;
+}
+
 size_t strlen(const char *s) {
     const char *ptr = s;
     while (*ptr) ptr++;
@@ -80,4 +95,57 @@ char *strchr(const char *str, int c) {
     }
     if (c == '\0') return (char *)str;
     return NULL;
+}
+
+char *strtok(char *str, const char *delim) {
+    static char *next_token = NULL;  // Static pointer to store the next token
+    if (str != NULL) {
+        next_token = str;  // Start from the beginning of the new string
+    }
+
+    if (next_token == NULL) {
+        return NULL;  // No more tokens
+    }
+
+    // Skip leading delimiters
+    char *start = next_token;
+    while (*start && strchr(delim, *start)) {
+        start++;
+    }
+
+    if (*start == '\0') {
+        next_token = NULL;  // No tokens left
+        return NULL;
+    }
+
+    // Find the end of the token
+    char *end = start;
+    while (*end && !strchr(delim, *end)) {
+        end++;
+    }
+
+    if (*end == '\0') {
+        next_token = NULL;  // No more tokens after this one
+    } else {
+        *end = '\0';  // Null-terminate the token
+        next_token = end + 1;  // Move the pointer to the next token
+    }
+
+    return start;
+}
+
+char* strdup(const char* str) {
+    if (str == NULL) {
+        return NULL;  // Return NULL if the input string is NULL
+    }
+
+    size_t len = strlen(str) + 1;  // +1 for the null terminator
+    char* copy = (char*)malloc(len);  // Allocate memory for the copy
+
+    if (copy == NULL) {
+        return NULL;  // Return NULL if memory allocation fails
+    }
+
+    strcpy(copy, str);  // Copy the original string into the new memory location
+    return copy;
 }

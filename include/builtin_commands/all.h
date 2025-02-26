@@ -9,5 +9,8 @@ DEFCMD(clear)
 DEFCMD(off)
 DEFCMD(serialw)
 DEFCMD(serialr)
+DEFCMD(ls)
+DEFCMD(cd)
+DEFCMD(cat)
 
 #endif  // BUILTIN_COMMANDS_H

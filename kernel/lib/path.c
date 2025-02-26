@@ -1,18 +1,13 @@
 #include "lib/path.h"
 #include "lib/string.h"
+#include "lib/malloc.h"
+#include "lib/stdio.h"
 
 void get_directory(const char *path, char *dir) {
     size_t len = strlen(path);
     size_t i = len;
-    while (i > 0 && path[i - 1] != '/') {
-        i--;
-    }
-    size_t j = 0;
-    while (i > 0 && path[i - 1] != '\0') {
-        dir[j++] = path[i - 1];
-        i--;
-    }
-    dir[j] = '\0';
+    while (i > 0 && path[i - 1] != '/') i--;
+    strncpy(dir, path, i);
 }
 
 size_t split_path(const char *path, char **components, size_t max_components) {
@@ -58,43 +53,45 @@ void join_path(const char *base, const char *relative, char *result) {
 }
 
 void normalize_path(char *path) {
-    size_t i = 0, j = 0;
-    char temp[1024]; // Temporary array for building the normalized path
-    size_t len = strlen(path);
+    char normalized[256] = "";
+    char *stack[100];
+    int stackptr = 0;
 
-    while (i < len) {
-        if (path[i] == '/') {
-            if (j > 0 && temp[j - 1] != '/') {
-                temp[j++] = '/';
+    if (path[0] == '/') {
+        strcpy(normalized, "/");
+    }
+
+    char *tok = strtok(path, "/");
+    while (tok != NULL) {
+        if (strcmp(tok, ".") == 0) {
+            // Ignore "."
+        } else if (strcmp(tok, "..") == 0) {
+            if (stackptr > 0) {
+                stackptr--;  // Go back one level
             }
-            i++;
-        }
-
-        else if (path[i] == '.' && (i == 0 || path[i - 1] == '/')) {
-            i++; // Skip '.' character
-        }
-
-        else if (path[i] == '.' && path[i + 1] == '.' &&
-                 (i == 0 || path[i - 1] == '/')) {
-            i += 2; // Skip the ".." part
-            if (j > 0) {
-                // Backtrack one directory level
-                while (j > 0 && temp[j - 1] != '/') {
-                    j--;
-                }
+        } else {
+            if (stackptr < 100) {
+                stack[stackptr++] = tok;
             }
         }
-        else {
+        tok = strtok(NULL, "/");
+    }
 
-            temp[j++] = path[i++];
+    // Construct normalized path
+    for (int i = 0; i < stackptr; ++i) {
+        strcat(normalized, stack[i]);
+        if (i < stackptr - 1) {
+            strcat(normalized, "/");
         }
     }
 
-    temp[j] = '\0';
-
-    for (size_t k = 0; k <= j; k++) {
-        path[k] = temp[k];
+    // Ensure at least "/"
+    if (normalized[0] == '\0') {
+        strcpy(normalized, "/");
     }
+
+    // Copy result back to input
+    strcpy(path, normalized);
 }
 
 void get_filename(const char *path, char *filename) {

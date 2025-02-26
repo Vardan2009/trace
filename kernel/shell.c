@@ -3,20 +3,25 @@
 #include "lib/malloc.h"
 #include "lib/stdio.h"
 
-#define NCMDS 5
+#define NCMDS 8
 builtin_command_t builtin_commands[NCMDS] = {
     {"echo", "echo <text>", "prints given text to screen",
      &builtin_command_echo},
     {"clear", "clear", "clears screen", &builtin_command_clear},
     {"off", "off", "prepares system for power off", &builtin_command_off},
     {"serialw", "serialw <port> <text>", "writes data to serial port", &builtin_command_serialw},
-    {"serialr", "serialr <port>", "listens to data in serial port", &builtin_command_serialr}
+    {"serialr", "serialr <port>", "listens to data in serial port", &builtin_command_serialr},
+    {"ls", "ls", "lists current directory", &builtin_command_ls},
+    {"cd", "cd <relative path>", "changes directory", &builtin_command_cd},
+    {"cat", "cat <relative path>", "read file", &builtin_command_cat}
 };
+
+char user_pwd[256] = "/";
 
 const char *prompt() {
     static char input[512];
     set_color(COLOR_LYELLOW, COLOR_BLACK);
-    puts("[-> ");
+    printf("@%s -> ", user_pwd);
     set_color_fg(COLOR_GREEN);
     scanl(input, 512);
     set_color_fg(COLOR_WHITE);
