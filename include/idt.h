@@ -26,7 +26,7 @@ typedef struct {
     uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
     uint32_t int_no, err_code;
     uint32_t eip, csm, eflags, useresp, ss;
-} int_regs;
+} __attribute__((packed)) int_regs;
 
 void init_idt();
 void set_idt_gate(uint8_t, uint32_t, uint16_t, uint8_t);

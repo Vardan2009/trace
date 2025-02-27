@@ -27,10 +27,8 @@ void builtin_command_cat(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
     static const int buflen = 60000;
     char buffer[buflen];
     int bytesread = read_file_from_path(path, buffer, buflen);
-    buffer[bytesread] = '\0';
-    
     if (bytesread == -1) return;
-
+    buffer[bytesread] = '\0';
     switch (print_type) {
         case PRINT_TYPE_STRING:
             printf("%s\n", buffer);
