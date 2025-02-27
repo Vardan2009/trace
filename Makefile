@@ -6,7 +6,7 @@ VM = qemu-system-i386
 CFLAGS = -m32 -ffreestanding -nostdlib -Iinclude
 ASFLAGS = -felf32
 LDFLAGS = -m elf_i386 -T linker.ld
-VMFLAGS = -drive file=trace.iso,format=raw -serial mon:stdio -drive file=secondary.iso,format=raw
+VMFLAGS = -drive file=trace.iso,format=raw -serial mon:stdio -drive file=secondary.img,format=raw
 
 SRC = $(shell find kernel -name "*.c")
 OBJ = $(SRC:.c=.o)
@@ -43,5 +43,10 @@ clean:
 
 test-qemu:
 	$(VM) $(VMFLAGS)
+
+secondary-fat32-disk:
+	dd if=/dev/zero of=secondary.img bs=1M count=100
+	mkfs.fat -F 32 secondary.img
+
 
 full: iso test-qemu clean
