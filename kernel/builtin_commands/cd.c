@@ -1,7 +1,6 @@
-#include "driver/fs/iso9660.h"
 #include "shell.h"
 #include "lib/path.h"
-#include "driver/fs/iso9660.h"
+#include "lib/fs.h"
 
 void builtin_command_cd(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
     if(tokc != 2) return;
@@ -15,5 +14,5 @@ void builtin_command_cd(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
         strcat(user_pwd, tokv[1]);
     }
     normalize_path(user_pwd);
-    if(!dir_from_path(user_pwd)) strcpy(user_pwd, old_pwd);
+    if(!dir_exists(user_pwd)) strcpy(user_pwd, old_pwd);
 }

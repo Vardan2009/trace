@@ -1,6 +1,5 @@
 #include "kernel.h"
-
-#include "driver/fs/iso9660.h"
+#include "lib/fs.h"
 
 multiboot_info mboot_info;
 
@@ -32,7 +31,7 @@ void init_all() {
     puts("Memory initialization successful\n");
     serial_init(IOPORT);
     printf("Serial initialization successful on port 0x%x\n", IOPORT);
+    init_fs();
     puts("Initialization done.\n");
     set_color_fg(COLOR_WHITE);
-    read_pvd(&pvd);
 }

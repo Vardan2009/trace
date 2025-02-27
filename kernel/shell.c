@@ -3,7 +3,9 @@
 #include "lib/malloc.h"
 #include "lib/stdio.h"
 
-#define NCMDS 8
+#include "driver/diskio.h"
+
+#define NCMDS 9
 builtin_command_t builtin_commands[NCMDS] = {
     {"echo", "echo <text>", "prints given text to screen",
      &builtin_command_echo},
@@ -13,7 +15,8 @@ builtin_command_t builtin_commands[NCMDS] = {
     {"serialr", "serialr <port>", "listens to data in serial port", &builtin_command_serialr},
     {"ls", "ls", "lists current directory", &builtin_command_ls},
     {"cd", "cd <relative path>", "changes directory", &builtin_command_cd},
-    {"cat", "cat <relative path>", "read file", &builtin_command_cat}
+    {"cat", "cat <relative path>", "read file", &builtin_command_cat},
+    {"setdisk", "setdisk <disk num>", "set current disk", &builtin_command_setdisk},
 };
 
 char user_pwd[256] = "/";
@@ -21,7 +24,7 @@ char user_pwd[256] = "/";
 const char *prompt() {
     static char input[512];
     set_color(COLOR_LYELLOW, COLOR_BLACK);
-    printf("@%s -> ", user_pwd);
+    printf("[DISK %d] %s -> ", drive_num, user_pwd);
     set_color_fg(COLOR_GREEN);
     scanl(input, 512);
     set_color_fg(COLOR_WHITE);

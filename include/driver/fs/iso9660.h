@@ -97,16 +97,15 @@ typedef void (*dir_record_callback_t)(iso9660_dir_record_t *record);
 
 extern i9660_pvd_t pvd;
 
-void read_cd_sector(uint32_t cd_sector, uint8_t *buffer);
-void process_directory(uint32_t extent, uint32_t length, dir_record_callback_t callback);
-void get_file_identifier(iso9660_dir_record_t *record, char *dest, int dest_size);
-int compare_file_identifier(iso9660_dir_record_t *record, const char *name);
-iso9660_dir_record_t *find_directory_record(uint32_t extent, uint32_t length, const char *name);
-void print_dir_record(iso9660_dir_record_t *record);
-iso9660_dir_record_t *dir_from_path(const char *path) ;
-void read_directory_from_path(const char *path);
-int read_file_from_path(const char *path, uint8_t *buffer, uint32_t buffer_size);
-void read_pvd(i9660_pvd_t *);
+void i9660_read_cd_sector(uint32_t cd_sector, uint8_t *buffer);
+void i9660_process_directory(uint32_t extent, uint32_t length, dir_record_callback_t callback);
+void i9660_get_file_identifier(iso9660_dir_record_t *record, char *dest, int dest_size);
+int i9660_compare_file_identifier(iso9660_dir_record_t *record, const char *name);
+iso9660_dir_record_t *i9660_find_directory_record(uint32_t extent, uint32_t length, const char *name);
+iso9660_dir_record_t *i9660_dir_from_path(const char *path) ;
+int i9660_read_directory(const char *path, char dirs[256][256]);
+int i9660_read_file_from_path(const char *path, uint8_t *buffer, uint32_t buffer_size);
+void i9660_read_pvd(i9660_pvd_t *);
 
 
 #endif // ISO9660_H

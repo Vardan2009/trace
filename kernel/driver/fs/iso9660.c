@@ -6,7 +6,7 @@
 
 i9660_pvd_t pvd;
 
-void read_pvd(i9660_pvd_t *pvd) {
+void i9660_read_pvd(i9660_pvd_t *pvd) {
 	uint8_t sector_buffer[ATA_SECTOR_SIZE];
     uint8_t *pvd_bytes = (uint8_t *)pvd;
 
@@ -16,18 +16,18 @@ void read_pvd(i9660_pvd_t *pvd) {
     }
 }
 
-void read_cd_sector(uint32_t cd_sector, uint8_t *buffer) {
+void i9660_read_cd_sector(uint32_t cd_sector, uint8_t *buffer) {
     uint32_t base_lba = cd_sector * SECTORS_PER_ISO;
     for (int i = 0; i < SECTORS_PER_ISO; i++) {
         ata_read_sector(base_lba + i, buffer + (i * ATA_SECTOR_SIZE));
     }
 }
 
-void process_directory(uint32_t extent, uint32_t length, dir_record_callback_t callback) {
+void i9660_process_directory(uint32_t extent, uint32_t length, dir_record_callback_t callback) {
     uint32_t sectors = (length + ISO_SECTOR_SIZE - 1) / ISO_SECTOR_SIZE;
     uint8_t block[ISO_SECTOR_SIZE];
     for (uint32_t i = 0; i < sectors; i++) {
-        read_cd_sector(extent + i, block);
+        i9660_read_cd_sector(extent + i, block);
         uint32_t offset = 0;
         while (offset < ISO_SECTOR_SIZE) {
             iso9660_dir_record_t *record = (iso9660_dir_record_t *)(block + offset);
@@ -39,7 +39,7 @@ void process_directory(uint32_t extent, uint32_t length, dir_record_callback_t c
     }
 }
 
-void get_file_identifier(iso9660_dir_record_t *record, char *dest, int dest_size) {
+void i9660_get_file_identifier(iso9660_dir_record_t *record, char *dest, int dest_size) {
     int len = record->file_id_length;
     if (len > dest_size - 1)
         len = dest_size - 1;
@@ -50,25 +50,25 @@ void get_file_identifier(iso9660_dir_record_t *record, char *dest, int dest_size
         *semicolon = '\0';
 }
 
-int compare_file_identifier(iso9660_dir_record_t *record, const char *name) {
+int i9660_compare_file_identifier(iso9660_dir_record_t *record, const char *name) {
     char filename[256];
-    get_file_identifier(record, filename, sizeof(filename));
+    i9660_get_file_identifier(record, filename, sizeof(filename));
     return strcmp(filename, name);
 }
 
-iso9660_dir_record_t *find_directory_record(uint32_t extent, uint32_t length, const char *name) {
+iso9660_dir_record_t *i9660_find_directory_record(uint32_t extent, uint32_t length, const char *name) {
     static uint8_t found_record_buffer[256];
     int found = 0;
     uint8_t block[ISO_SECTOR_SIZE];
     uint32_t sectors = (length + ISO_SECTOR_SIZE - 1) / ISO_SECTOR_SIZE;
     for (uint32_t i = 0; i < sectors && !found; i++) {
-        read_cd_sector(extent + i, block);
+        i9660_read_cd_sector(extent + i, block);
         uint32_t offset = 0;
         while (offset < ISO_SECTOR_SIZE) {
             iso9660_dir_record_t *record = (iso9660_dir_record_t *)(block + offset);
             if (record->length == 0)
                 break;
-            if (compare_file_identifier(record, name) == 0) {
+            if (i9660_compare_file_identifier(record, name) == 0) {
                 if (record->length < sizeof(found_record_buffer))
                     memcpy(found_record_buffer, record, record->length);
                 found = 1;
@@ -84,7 +84,7 @@ iso9660_dir_record_t *find_directory_record(uint32_t extent, uint32_t length, co
 }
 
 
-iso9660_dir_record_t *dir_from_path(const char *path) {
+iso9660_dir_record_t *i9660_dir_from_path(const char *path) {
 	iso9660_dir_record_t *current = (iso9660_dir_record_t *)pvd.root_dir;
     char token[64];
     const char *p = path;
@@ -100,7 +100,7 @@ iso9660_dir_record_t *dir_from_path(const char *path) {
             p++;
         uint32_t curr_extent = current->extent_lba_lsb;  // LSB used
         uint32_t curr_length = current->data_length_lsb;   // LSB used
-        iso9660_dir_record_t *child = find_directory_record(curr_extent, curr_length, token);
+        iso9660_dir_record_t *child = i9660_find_directory_record(curr_extent, curr_length, token);
         if (child == NULL) {
             printf("Directory '%s' not found.\n", token);
             return NULL;
@@ -114,35 +114,49 @@ iso9660_dir_record_t *dir_from_path(const char *path) {
     return current;
 }
 
-void print_dir_record(iso9660_dir_record_t *record) {
+int diridx = 0;
+char (*directories)[256];  // Correct pointer type
+
+void set_dir_record(iso9660_dir_record_t *record) {
     if (record->file_id_length == 1) {
         uint8_t fid = *((uint8_t*)record + 33);
         if (fid == 0 || fid == 1)
             return;
     }
+    
     char filename[256];
-    get_file_identifier(record, filename, sizeof(filename));
-    printf("%s%s ", filename, (record->file_flags & 2) ? "/" : "");
+    i9660_get_file_identifier(record, filename, sizeof(filename));
+    
+    if (diridx >= 256) return;  // Prevent buffer overflow
+
+    strcpy(directories[diridx++], filename);  // Use correct pointer type
 }
 
-void read_directory_from_path(const char *path) {
-	iso9660_dir_record_t *current = dir_from_path(path);
-	if(!current) return;
+int i9660_read_directory(const char *path, char dirs[256][256]) {
+    diridx = 0;
+    directories = dirs;  // Correctly assign the pointer
+
+    iso9660_dir_record_t *current = i9660_dir_from_path(path);
+    if (!current) return -1;
+
     uint32_t dir_extent = current->extent_lba_lsb;
     uint32_t dir_length = current->data_length_lsb;
-    process_directory(dir_extent, dir_length, print_dir_record);
+    
+    i9660_process_directory(dir_extent, dir_length, set_dir_record);
+    return diridx;
 }
 
-int read_file_from_path(const char *path, uint8_t *buffer, uint32_t buffer_size) {
+
+int i9660_read_file_from_path(const char *path, uint8_t *buffer, uint32_t buffer_size) {
 	char dirpath[256];
 	char filename[256];
 	get_directory(path, dirpath);
 	get_filename(path, filename);
 
-    iso9660_dir_record_t *current = dir_from_path(dirpath);
+    iso9660_dir_record_t *current = i9660_dir_from_path(dirpath);
     uint32_t curr_extent = current->extent_lba_lsb;
     uint32_t curr_length = current->data_length_lsb;
-    iso9660_dir_record_t *file_record = find_directory_record(curr_extent, curr_length, filename);
+    iso9660_dir_record_t *file_record = i9660_find_directory_record(curr_extent, curr_length, filename);
 
     if (file_record == NULL) {
         printf("File '%s' not found.\n", filename);
@@ -163,7 +177,7 @@ int read_file_from_path(const char *path, uint8_t *buffer, uint32_t buffer_size)
     uint32_t sectors = (file_length + ISO_SECTOR_SIZE - 1) / ISO_SECTOR_SIZE;
     uint32_t extent = file_record->extent_lba_lsb;
     for (uint32_t i = 0; i < sectors; i++) {
-        read_cd_sector(extent + i, buffer + (i * ISO_SECTOR_SIZE));
+        i9660_read_cd_sector(extent + i, buffer + (i * ISO_SECTOR_SIZE));
     }
 
     return file_length;

@@ -1,7 +1,6 @@
-#include "driver/fs/iso9660.h"
 #include "shell.h"
 #include "lib/path.h"
-#include "driver/fs/iso9660.h"
+#include "lib/fs.h"
 
 #define PRINT_TYPE_STRING 0
 #define PRINT_TYPE_HEX 1
@@ -20,13 +19,13 @@ void builtin_command_cat(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
     
     char path[256];
     strcpy(path, user_pwd);
-    strcat(path, "/");
+    if(strcmp(user_pwd, "/") != 0) strcat(path, "/");
     strcat(path, tokv[1]);
     normalize_path(path);
     
     static const int buflen = 60000;
     char buffer[buflen];
-    int bytesread = read_file_from_path(path, buffer, buflen);
+    int bytesread = read_file(path, buffer, buflen);
     if (bytesread == -1) return;
     buffer[bytesread] = '\0';
     switch (print_type) {
