@@ -42,4 +42,32 @@ extern fat32_boot_sector_t *fat32_boot_sector;
 
 void fat32_read_boot_sector();
 
+void fat32_read_cluster(uint32_t, uint8_t *);
+void fat32_write_cluster(uint32_t, const uint8_t *);
+
+uint32_t fat32_get_next_cluster(uint32_t);
+
+int fat32_read_file(uint32_t, uint8_t *, uint32_t);
+
+// FAT directory entry structure (short 8.3 name only)
+typedef struct {
+    uint8_t  DIR_Name[11];     // (8 chars).(3 chars) filename (padded with spaces)
+    uint8_t  DIR_Attr;         // File attributes
+    uint8_t  DIR_NTRes;        // Reserved for NT
+    uint8_t  DIR_CrtTimeTenth; // Creation time (tenths of second)
+    uint16_t DIR_CrtTime;      // Creation time
+    uint16_t DIR_CrtDate;      // Creation date
+    uint16_t DIR_LstAccDate;   // Last access date
+    uint16_t DIR_FstClusHI;    // High word of first cluster number
+    uint16_t DIR_WrtTime;      // Last write time
+    uint16_t DIR_WrtDate;      // Last write date
+    uint16_t DIR_FstClusLO;    // Low word of first cluster number
+    uint32_t DIR_FileSize;     // File size in bytes
+} __attribute__((packed)) fat32_dir_entry_t;
+
+int fat32_traverse_path(const char *, fat32_dir_entry_t *, int);
+
+int fat32_read_file_from_path(const char *, uint8_t *, uint32_t);
+int fat32_list_directory(const char *, char[256][256]);
+
 #endif // FAT32_H

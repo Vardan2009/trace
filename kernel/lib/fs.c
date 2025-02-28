@@ -8,7 +8,7 @@ fs_type_t fs_type;
 int read_file(const char * path, uint8_t *buffer, uint32_t buffer_sz) {
 	switch(fs_type) {
 	case ISO9660: return i9660_read_file_from_path(path, buffer, buffer_sz);
-	// case FAT32: return fat32_read_file(path, buffer, buffer_sz);
+	case FAT32: return fat32_read_file_from_path(path, buffer, buffer_sz);
 	default: return -1;
 	}
 }
@@ -16,7 +16,7 @@ int read_file(const char * path, uint8_t *buffer, uint32_t buffer_sz) {
 int read_directory_listing(const char *path, char dirs[256][256]) {
 	switch(fs_type) {
 	case ISO9660: return i9660_read_directory(path, dirs);
-	// case FAT32: return fat32_read_directory_listing(path, dirs);
+	case FAT32: return fat32_list_directory(path, dirs);
 	default: return -1;
 	}
 }
@@ -24,7 +24,7 @@ int read_directory_listing(const char *path, char dirs[256][256]) {
 int dir_exists(const char *path) {
 	switch(fs_type) {
 	case ISO9660: return i9660_dir_from_path(path) != NULL;
-	// case FAT32: return 1;
+	case FAT32: return fat32_traverse_path(path, NULL, 1) == 0;
 	default: return 0;
 	}
 }
