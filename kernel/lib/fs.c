@@ -36,14 +36,27 @@ int dir_exists(const char *path) {
 void create_file(const char *path) {
 	switch(fs_type) {
 	case TRACEFS: return tracefs_create_file(path);
-	default: return;
+	default:
+		printf("Not available for this filesystem\n");
+		return;
 	}
 }
 
 int remove_file(const char *path) {
 	switch(fs_type) {
 	case TRACEFS: return tracefs_remove_file(path);
-	default: return;
+	default:
+		printf("Not available for this filesystem\n");
+		return -1;
+	}
+}
+
+int write_file(const char *path, const char *content) {
+	switch(fs_type) {
+	case TRACEFS: return tracefs_write_file(path, content);
+	default:
+		printf("Not available for this filesystem\n");
+		return -1;
 	}
 }
 

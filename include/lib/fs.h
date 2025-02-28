@@ -18,5 +18,6 @@ void init_fs();
 int dir_exists(const char *);
 void create_file(const char *);
 int remove_file(const char *);
+int write_file(const char *, const char *);
 
 #endif // FS_H

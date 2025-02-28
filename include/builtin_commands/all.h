@@ -15,5 +15,6 @@ DEFCMD(cat)
 DEFCMD(setdisk)
 DEFCMD(touch)
 DEFCMD(rm)
+DEFCMD(fwrite)
 
 #endif  // BUILTIN_COMMANDS_H

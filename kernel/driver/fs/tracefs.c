@@ -150,3 +150,29 @@ int tracefs_remove_file(const char *path) {
     printf("TRACEFS: File not found\n");
     return -1;
 }
+
+int tracefs_write_file(const char *path, const char *content) {
+    char dirpath[32];
+    char filename[16];
+    get_directory(path, dirpath);
+    get_filename(path, filename);
+
+    char lbuffer[512];
+    tracefs_file_entry_t *f_entry;
+    for (int i = 1;; ++i) {
+        ata_read_sector(i, lbuffer);
+        f_entry = (tracefs_file_entry_t *)lbuffer;
+        if (f_entry->directory[0] == 0) {
+            printf("TRACEFS: File not found\n");
+            return -1;
+        }
+        if (strcmp(dirpath, f_entry->directory) == 0 &&
+            strcmp(filename, f_entry->filename) == 0) {
+            strcpy(f_entry->content, content);
+            ata_write_sector(i, (char*)f_entry);
+            return 0;
+        }
+    }
+    printf("TRACEFS: File not found\n");
+    return -1;
+}

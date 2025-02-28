@@ -23,5 +23,6 @@ int tracefs_dir_exists(const char *);
 
 void tracefs_create_file(const char *);
 int tracefs_remove_file(const char *);
+int tracefs_write_file(const char *, const char *);
 
 #endif // TRACEFS_H
