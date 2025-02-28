@@ -6,7 +6,7 @@ VM = qemu-system-i386
 CFLAGS = -m32 -ffreestanding -nostdlib -Iinclude
 ASFLAGS = -felf32
 LDFLAGS = -m elf_i386 -T linker.ld
-VMFLAGS = -cdrom trace.iso -serial mon:stdio -drive file=fat32-disk.img -drive file=tracefs-disk.img -boot order=d
+VMFLAGS = -cdrom trace.iso -serial mon:stdio -drive file=fat32-disk.img,format=raw -drive file=tracefs-disk.img,format=raw -boot order=d
 SRC = $(shell find kernel -name "*.c")
 OBJ = $(SRC:.c=.o)
 
@@ -44,7 +44,8 @@ test-qemu:
 	$(VM) $(VMFLAGS)
 
 tracefs-disk:
-	echo -n -e "TRACEFS\x00" | dd of=tracefs-disk.img bs=1 seek=0
+	dd if=/dev/zero of=tracefs-disk.img bs=1M count=100
+	printf "TRACEFS" | dd of=tracefs-disk.img bs=1 seek=0 conv=notrunc
 
 fat32-disk:
 	dd if=/dev/zero of=fat32-disk.img bs=1M count=100
