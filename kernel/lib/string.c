@@ -50,6 +50,14 @@ char *strcpy(char *dest, const char *src) {
     return dest;
 }
 
+const char* strrchr(const char* str, int ch) {
+    const char* last = NULL;
+    while (*str) {
+        if (*str == (char)ch) last = str; 
+        str++;
+    }
+    return last;
+}
 
 char *strncpy(char *dest, const char *src, size_t n) {
     char *ptr = dest;

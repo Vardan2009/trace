@@ -13,5 +13,7 @@ DEFCMD(ls)
 DEFCMD(cd)
 DEFCMD(cat)
 DEFCMD(setdisk)
+DEFCMD(touch)
+DEFCMD(rm)
 
 #endif  // BUILTIN_COMMANDS_H

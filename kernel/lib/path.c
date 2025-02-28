@@ -4,10 +4,19 @@
 #include "lib/stdio.h"
 
 void get_directory(const char *path, char *dir) {
-    size_t len = strlen(path);
-    size_t i = len;
-    while (i > 0 && path[i - 1] != '/') i--;
-    strncpy(dir, path, i);
+    const char *last_slash = strrchr(path, '/');
+    
+    if (last_slash != NULL) {
+        if (last_slash == path) {
+            dir[0] = '/';
+            dir[1] = '\0';
+        } else {
+            size_t len = last_slash - path;
+            strncpy(dir, path, len);
+            dir[len] = '\0';
+        }
+    } else
+        dir[0] = '\0';
 }
 
 size_t split_path(const char *path, char **components, size_t max_components) {

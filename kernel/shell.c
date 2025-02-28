@@ -5,7 +5,7 @@
 
 #include "driver/diskio.h"
 
-#define NCMDS 9
+#define NCMDS 11
 builtin_command_t builtin_commands[NCMDS] = {
     {"echo", "echo <text>", "prints given text to screen",
      &builtin_command_echo},
@@ -17,6 +17,8 @@ builtin_command_t builtin_commands[NCMDS] = {
     {"cd", "cd <relative path>", "changes directory", &builtin_command_cd},
     {"cat", "cat <relative path>", "read file", &builtin_command_cat},
     {"setdisk", "setdisk <disk num>", "set current disk", &builtin_command_setdisk},
+    {"touch", "touch <relative path>", "create new file", &builtin_command_touch},
+    {"rm", "rm <relative path>", "remove file", &builtin_command_rm},
 };
 
 char user_pwd[256] = "/";

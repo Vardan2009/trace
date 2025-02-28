@@ -43,9 +43,9 @@ clean:
 test-qemu:
 	$(VM) $(VMFLAGS)
 
-secondary-fat32-disk:
+secondary-disk:
 	dd if=/dev/zero of=secondary.img bs=1M count=100
-	mkfs.fat -F 32 secondary.img
+# 	mkfs.fat -F 32 secondary.img
 
 
 full: iso test-qemu clean
