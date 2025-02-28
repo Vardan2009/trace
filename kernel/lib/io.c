@@ -20,6 +20,11 @@ uint16_t inw(uint16_t port) {
     return ret;
 }
 
+void outw(uint16_t port, uint16_t value) {
+    asm volatile("outw %0, %1" : : "a"(value), "Nd"(port));
+}
+
+
 #pragma diag_default 79
 #pragma diag_default 20
 #pragma diag_defualt 65

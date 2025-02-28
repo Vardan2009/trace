@@ -15,6 +15,7 @@ void kernel_main(uint32_t magic, multiboot_info *b_inf) {
 void init_all() {
     set_color_fg(COLOR_DGRAY);
     puts("Initializing TRACE\n");
+    printf("Boot Device: 0x%x\n", mboot_info.boot_device);
     init_gdt();
     puts("GDT initialization successful\n");
     init_idt();
