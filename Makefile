@@ -54,5 +54,11 @@ tracefs-disk:
 fat32-disk:
 	dd if=/dev/zero of=fat32-disk.img bs=1M count=100
 	mkfs.fat -F 32 fat32-disk.img
+	sudo mount fat32-disk.img smnt
+	sudo touch smnt/write.txt
+	sudo touch smnt/edit.txt
+	sudo echo "edit me" | sudo tee -a smnt/edit.txt
+	sudo umount smnt
+
 
 full: iso test-qemu clean

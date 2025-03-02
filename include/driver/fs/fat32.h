@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define FAT32_MAX_CLUSTERS 268435456
+
 typedef struct {
     // Standard BPB
     uint8_t  BS_jmpBoot[3];      // Jump instruction to boot code
@@ -68,6 +70,14 @@ typedef struct {
 int fat32_traverse_path(const char *, fat32_dir_entry_t *, int);
 
 int fat32_read_file_from_path(const char *, uint8_t *, uint32_t);
+int fat32_write_file_from_path(const char *,const uint8_t *, uint32_t);
 int fat32_list_directory(const char *, char[256][256]);
+
+int fat32_write_file(uint32_t, const uint8_t *, uint32_t, fat32_dir_entry_t *, uint32_t);
+uint32_t fat32_allocate_next_cluster(uint32_t);
+void fat32_set_next_cluster(uint32_t, uint32_t);
+void fat32_mark_cluster_as_used(uint32_t);
+uint32_t fat32_read_fat_entry(uint32_t);
+void fat32_write_fat_entry(uint32_t, uint32_t);
 
 #endif // FAT32_H

@@ -54,6 +54,7 @@ int remove_file(const char *path) {
 int write_file(const char *path, const char *content) {
 	switch(fs_type) {
 	case TRACEFS: return tracefs_write_file(path, content);
+	case FAT32: return fat32_write_file_from_path(path, content, strlen(content));
 	default:
 		printf("Not available for this filesystem\n");
 		return -1;
