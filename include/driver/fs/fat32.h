@@ -68,6 +68,7 @@ typedef struct {
 } __attribute__((packed)) fat32_dir_entry_t;
 
 int fat32_traverse_path(const char *, fat32_dir_entry_t *, int);
+uint32_t fat32_get_parent_directory_cluster(const char *);
 
 int fat32_read_file_from_path(const char *, uint8_t *, uint32_t);
 int fat32_write_file_from_path(const char *,const uint8_t *, uint32_t);
@@ -79,5 +80,7 @@ void fat32_set_next_cluster(uint32_t, uint32_t);
 void fat32_mark_cluster_as_used(uint32_t);
 uint32_t fat32_read_fat_entry(uint32_t);
 void fat32_write_fat_entry(uint32_t, uint32_t);
+
+int fat32_create_file(const char *); 
 
 #endif // FAT32_H

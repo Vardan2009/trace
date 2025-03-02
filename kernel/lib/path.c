@@ -2,6 +2,7 @@
 #include "lib/string.h"
 #include "lib/malloc.h"
 #include "lib/stdio.h"
+#include "lib/stdlib.h"
 
 void get_directory(const char *path, char *dir) {
     const char *last_slash = strrchr(path, '/');
@@ -39,6 +40,43 @@ size_t split_path(const char *path, char **components, size_t max_components) {
         components[count++] = (char *)path + start;
     
     return count;
+}
+
+void split_filename(const char *filename, char *name, char *extension) {
+    const char *dot = strrchr(filename, '.');
+    
+    if (dot && dot != filename) {
+        size_t name_len = dot - filename;
+        strncpy(name, filename, name_len);
+        name[name_len] = '\0';
+        strcpy(extension, dot + 1);
+    } else {
+        strcpy(name, filename);
+        extension[0] = '\0';
+    }
+}
+
+void convert_to_fat32(const char *filename, char *fat_filename) {
+    char name[9] = {0};
+    char extension[4] = {0};
+    const char *dot = strrchr(filename, '.');
+    if (dot) {
+        size_t name_len = dot - filename;
+        if (name_len > 8) name_len = 8;
+        strncpy(name, filename, name_len);
+        size_t ext_len = strlen(dot + 1);
+        if (ext_len > 3) ext_len = 3;
+        strncpy(extension, dot + 1, ext_len);
+    } else
+        strncpy(name, filename, 8); // Ensure it fits in 8 characters
+    for (int i = 0; i < 8 && name[i] != '\0'; i++)
+        name[i] = toupper(name[i]);
+    for (int i = 0; i < 3 && extension[i] != '\0'; i++)
+        extension[i] = toupper(extension[i]);
+    for (int i = 0; i < 8; i++)
+        fat_filename[i] = (i < strlen(name)) ? name[i] : ' ';
+    for (int i = 8; i < 11; i++)
+        fat_filename[i] = (i - 8 < strlen(extension)) ? extension[i - 8] : ' ';
 }
 
 void join_path(const char *base, const char *relative, char *result) {

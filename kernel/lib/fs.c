@@ -36,6 +36,7 @@ int dir_exists(const char *path) {
 void create_file(const char *path) {
 	switch(fs_type) {
 	case TRACEFS: return tracefs_create_file(path);
+	case FAT32: return fat32_create_file(path);
 	default:
 		printf("Not available for this filesystem\n");
 		return;

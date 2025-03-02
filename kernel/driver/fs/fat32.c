@@ -392,3 +392,70 @@ void fat32_write_fat_entry(uint32_t cluster, uint32_t value) {
     memcpy(fat_buffer + fat_entry_offset, &value, 4);
     ata_write_sector(fat_sector, fat_buffer);
 }
+
+int fat32_create_file(const char *path) {
+    if (!path || *path != '/') {
+        printf("FAT32: Invalid path\n");
+        return -1;
+    }
+
+    if(fat32_traverse_path(path, NULL, 0) == 0) {
+        printf("FAT32: File already exists\n");
+        return -1;
+    }
+
+    char parent_path[256];
+    get_directory(path, parent_path);
+
+    fat32_dir_entry_t parent_dir;
+    if (fat32_traverse_path(parent_path, &parent_dir, 1) != 0) {
+        printf("FAT32: Parent directory not found\n");
+        return -1;
+    }
+
+    uint32_t parent_directory_cluster = (parent_dir.DIR_FstClusHI << 16) | parent_dir.DIR_FstClusLO;
+    if (parent_directory_cluster == 0) {
+        parent_directory_cluster = fat32_boot_sector->BPB_RootClus;
+    }
+
+    char filename_raw[128] = {0};
+    char filename[11] = {0};
+    get_filename(path, filename_raw);
+    convert_to_fat32(filename_raw, filename);
+
+    uint8_t dir_buffer[fat32_boot_sector->BPB_SecPerClus * fat32_boot_sector->BPB_BytsPerSec];
+    uint32_t cluster = parent_directory_cluster;
+
+    while (cluster < 0x0FFFFFF8) {
+        fat32_read_cluster(cluster, dir_buffer);
+
+        for (int i = 0; i < (fat32_boot_sector->BPB_SecPerClus * fat32_boot_sector->BPB_BytsPerSec) / sizeof(fat32_dir_entry_t); i++) {
+            fat32_dir_entry_t *entry = (fat32_dir_entry_t *)(dir_buffer + (i * sizeof(fat32_dir_entry_t)));
+
+            if (entry->DIR_Name[0] == 0x00 || entry->DIR_Name[0] == 0xE5) {
+                memset(entry, 0, sizeof(fat32_dir_entry_t));
+                memcpy(entry->DIR_Name, filename, 11);
+                entry->DIR_Attr = 0x20;
+                entry->DIR_FileSize = 0;
+
+                uint32_t first_cluster = fat32_allocate_next_cluster(0);
+                if (first_cluster) {
+                    fat32_mark_cluster_as_used(first_cluster);
+                    entry->DIR_FstClusLO = first_cluster & 0xFFFF;
+                    entry->DIR_FstClusHI = (first_cluster >> 16) & 0xFFFF;
+                } else {
+                    entry->DIR_FstClusLO = 0;
+                    entry->DIR_FstClusHI = 0;
+                }
+                fat32_write_cluster(cluster, dir_buffer);
+                return 0;
+            }
+        }
+
+        // Move to the next directory cluster
+        cluster = fat32_get_next_cluster(cluster);
+    }
+
+    printf("FAT32: No space in directory\n");
+    return -1;
+}
