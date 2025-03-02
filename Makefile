@@ -36,7 +36,7 @@ kernel.bin: boot.o gdt.o idt.o $(OBJ)
 iso: kernel.bin
 	mkdir -p iso/boot/grub
 	cp grub.cfg iso/boot/grub/grub.cfg
-	cp -a copy_to_fs/. iso/
+	cp -a copy_to_os_fs/. iso/
 	grub-mkrescue -o trace.iso iso/
 
 clean:
