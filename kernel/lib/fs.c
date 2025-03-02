@@ -27,7 +27,7 @@ int read_directory_listing(const char *path, char dirs[256][256]) {
 int dir_exists(const char *path) {
 	switch(fs_type) {
 	case ISO9660: return i9660_dir_from_path(path) != NULL;
-	case FAT32: return fat32_traverse_path(path, NULL, 1) == 0;
+	case FAT32: return fat32_traverse_path(path, NULL, 1, 1) == 0;
 	case TRACEFS: return tracefs_dir_exists(path);
 	default: return 0;
 	}
@@ -36,7 +36,7 @@ int dir_exists(const char *path) {
 void create_file(const char *path) {
 	switch(fs_type) {
 	case TRACEFS: return tracefs_create_file(path);
-	case FAT32: return fat32_create_file(path);
+	case FAT32: fat32_create_file(path); break;
 	default:
 		printf("Not available for this filesystem\n");
 		return;
@@ -46,6 +46,7 @@ void create_file(const char *path) {
 int remove_file(const char *path) {
 	switch(fs_type) {
 	case TRACEFS: return tracefs_remove_file(path);
+	case FAT32: return fat32_remove_file(path);
 	default:
 		printf("Not available for this filesystem\n");
 		return -1;

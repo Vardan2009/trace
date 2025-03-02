@@ -3,6 +3,7 @@
 #include "lib/string.h"
 #include "lib/malloc.h"
 #include "lib/stdio.h"
+#include "lib/path.h"
 
 fat32_boot_sector_t *fat32_boot_sector;
 uint8_t buffer[512];
@@ -152,7 +153,7 @@ int fat32_find_entry(uint32_t dir_cluster, const char *name, fat32_dir_entry_t *
     return -1;
 }
 
-int fat32_traverse_path(const char *path, fat32_dir_entry_t *result, int is_dir_path) {
+int fat32_traverse_path(const char *path, fat32_dir_entry_t *result, int is_dir_path, int print_notfound) {
     uint32_t current_cluster = fat32_boot_sector->BPB_RootClus;
     char path_copy[256];
 
@@ -163,7 +164,7 @@ int fat32_traverse_path(const char *path, fat32_dir_entry_t *result, int is_dir_
     
     while (token != NULL) {
         if (fat32_find_entry(current_cluster, token, &entry) != 0) {
-            printf("FAT32: Entry `%s` not found\n", token);
+            if(print_notfound) printf("FAT32: Entry `%s` not found\n", token);
             return -1;
         }
         
@@ -198,7 +199,7 @@ int fat32_traverse_path(const char *path, fat32_dir_entry_t *result, int is_dir_
 
 int fat32_read_file_from_path(const char *path, uint8_t *buffer, uint32_t buffer_size) {
     fat32_dir_entry_t entry;
-    if (fat32_traverse_path(path, &entry, 0) != 0) {
+    if (fat32_traverse_path(path, &entry, 0, 0) != 0) {
         printf("FAT32: File not Found\n");
         return -1;
     }
@@ -220,7 +221,7 @@ int fat32_list_directory(const char *path, char dirs[256][256]) {
     if (path[0] == '/' && strlen(path) == 1) {
         dir_cluster = fat32_boot_sector->BPB_RootClus;
     } else {
-        if (fat32_traverse_path(path, &entry, 1) != 0) {
+        if (fat32_traverse_path(path, &entry, 1, 0) != 0) {
             printf("FAT32: Directory Not Found\n");
             return -1;
         }
@@ -267,14 +268,14 @@ uint32_t fat32_get_parent_directory_cluster(const char *path) {
     if(strlen(parent_path) == 1 && parent_path[0] == '/')
         return fat32_boot_sector->BPB_RootClus; // Root directory cluster
     fat32_dir_entry_t parent_dir;
-    if (fat32_traverse_path(parent_path, &parent_dir, 1) == 0)
+    if (fat32_traverse_path(parent_path, &parent_dir, 1, 0) == 0)
         return (parent_dir.DIR_FstClusHI << 16) | parent_dir.DIR_FstClusLO;
     return 0;
 }
 
 int fat32_write_file_from_path(const char *path, const uint8_t *buffer, uint32_t buffer_size) {
     fat32_dir_entry_t entry;
-    if (fat32_traverse_path(path, &entry, 0) != 0) {
+    if (fat32_traverse_path(path, &entry, 0, 0) != 0) {
         printf("FAT32: File not Found\n");
         return -1;
     }
@@ -296,12 +297,9 @@ int fat32_update_directory_entry(fat32_dir_entry_t *dir_entry, uint32_t dir_clus
         fat32_read_cluster(cluster, dir_buffer);
         for (int i = 0; i < (fat32_boot_sector->BPB_SecPerClus * fat32_boot_sector->BPB_BytsPerSec) / sizeof(fat32_dir_entry_t); i++) {
             fat32_dir_entry_t *entry = (fat32_dir_entry_t *)(dir_buffer + (i * sizeof(fat32_dir_entry_t)));
-
-            if (memcmp(entry->DIR_Name, dir_entry->DIR_Name, 11) == 0) {
-                // Found the entry, update file size and cluster info
-                entry->DIR_FileSize = dir_entry->DIR_FileSize;
-                entry->DIR_FstClusLO = dir_entry->DIR_FstClusLO;
-                entry->DIR_FstClusHI = dir_entry->DIR_FstClusHI;
+            // if (strncmp(entry->DIR_Name, dir_entry->DIR_Name, 11) == 0) {
+            if(entry->DIR_FstClusHI == dir_entry->DIR_FstClusHI && entry->DIR_FstClusLO == dir_entry->DIR_FstClusLO) {
+                memcpy(entry, dir_entry, sizeof(*dir_entry));
                 fat32_write_cluster(cluster, dir_buffer);
                 return 0;
             }
@@ -399,7 +397,7 @@ int fat32_create_file(const char *path) {
         return -1;
     }
 
-    if(fat32_traverse_path(path, NULL, 0) == 0) {
+    if(fat32_traverse_path(path, NULL, 0, 0) == 0) {
         printf("FAT32: File already exists\n");
         return -1;
     }
@@ -408,7 +406,7 @@ int fat32_create_file(const char *path) {
     get_directory(path, parent_path);
 
     fat32_dir_entry_t parent_dir;
-    if (fat32_traverse_path(parent_path, &parent_dir, 1) != 0) {
+    if (fat32_traverse_path(parent_path, &parent_dir, 1, 0) != 0) {
         printf("FAT32: Parent directory not found\n");
         return -1;
     }
@@ -458,4 +456,33 @@ int fat32_create_file(const char *path) {
 
     printf("FAT32: No space in directory\n");
     return -1;
+}
+
+int fat32_remove_file(const char *path) {
+    uint32_t bytes_per_cluster = fat32_boot_sector->BPB_SecPerClus * fat32_boot_sector->BPB_BytsPerSec;
+    uint8_t empty_cluster[bytes_per_cluster];
+    memset(empty_cluster, 0, bytes_per_cluster);
+
+    fat32_dir_entry_t dir_entry;
+    int result = fat32_traverse_path(path, &dir_entry, 0, 0);
+    
+    if (result != 0) {
+        printf("FAT32: File doesn't exist\n");
+        return -1;
+    }
+
+    uint32_t cluster = fat32_get_first_cluster_from_entry(&dir_entry);
+    
+    while (cluster >= 2 && cluster < 0x0FFFFFF8) {
+        fat32_write_cluster(cluster, empty_cluster);
+        uint32_t next_cluster = fat32_get_next_cluster(cluster);
+        cluster = next_cluster;
+    }
+
+    for (int i = 0; i < 11; i++) dir_entry.DIR_Name[i] = 0;
+    dir_entry.DIR_Attr = 0xE5; // deleted attribute
+    
+    uint32_t parent_cluster = fat32_get_parent_directory_cluster(path);
+    fat32_update_directory_entry(&dir_entry, parent_cluster);
+    return 0;
 }
