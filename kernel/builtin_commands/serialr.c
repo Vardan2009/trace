@@ -6,7 +6,10 @@
 #include "shell.h"
 
 void builtin_command_serialr(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
-    if (tokc != 2) return;
+    if (tokc != 2) {
+        printf("USAGE: serialr com<1-8>\n");
+        return;
+    }
     uint16_t port;
     if(strcmp(tokv[1], "com1") == 0) port = COM1;
     else if(strcmp(tokv[1], "com2") == 0) port = COM2;

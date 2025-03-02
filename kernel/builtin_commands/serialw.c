@@ -5,7 +5,10 @@
 #include "shell.h"
 
 void builtin_command_serialw(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
-    if (tokc != 3) return;
+    if (tokc != 3) {
+        printf("USAGE: serialw com<1-8> <data>\n");
+        return;
+    }
     uint16_t port;
     if(strcmp(tokv[1], "com1") == 0) port = COM1;
     else if(strcmp(tokv[1], "com2") == 0) port = COM2;

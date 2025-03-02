@@ -3,16 +3,11 @@
 #include "lib/fs.h"
 
 void builtin_command_mkdir(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
-    if(tokc != 2) return;
-    char path[256];
-    strcpy(path, user_pwd);
-    if(tokv[1][0] == '/')
-        strcpy(path, tokv[1]);
-    else {
-        if(strcmp(path, "/") != 0)
-            strcat(path, "/");
-        strcat(path, tokv[1]);
+    if (tokc != 2) {
+        printf("USAGE: mkdir <relative filepath>\n");
+        return;
     }
-    normalize_path(path);
+    char path[256];
+    relative_to_user_pwd(tokv[1], path);
     create_directory(path);
 }

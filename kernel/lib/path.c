@@ -3,6 +3,7 @@
 #include "lib/malloc.h"
 #include "lib/stdio.h"
 #include "lib/stdlib.h"
+#include "shell.h"
 
 void get_directory(const char *path, char *dir) {
     const char *last_slash = strrchr(path, '/');
@@ -158,4 +159,16 @@ void get_filename(const char *path, char *filename) {
 
     // Null-terminate the filename string
     filename[j] = '\0';
+}
+
+void relative_to_user_pwd(const char *rel_path, char *abs_path) {
+    strcpy(abs_path, user_pwd);
+    if(rel_path[0] == '/')
+        strcpy(abs_path, rel_path);
+    else {
+        if(strcmp(abs_path, "/") != 0)
+            strcat(abs_path, "/");
+        strcat(abs_path, rel_path);
+    }
+    normalize_path(abs_path);
 }

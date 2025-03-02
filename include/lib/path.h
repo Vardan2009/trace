@@ -10,5 +10,6 @@ size_t split_path(const char *, char **, size_t);
 void join_path(const char *, const char *, char *);
 void normalize_path(char *);
 void get_filename(const char *, char *);
+void relative_to_user_pwd(const char *, char *);
 
 #endif // PATH_H

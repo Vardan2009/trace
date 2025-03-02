@@ -11,17 +11,17 @@ int isprint(char c) {
 
 
 void builtin_command_cat(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
-    if (tokc < 2) return;
+    if (tokc != 2 && tokc != 3) {
+        printf("USAGE: cat <relative filepath> [-x]\n");
+        return;
+    }
     
     int print_type = PRINT_TYPE_STRING;
     if (tokc == 3 && strcmp(tokv[2], "-x") == 0) 
         print_type = PRINT_TYPE_HEX;
     
     char path[256];
-    strcpy(path, user_pwd);
-    if(strcmp(user_pwd, "/") != 0) strcat(path, "/");
-    strcat(path, tokv[1]);
-    normalize_path(path);
+    relative_to_user_pwd(tokv[1], path);
     
     static const int buflen = 60000;
     char buffer[buflen];

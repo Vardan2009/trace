@@ -3,11 +3,11 @@
 #include "lib/fs.h"
 
 void builtin_command_rm(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
-    if (tokc < 2) return;
+    if (tokc != 2) {
+        printf("USAGE: rm <relative filepath>\n");
+        return;
+    }
     char path[256];
-    strcpy(path, user_pwd);
-    if(strcmp(user_pwd, "/") != 0) strcat(path, "/");
-    strcat(path, tokv[1]);
-    normalize_path(path);
+    relative_to_user_pwd(tokv[1], path);
     remove_file(path);
 }
