@@ -33,6 +33,18 @@ int dir_exists(const char *path) {
 	}
 }
 
+void create_directory(const char *path) {
+	switch(fs_type) {
+	case TRACEFS:
+		printf("TRACEFS: Empty directories not supported\n");
+		return;
+	case FAT32: fat32_create_directory(path); break;
+	default:
+		printf("Not available for this filesystem\n");
+		return;
+	}
+}
+
 void create_file(const char *path) {
 	switch(fs_type) {
 	case TRACEFS: return tracefs_create_file(path);

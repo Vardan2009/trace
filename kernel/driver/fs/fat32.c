@@ -4,6 +4,7 @@
 #include "lib/malloc.h"
 #include "lib/stdio.h"
 #include "lib/path.h"
+#include "lib/stdlib.h"
 
 fat32_boot_sector_t *fat32_boot_sector;
 uint8_t buffer[512];
@@ -248,8 +249,7 @@ int fat32_list_directory(const char *path, char dirs[256][256]) {
             if (dentry->DIR_Attr == 0x0F) continue;
             char formatted[13];
             fat32_format_filename(formatted, dentry->DIR_Name);
-            if(strcmp(formatted, "..") != 0 && strcmp(formatted, ".") != 0)
-                strncpy(dirs[dir_idx++], formatted, 13);
+            strncpy(dirs[dir_idx++], formatted, 13);
             entry_count++;
         }
         uint32_t next_cluster = fat32_get_next_cluster(dir_cluster);
@@ -484,5 +484,115 @@ int fat32_remove_file(const char *path) {
     
     uint32_t parent_cluster = fat32_get_parent_directory_cluster(path);
     fat32_update_directory_entry(&dir_entry, parent_cluster);
+    return 0;
+}
+
+int fat32_create_directory_entry(const char *path, fat32_dir_entry_t *entry, uint32_t first_cluster) {
+    memset(entry, 0, sizeof(fat32_dir_entry_t));
+    
+    get_filename(path, (char *)entry->DIR_Name);
+    for(int i = 0; i < strlen(entry->DIR_Name); ++i) entry->DIR_Name[i] = toupper(entry->DIR_Name[i]);
+    if(strlen(entry->DIR_Name) > 8) return -1;
+
+    entry->DIR_Attr = 0x10;
+    
+    entry->DIR_FstClusHI = (first_cluster >> 16) & 0xFFFF;
+    entry->DIR_FstClusLO = first_cluster & 0xFFFF;
+    
+    entry->DIR_CrtTime = 0;
+    entry->DIR_CrtDate = 0;
+    entry->DIR_WrtTime = 0;
+    entry->DIR_WrtDate = 0;
+    entry->DIR_LstAccDate = 0;
+    entry->DIR_FileSize = 0;
+    entry->DIR_CrtTimeTenth = 0;
+    entry->DIR_NTRes = 0;
+
+    return 0;
+}
+
+int fat32_find_free_directory_entry(uint32_t cluster) {
+    uint8_t buffer[fat32_boot_sector->BPB_BytsPerSec * fat32_boot_sector->BPB_SecPerClus];
+    fat32_dir_entry_t *entry;
+    uint32_t entries_per_cluster, i;
+
+    fat32_read_cluster(cluster, buffer);
+
+    entries_per_cluster = (fat32_boot_sector->BPB_BytsPerSec * fat32_boot_sector->BPB_SecPerClus) / sizeof(fat32_dir_entry_t);
+
+    for (i = 0; i < entries_per_cluster; ++i) {
+        entry = (fat32_dir_entry_t *)(buffer + (i * sizeof(fat32_dir_entry_t)));
+        if (entry->DIR_Name[0] == 0 || entry->DIR_Name[0] == 0xE5) return i;
+    }
+
+    return -1;
+}
+
+int fat32_write_directory_entry(uint32_t cluster, uint32_t offset, fat32_dir_entry_t *entry) {
+    uint8_t buffer[fat32_boot_sector->BPB_BytsPerSec * fat32_boot_sector->BPB_SecPerClus];
+    fat32_read_cluster(cluster, buffer);
+    uint32_t entry_offset = offset * sizeof(fat32_dir_entry_t);
+    memcpy(buffer + entry_offset, entry, sizeof(fat32_dir_entry_t));
+    fat32_write_cluster(cluster, buffer);
+    return 0;
+}
+
+int fat32_create_directory(const char *path) {
+    fat32_dir_entry_t entry;
+    uint32_t parent_cluster;
+    uint32_t new_cluster;
+    uint32_t dir_entry_offset;
+    int result;
+
+    parent_cluster = fat32_get_parent_directory_cluster(path);
+    if (parent_cluster == 0) {
+        printf("FAT32: Unable to find parent directory\n");
+        return -1;
+    }
+
+    result = fat32_traverse_path(path, &entry, 1, 0);
+    if (result == 0) {
+        printf("FAT32: Directory already exists\n");
+        return -2;
+    }
+
+    new_cluster = fat32_allocate_next_cluster(0);
+    if (new_cluster == 0) {
+        printf("FAT32: No free clusters available\n");
+        return -3;
+    }
+
+    fat32_write_fat_entry(new_cluster, 0x0FFFFFFF);
+
+    result = fat32_create_directory_entry(path, &entry, new_cluster);
+    if (result != 0) {
+        printf("FAT32: Error creating directory entry\n");
+        return -4;
+    }
+
+    dir_entry_offset = fat32_find_free_directory_entry(parent_cluster);
+    if (dir_entry_offset == -1) {
+        printf("FAT32: No space for a new directory entry in the parent directory\n");
+        return -5;
+    }
+
+    result = fat32_write_directory_entry(parent_cluster, dir_entry_offset, &entry);
+    if (result != 0) {
+        printf("FAT32: Error writing directory entry to the parent directory\n");
+        return -6;
+    }
+
+    uint8_t cluster_data[fat32_boot_sector->BPB_BytsPerSec * fat32_boot_sector->BPB_SecPerClus];
+    memset(cluster_data, 0, sizeof(cluster_data));
+    fat32_write_cluster(new_cluster, cluster_data);
+
+    fat32_dir_entry_t dot_entry;
+    fat32_create_directory_entry(".", &dot_entry, new_cluster);
+    fat32_write_directory_entry(new_cluster, 0, &dot_entry);
+
+    fat32_dir_entry_t dotdot_entry;
+    fat32_create_directory_entry("..", &dotdot_entry, parent_cluster);
+    fat32_write_directory_entry(new_cluster, 1, &dotdot_entry);
+
     return 0;
 }

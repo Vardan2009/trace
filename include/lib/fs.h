@@ -17,6 +17,7 @@ int read_directory_listing(const char *, char[256][256]);
 void init_fs();
 int dir_exists(const char *);
 void create_file(const char *);
+void create_directory(const char *);
 int remove_file(const char *);
 int write_file(const char *, const char *);
 
