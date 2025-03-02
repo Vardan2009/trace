@@ -3,6 +3,8 @@
 #include "lib/string.h"
 #include "lib/stdio.h"
 #include "lib/path.h"
+#include "shell.h"
+
 
 tracefs_header_sector_t *tracefs_header_sector;
 uint8_t tracefs_boot_sector_buffer[512];

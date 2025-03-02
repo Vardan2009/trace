@@ -3,6 +3,8 @@
 #include "driver/diskio.h"
 #include "lib/stdio.h"
 #include "lib/path.h"
+#include "shell.h"
+
 
 i9660_pvd_t pvd;
 

@@ -5,6 +5,7 @@
 #include "lib/stdio.h"
 #include "lib/path.h"
 #include "lib/stdlib.h"
+#include "shell.h"
 
 fat32_boot_sector_t *fat32_boot_sector;
 uint8_t buffer[512];

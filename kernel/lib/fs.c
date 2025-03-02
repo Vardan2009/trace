@@ -3,6 +3,7 @@
 #include "driver/fs/fat32.h"
 #include "driver/fs/tracefs.h"
 #include "lib/stdio.h"
+#include "shell.h"
 
 fs_type_t fs_type;
 
