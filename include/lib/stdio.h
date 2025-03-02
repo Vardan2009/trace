@@ -44,6 +44,7 @@ void printi(int);
 void printui(unsigned int, int, char);
 void printhx(unsigned int, int, char);
 void printf(const char *, ...);
+void vprintf(const char *, va_list);
 
 void clear_screen(void);
 

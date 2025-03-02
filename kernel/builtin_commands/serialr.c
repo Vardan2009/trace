@@ -7,7 +7,7 @@
 
 void builtin_command_serialr(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
     if (tokc != 2) {
-        printf("USAGE: serialr com<1-8>\n");
+        print_info("USAGE: serialr com<1-8>\n");
         return;
     }
     uint16_t port;

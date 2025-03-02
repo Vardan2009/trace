@@ -24,7 +24,7 @@ int tracefs_read_file_from_path(const char *path, uint8_t *buffer, uint32_t buff
 		ata_read_sector(i, lbuffer);
 		f_entry = (tracefs_file_entry_t *)lbuffer;
 		if(f_entry->directory[0] == 0) {
-			printf("TRACEFS: File not found");
+			print_err("TRACEFS: File not found");
 			return -1;
 		}
 		if(strcmp(dirpath, f_entry->directory) == 0 && strcmp(filename, f_entry->filename) == 0) {
@@ -32,7 +32,7 @@ int tracefs_read_file_from_path(const char *path, uint8_t *buffer, uint32_t buff
 			return strlen(buffer);
 		}
 	}
-	printf("TRACEFS: File not found");
+	print_err("TRACEFS: File not found");
 	return -1;
 }
 
@@ -94,7 +94,7 @@ int tracefs_dir_exists(const char *dirpath) {
 		ata_read_sector(i, lbuffer);
 		f_entry = (tracefs_file_entry_t *)lbuffer;
 		if(f_entry->directory[0] == 0) {
-			printf("TRACEFS: Directory not found");
+			print_err("TRACEFS: Directory not found");
 			return 0;
 		}
 		if(strncmp(dirpath, f_entry->directory, strlen(dirpath)) == 0) return 1;
@@ -136,7 +136,7 @@ int tracefs_remove_file(const char *path) {
         ata_read_sector(i, lbuffer);
         f_entry = (tracefs_file_entry_t *)lbuffer;
         if (f_entry->directory[0] == 0) {
-            printf("TRACEFS: File not found\n");
+            print_err("TRACEFS: File not found\n");
             return -1;
         }
         if (strcmp(dirpath, f_entry->directory) == 0 &&
@@ -147,7 +147,7 @@ int tracefs_remove_file(const char *path) {
             return 0;
         }
     }
-    printf("TRACEFS: File not found\n");
+    print_err("TRACEFS: File not found\n");
     return -1;
 }
 
@@ -163,7 +163,7 @@ int tracefs_write_file(const char *path, const char *content) {
         ata_read_sector(i, lbuffer);
         f_entry = (tracefs_file_entry_t *)lbuffer;
         if (f_entry->directory[0] == 0) {
-            printf("TRACEFS: File not found\n");
+            print_err("TRACEFS: File not found\n");
             return -1;
         }
         if (strcmp(dirpath, f_entry->directory) == 0 &&
@@ -173,6 +173,6 @@ int tracefs_write_file(const char *path, const char *content) {
             return 0;
         }
     }
-    printf("TRACEFS: File not found\n");
+    print_err("TRACEFS: File not found\n");
     return -1;
 }

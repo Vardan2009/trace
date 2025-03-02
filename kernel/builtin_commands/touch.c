@@ -4,7 +4,7 @@
 
 void builtin_command_touch(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
     if (tokc != 2) {
-        printf("USAGE: touch <relative filepath>\n");
+        print_info("USAGE: touch <relative filepath>\n");
         return;
     }
     char path[256];

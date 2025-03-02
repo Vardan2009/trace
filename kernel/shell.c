@@ -5,22 +5,22 @@
 
 #include "driver/diskio.h"
 
-#define NCMDS 13
+#define NCMDS 14
 builtin_command_t builtin_commands[NCMDS] = {
-    {"echo", "echo <text>", "prints given text to screen",
-     &builtin_command_echo},
+    {"help", "help", "lists all built-in commands", &builtin_command_help},
+    {"echo", "echo <text>", "prints given text to screen", &builtin_command_echo},
     {"clear", "clear", "clears screen", &builtin_command_clear},
     {"off", "off", "prepares system for power off", &builtin_command_off},
     {"serialw", "serialw <port> <text>", "writes data to serial port", &builtin_command_serialw},
     {"serialr", "serialr <port>", "listens to data in serial port", &builtin_command_serialr},
     {"ls", "ls", "lists current directory", &builtin_command_ls},
     {"cd", "cd <relative path>", "changes directory", &builtin_command_cd},
-    {"cat", "cat <relative path>", "read file", &builtin_command_cat},
-    {"setdisk", "setdisk <disk num>", "set current disk", &builtin_command_setdisk},
-    {"touch", "touch <relative path>", "create new file", &builtin_command_touch},
-    {"rm", "rm <relative path>", "remove file", &builtin_command_rm},
-    {"fwrite", "fwrite <relative path> <new data>", "write to file", &builtin_command_fwrite},
-    {"mkdir", "mkdir <relative path>", "create new folder", &builtin_command_mkdir},
+    {"cat", "cat <relative path>", "reads file", &builtin_command_cat},
+    {"setdisk", "setdisk <disk num>", "sets current disk", &builtin_command_setdisk},
+    {"touch", "touch <relative path>", "creates new file", &builtin_command_touch},
+    {"rm", "rm <relative path>", "removes file", &builtin_command_rm},
+    {"fwrite", "fwrite <relative path> <new data>", "writes to file", &builtin_command_fwrite},
+    {"mkdir", "mkdir <relative path>", "creates new folder", &builtin_command_mkdir},
 };
 
 char user_pwd[256] = "/";
@@ -62,15 +62,93 @@ void spltoks(const char *input, char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH],
     *token_count = token_index;
 }
 
+void print_help() {
+    for(int i = 0; i < NCMDS; ++i)
+            print_help_cmd(builtin_commands[i]);
+}
+
+void print_err(const char *msg, ...) {
+    va_list args;
+    va_start(args, msg);
+    
+    set_color(COLOR_WHITE, COLOR_RED);
+    printf("[ ERR ] ");
+    vprintf(msg, args);
+    printf("\n");
+
+    va_end(args);
+    set_color(COLOR_WHITE, COLOR_BLACK);
+}
+
+void print_warn(const char *msg, ...) {
+    va_list args;
+    va_start(args, msg);
+
+    set_color(COLOR_BLACK, COLOR_LYELLOW);
+    printf("[ WARN ] ");
+    vprintf(msg, args);
+    printf("\n");
+
+    va_end(args);
+    set_color(COLOR_WHITE, COLOR_BLACK);
+}
+
+void print_info(const char *msg, ...) {
+    va_list args;
+    va_start(args, msg);
+
+    set_color(COLOR_WHITE, COLOR_BLUE);
+    printf("[ INFO ] ");
+    vprintf(msg, args);
+    printf("\n");
+
+    va_end(args);
+    set_color(COLOR_WHITE, COLOR_BLACK);
+}
+
+void print_ok(const char *msg, ...) {
+    va_list args;
+    va_start(args, msg);
+
+    set_color(COLOR_WHITE, COLOR_GREEN);
+    printf("[ OK ] ");
+    vprintf(msg, args);
+    printf("\n");
+
+    va_end(args);
+    set_color(COLOR_WHITE, COLOR_BLACK);
+}
+
+void print_help_cmd_str(const char *command) {
+    for(int i = 0; i < NCMDS; ++i) {
+        if(strcmp(builtin_commands[i].name, command) == 0) {
+            print_help_cmd(builtin_commands[i]);
+            return;
+        }
+    }
+    print_err("No such command `%s`", command);
+}
+
+void print_help_cmd(builtin_command_t cmd) {
+    curx = 1;
+    puts(cmd.usage);
+    curx = VGA_WIDTH - strlen(cmd.description) - 1;
+    puts(cmd.description);
+    putc('\n');
+}
+
 void parse_command(char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH], int token_count) {
     for (int i = 0; i < NCMDS; ++i) {
         if (strcmp(builtin_commands[i].name, tokens[0]) == 0) {
+            if(token_count == 2 && strcmp(tokens[1], "-?") == 0) {
+                print_help_cmd(builtin_commands[i]);
+                return;
+            }
             builtin_commands[i].exec(tokens, token_count);
             return;
         }
     }
-    set_color(COLOR_WHITE, COLOR_RED);
-    printf("No such command `%s`\n", tokens[0]);
+    print_err("No such command `%s`", tokens[0]);
 }
 
 void shell() {

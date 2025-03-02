@@ -4,7 +4,7 @@
 
 void builtin_command_setdisk(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
     if (tokc != 2) {
-        printf("USAGE: setdisk <disk number>\n");
+        print_info("USAGE: setdisk <disk number>\n");
         return;
     }
     set_drive_controller(tokv[1][0] - '0');

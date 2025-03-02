@@ -150,28 +150,24 @@ void printhx(unsigned int value, int width, char padChar) {
     while (i > 0) putc(buffer[--i]);
 }
 
-void printf(const char *format, ...) {
-    va_list args;
-    va_start(args, format);
-
+void vprintf_impl(const char *format, va_list args) {
     for (const char *p = format; *p != '\0'; p++) {
         if (*p == '%') {
             p++;
 
             // Parse flags and width
             char padChar = ' ';
-            if (*p == '0') { // Check for zero-padding
+            if (*p == '0') {
                 padChar = '0';
                 p++;
             }
 
             int width = 0;
-            while (*p >= '0' && *p <= '9') { // Read width
+            while (*p >= '0' && *p <= '9') {
                 width = width * 10 + (*p - '0');
                 p++;
             }
 
-            // Handle specifier
             switch (*p) {
                 case 's': {
                     char *str = va_arg(args, char *);
@@ -180,7 +176,7 @@ void printf(const char *format, ...) {
                 }
                 case 'd': {
                     int num = va_arg(args, int);
-                    printi(num); // No padding for signed integers
+                    printi(num);
                     break;
                 }
                 case 'u': {
@@ -207,7 +203,16 @@ void printf(const char *format, ...) {
             putc(*p);
         }
     }
+}
 
+void vprintf(const char *format, va_list args) {
+    vprintf_impl(format, args);
+}
+
+void printf(const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+    vprintf_impl(format, args);
     va_end(args);
 }
 

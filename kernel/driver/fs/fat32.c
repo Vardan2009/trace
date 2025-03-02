@@ -165,7 +165,7 @@ int fat32_traverse_path(const char *path, fat32_dir_entry_t *result, int is_dir_
     
     while (token != NULL) {
         if (fat32_find_entry(current_cluster, token, &entry) != 0) {
-            if(print_notfound) printf("FAT32: Entry `%s` not found\n", token);
+            if(print_notfound) print_err("FAT32: Entry `%s` not found\n", token);
             return -1;
         }
         
@@ -173,13 +173,13 @@ int fat32_traverse_path(const char *path, fat32_dir_entry_t *result, int is_dir_
 
         if (token != NULL) {
             if (!(entry.DIR_Attr & 0x10)) {
-                printf("FAT32: Not a Directory\n");
+                print_err("FAT32: Not a Directory\n");
                 return -1;
             }
             current_cluster = fat32_get_first_cluster_from_entry(&entry);
         } else {
             if (is_dir_path && !(entry.DIR_Attr & 0x10)) {
-                printf("FAT32: Not a Directory\n");
+                print_err("FAT32: Not a Directory\n");
                 return -1;
             }
             if (result)
@@ -201,11 +201,11 @@ int fat32_traverse_path(const char *path, fat32_dir_entry_t *result, int is_dir_
 int fat32_read_file_from_path(const char *path, uint8_t *buffer, uint32_t buffer_size) {
     fat32_dir_entry_t entry;
     if (fat32_traverse_path(path, &entry, 0, 0) != 0) {
-        printf("FAT32: File not Found\n");
+        print_err("FAT32: File not Found\n");
         return -1;
     }
     if (entry.DIR_Attr & 0x10) {
-        printf("FAT32: Not a File\n");
+        print_err("FAT32: Not a File\n");
         return -1;
     }
     uint32_t file_size = entry.DIR_FileSize;
@@ -223,7 +223,7 @@ int fat32_list_directory(const char *path, char dirs[256][256]) {
         dir_cluster = fat32_boot_sector->BPB_RootClus;
     } else {
         if (fat32_traverse_path(path, &entry, 1, 0) != 0) {
-            printf("FAT32: Directory Not Found\n");
+            print_err("FAT32: Directory Not Found\n");
             return -1;
         }
         dir_cluster = fat32_get_first_cluster_from_entry(&entry);
@@ -276,11 +276,11 @@ uint32_t fat32_get_parent_directory_cluster(const char *path) {
 int fat32_write_file_from_path(const char *path, const uint8_t *buffer, uint32_t buffer_size) {
     fat32_dir_entry_t entry;
     if (fat32_traverse_path(path, &entry, 0, 0) != 0) {
-        printf("FAT32: File not Found\n");
+        print_err("FAT32: File not Found\n");
         return -1;
     }
     if (entry.DIR_Attr & 0x10) {
-        printf("FAT32: Not a File\n");
+        print_err("FAT32: Not a File\n");
         return -1;
     }
     uint32_t start_cluster = fat32_get_first_cluster_from_entry(&entry);
@@ -344,7 +344,7 @@ int fat32_write_file(uint32_t start_cluster, const uint8_t *buffer, uint32_t fil
     dir_entry->DIR_FileSize = file_size;
 
     if (fat32_update_directory_entry(dir_entry, parent_directory_cluster) < 0) {
-        printf("FAT32: Error updating dir entry\n");
+        print_err("FAT32: Error updating dir entry\n");
         return -1;
     }
 
@@ -393,12 +393,12 @@ void fat32_write_fat_entry(uint32_t cluster, uint32_t value) {
 
 int fat32_create_file(const char *path) {
     if (!path || *path != '/') {
-        printf("FAT32: Invalid path\n");
+        print_err("FAT32: Invalid path\n");
         return -1;
     }
 
     if(fat32_traverse_path(path, NULL, 0, 0) == 0) {
-        printf("FAT32: File already exists\n");
+        print_err("FAT32: File already exists\n");
         return -1;
     }
 
@@ -407,7 +407,7 @@ int fat32_create_file(const char *path) {
 
     fat32_dir_entry_t parent_dir;
     if (fat32_traverse_path(parent_path, &parent_dir, 1, 0) != 0) {
-        printf("FAT32: Parent directory not found\n");
+        print_err("FAT32: Parent directory not found\n");
         return -1;
     }
 
@@ -454,7 +454,7 @@ int fat32_create_file(const char *path) {
         cluster = fat32_get_next_cluster(cluster);
     }
 
-    printf("FAT32: No space in directory\n");
+    print_err("FAT32: No space in directory\n");
     return -1;
 }
 
@@ -467,7 +467,7 @@ int fat32_remove_file(const char *path) {
     int result = fat32_traverse_path(path, &dir_entry, 0, 0);
     
     if (result != 0) {
-        printf("FAT32: File doesn't exist\n");
+        print_err("FAT32: File doesn't exist\n");
         return -1;
     }
 
@@ -546,19 +546,19 @@ int fat32_create_directory(const char *path) {
 
     parent_cluster = fat32_get_parent_directory_cluster(path);
     if (parent_cluster == 0) {
-        printf("FAT32: Unable to find parent directory\n");
+        print_err("FAT32: Unable to find parent directory\n");
         return -1;
     }
 
     result = fat32_traverse_path(path, &entry, 1, 0);
     if (result == 0) {
-        printf("FAT32: Directory already exists\n");
+        print_err("FAT32: Directory already exists\n");
         return -2;
     }
 
     new_cluster = fat32_allocate_next_cluster(0);
     if (new_cluster == 0) {
-        printf("FAT32: No free clusters available\n");
+        print_err("FAT32: No free clusters available\n");
         return -3;
     }
 
@@ -566,19 +566,19 @@ int fat32_create_directory(const char *path) {
 
     result = fat32_create_directory_entry(path, &entry, new_cluster);
     if (result != 0) {
-        printf("FAT32: Error creating directory entry\n");
+        print_err("FAT32: Error creating directory entry\n");
         return -4;
     }
 
     dir_entry_offset = fat32_find_free_directory_entry(parent_cluster);
     if (dir_entry_offset == -1) {
-        printf("FAT32: No space for a new directory entry in the parent directory\n");
+        print_err("FAT32: No space for a new directory entry in the parent directory\n");
         return -5;
     }
 
     result = fat32_write_directory_entry(parent_cluster, dir_entry_offset, &entry);
     if (result != 0) {
-        printf("FAT32: Error writing directory entry to the parent directory\n");
+        print_err("FAT32: Error writing directory entry to the parent directory\n");
         return -6;
     }
 

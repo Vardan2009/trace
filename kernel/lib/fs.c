@@ -36,11 +36,11 @@ int dir_exists(const char *path) {
 void create_directory(const char *path) {
 	switch(fs_type) {
 	case TRACEFS:
-		printf("TRACEFS: Empty directories not supported\n");
+		print_err("TRACEFS: Empty directories not supported\n");
 		return;
 	case FAT32: fat32_create_directory(path); break;
 	default:
-		printf("Not available for this filesystem\n");
+		print_err("Not available for this filesystem\n");
 		return;
 	}
 }
@@ -50,7 +50,7 @@ void create_file(const char *path) {
 	case TRACEFS: return tracefs_create_file(path);
 	case FAT32: fat32_create_file(path); break;
 	default:
-		printf("Not available for this filesystem\n");
+		print_err("Not available for this filesystem\n");
 		return;
 	}
 }
@@ -60,7 +60,7 @@ int remove_file(const char *path) {
 	case TRACEFS: return tracefs_remove_file(path);
 	case FAT32: return fat32_remove_file(path);
 	default:
-		printf("Not available for this filesystem\n");
+		print_err("Not available for this filesystem\n");
 		return -1;
 	}
 }
@@ -70,7 +70,7 @@ int write_file(const char *path, const char *content) {
 	case TRACEFS: return tracefs_write_file(path, content);
 	case FAT32: return fat32_write_file_from_path(path, content, strlen(content));
 	default:
-		printf("Not available for this filesystem\n");
+		print_err("Not available for this filesystem\n");
 		return -1;
 	}
 }

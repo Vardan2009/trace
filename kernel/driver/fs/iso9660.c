@@ -102,11 +102,11 @@ iso9660_dir_record_t *i9660_dir_from_path(const char *path) {
         uint32_t curr_length = current->data_length_lsb;   // LSB used
         iso9660_dir_record_t *child = i9660_find_directory_record(curr_extent, curr_length, token);
         if (child == NULL) {
-            printf("Directory '%s' not found.\n", token);
+            print_err("Directory '%s' not found.\n", token);
             return NULL;
         }
         if (!(child->file_flags & 0x02)) {
-            printf("'%s' is not a directory.\n", token);
+            print_err("'%s' is not a directory.\n", token);
             return NULL;
         }
         current = child;
@@ -159,18 +159,18 @@ int i9660_read_file_from_path(const char *path, uint8_t *buffer, uint32_t buffer
     iso9660_dir_record_t *file_record = i9660_find_directory_record(curr_extent, curr_length, filename);
 
     if (file_record == NULL) {
-        printf("File '%s' not found.\n", filename);
+        print_err("File '%s' not found.\n", filename);
         return -1;
     }
 
     if (file_record->file_flags & 0x02) {
-        printf("'%s' is a directory, not a file.\n", filename);
+        print_err("'%s' is a directory, not a file.\n", filename);
         return -1;
     }
     
     uint32_t file_length = file_record->data_length_lsb;
     if (buffer_size < file_length) {
-        printf("Buffer too small: file size %u, buffer size %u.\n", file_length, buffer_size);
+        print_err("Buffer too small: file size %u, buffer size %u.\n", file_length, buffer_size);
         return -1;
     }
     

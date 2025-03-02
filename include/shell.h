@@ -20,5 +20,13 @@ typedef struct {
 extern char user_pwd[256];
 
 void shell();
+void print_help();
+void print_help_cmd_str(const char *);
+void print_help_cmd(builtin_command_t);
+
+void print_err(const char *, ...);
+void print_warn(const char *, ...);
+void print_info(const char *, ...);
+void print_ok(const char *, ...);
 
 #endif  // SHELL_H

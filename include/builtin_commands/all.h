@@ -17,5 +17,6 @@ DEFCMD(touch)
 DEFCMD(rm)
 DEFCMD(fwrite)
 DEFCMD(mkdir)
+DEFCMD(help)
 
 #endif  // BUILTIN_COMMANDS_H

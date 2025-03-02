@@ -4,7 +4,7 @@
 
 void builtin_command_mkdir(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
     if (tokc != 2) {
-        printf("USAGE: mkdir <relative filepath>\n");
+        print_info("USAGE: mkdir <relative filepath>\n");
         return;
     }
     char path[256];
