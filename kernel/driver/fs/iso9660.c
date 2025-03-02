@@ -117,7 +117,7 @@ iso9660_dir_record_t *i9660_dir_from_path(const char *path) {
 }
 
 int diridx = 0;
-char (*directories)[256];  // Correct pointer type
+fs_entry_t *directories;
 
 void set_dir_record(iso9660_dir_record_t *record) {
     if (record->file_id_length == 1) {
@@ -129,14 +129,16 @@ void set_dir_record(iso9660_dir_record_t *record) {
     char filename[256];
     i9660_get_file_identifier(record, filename, sizeof(filename));
     
-    if (diridx >= 256) return;  // Prevent buffer overflow
+    if (diridx >= 256) return;
 
-    strcpy(directories[diridx++], filename);  // Use correct pointer type
+    strcpy(directories[diridx].name, filename);
+    directories[diridx].is_dir = record->file_flags & 0x02;
+    diridx++;
 }
 
-int i9660_read_directory(const char *path, char dirs[256][256]) {
+int i9660_read_directory(const char *path, fs_entry_t dirs[256]) {
     diridx = 0;
-    directories = dirs;  // Correctly assign the pointer
+    directories = dirs; 
 
     iso9660_dir_record_t *current = i9660_dir_from_path(path);
     if (!current) return -1;

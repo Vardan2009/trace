@@ -2,6 +2,7 @@
 #define TRACEFS_H
 
 #include <stdint.h>
+#include "lib/fs.h"
 
 typedef struct {
 	char fsid[7];				 // should be TRACEFS
@@ -18,7 +19,7 @@ extern tracefs_header_sector_t *tracefs_header_sector;
 
 void tracefs_read_header_sector();
 int tracefs_read_file_from_path(const char *, uint8_t *, uint32_t);
-int tracefs_list_directory(const char *, char[256][256]);
+int tracefs_list_directory(const char *, fs_entry_t[256]);
 int tracefs_dir_exists(const char *);
 
 void tracefs_create_file(const char *);

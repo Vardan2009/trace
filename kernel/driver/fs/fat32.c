@@ -216,7 +216,7 @@ int fat32_read_file_from_path(const char *path, uint8_t *buffer, uint32_t buffer
     return fat32_read_file(start_cluster, buffer, file_size);
 }
 
-int fat32_list_directory(const char *path, char dirs[256][256]) {
+int fat32_list_directory(const char *path, fs_entry_t dirs[256]) {
     fat32_dir_entry_t entry;
     uint32_t dir_cluster;
 
@@ -250,7 +250,9 @@ int fat32_list_directory(const char *path, char dirs[256][256]) {
             if (dentry->DIR_Attr == 0x0F) continue;
             char formatted[13];
             fat32_format_filename(formatted, dentry->DIR_Name);
-            strncpy(dirs[dir_idx++], formatted, 13);
+            strncpy(dirs[dir_idx].name, formatted, 13);
+            dirs[dir_idx].is_dir = dentry->DIR_Attr == 0x10;
+            dir_idx++;
             entry_count++;
         }
         uint32_t next_cluster = fat32_get_next_cluster(dir_cluster);
@@ -492,8 +494,8 @@ int fat32_create_directory_entry(const char *path, fat32_dir_entry_t *entry, uin
     memset(entry, 0, sizeof(fat32_dir_entry_t));
     
     get_filename(path, (char *)entry->DIR_Name);
-    for(int i = 0; i < strlen(entry->DIR_Name); ++i) entry->DIR_Name[i] = toupper(entry->DIR_Name[i]);
     if(strlen(entry->DIR_Name) > 8) return -1;
+    for(int i = 0; i < 8; ++i) entry->DIR_Name[i] = toupper(entry->DIR_Name[i]);
 
     entry->DIR_Attr = 0x10;
     

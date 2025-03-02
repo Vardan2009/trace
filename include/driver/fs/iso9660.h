@@ -2,6 +2,7 @@
 #define ISO9660_H
 
 #include <stdint.h>
+#include "lib/fs.h"
 
 #define ATA_SECTOR_SIZE      512
 #define ISO_SECTOR_SIZE      2048
@@ -103,7 +104,7 @@ void i9660_get_file_identifier(iso9660_dir_record_t *record, char *dest, int des
 int i9660_compare_file_identifier(iso9660_dir_record_t *record, const char *name);
 iso9660_dir_record_t *i9660_find_directory_record(uint32_t extent, uint32_t length, const char *name);
 iso9660_dir_record_t *i9660_dir_from_path(const char *path) ;
-int i9660_read_directory(const char *path, char dirs[256][256]);
+int i9660_read_directory(const char *path, fs_entry_t dirs[256]);
 int i9660_read_file_from_path(const char *path, uint8_t *buffer, uint32_t buffer_size);
 void i9660_read_pvd(i9660_pvd_t *);
 

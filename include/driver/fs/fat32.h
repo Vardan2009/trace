@@ -2,6 +2,7 @@
 #define FAT32_H
 
 #include <stdint.h>
+#include "lib/fs.h"
 
 #define FAT32_MAX_CLUSTERS 268435456
 
@@ -73,7 +74,7 @@ int fat32_update_directory_entry(fat32_dir_entry_t *, uint32_t);
 
 int fat32_read_file_from_path(const char *, uint8_t *, uint32_t);
 int fat32_write_file_from_path(const char *,const uint8_t *, uint32_t);
-int fat32_list_directory(const char *, char[256][256]);
+int fat32_list_directory(const char *, fs_entry_t[256]);
 
 int fat32_write_file(uint32_t, const uint8_t *, uint32_t, fat32_dir_entry_t *, uint32_t);
 uint32_t fat32_allocate_next_cluster(uint32_t);

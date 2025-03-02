@@ -10,10 +10,15 @@ typedef enum {
 	TRACEFS
 } fs_type_t;
 
+typedef struct {
+	char name[64];
+	int is_dir;
+} fs_entry_t;
+
 extern fs_type_t fs_type;
 
 int read_file(const char *, uint8_t *, uint32_t);
-int read_directory_listing(const char *, char[256][256]);
+int read_directory_listing(const char *, fs_entry_t[256]);
 void init_fs();
 int dir_exists(const char *);
 void create_file(const char *);

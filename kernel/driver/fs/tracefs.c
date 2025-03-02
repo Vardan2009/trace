@@ -38,7 +38,7 @@ int tracefs_read_file_from_path(const char *path, uint8_t *buffer, uint32_t buff
 	return -1;
 }
 
-int tracefs_list_directory(const char *dirpath, char dirs[256][256]) {
+int tracefs_list_directory(const char *dirpath, fs_entry_t dirs[256]) {
     int dirs_counter = 0;
     char lbuffer[512];
     tracefs_file_entry_t *f_entry;
@@ -59,9 +59,10 @@ int tracefs_list_directory(const char *dirpath, char dirs[256][256]) {
         if (f_entry->directory[0] != '/') break;
 
         if (strcmp(dirpath, f_entry->directory) == 0) {
-            strcpy(dirs[dirs_counter++], f_entry->filename);
+            strcpy(dirs[dirs_counter].name, f_entry->filename);
+            dirs[dirs_counter].is_dir = 0;
+            dirs_counter++;
         } 
-
         else if (strncmp(f_entry->directory, normalized_dirpath, dirpath_len) == 0) {
             char subdir[32];
             int j = 0;
@@ -76,13 +77,16 @@ int tracefs_list_directory(const char *dirpath, char dirs[256][256]) {
             if (j > 0) {
                 int exists = 0;
                 for (int k = 0; k < dirs_counter; k++) {
-                    if (strcmp(dirs[k], subdir) == 0) {
+                    if (strcmp(dirs[k].name, subdir) == 0) {
                         exists = 1;
                         break;
                     }
                 }
-                if (!exists)
-                    strcpy(dirs[dirs_counter++], subdir);
+                if (!exists) {
+                    strcpy(dirs[dirs_counter].name, subdir);
+                    dirs[dirs_counter].is_dir = 1;
+                    dirs_counter++;
+                }
             }
         }
     }

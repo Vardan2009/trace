@@ -7,7 +7,13 @@ void builtin_command_ls(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
         print_info("USAGE: ls\n");
         return;
     }
-    char ls[256][256];
+    fs_entry_t ls[256];
     memset(ls, 0, sizeof(ls));
-    for(int i = 0; i < read_directory_listing(user_pwd, ls); ++i) printf("%s ", ls[i]);
+    int len = read_directory_listing(user_pwd, ls);
+    for(int i = 0; i < len; ++i) {
+        if(ls[i].is_dir) set_color_fg(COLOR_LGREEN);
+        else set_color_fg(COLOR_YELLOW);
+        printf("%s%s%s", ls[i].name, ls[i].is_dir ? "/" : "", (curx + strlen(ls[i].name)) >= VGA_WIDTH ? "\n" : " ");
+    }
+    set_color_fg(COLOR_WHITE);
 }

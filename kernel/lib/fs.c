@@ -16,7 +16,7 @@ int read_file(const char * path, uint8_t *buffer, uint32_t buffer_sz) {
 	}
 }
 
-int read_directory_listing(const char *path, char dirs[256][256]) {
+int read_directory_listing(const char *path, fs_entry_t dirs[256]) {
 	switch(fs_type) {
 	case ISO9660: return i9660_read_directory(path, dirs);
 	case FAT32: return fat32_list_directory(path, dirs);
