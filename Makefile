@@ -6,10 +6,11 @@ VM = qemu-system-i386
 CFLAGS = -m32 -ffreestanding -nostdlib -Iinclude
 ASFLAGS = -felf32
 LDFLAGS = -m elf_i386 -T linker.ld
-VMFLAGS = -cdrom trace.iso -serial mon:stdio \
+VMFLAGS = -cdrom trace.iso \
           -drive file=fat32-disk.img,format=raw \
           -drive file=tracefs-disk.img,format=raw \
-          -boot order=d
+          -boot order=d \
+          -serial mon:stdio
 
 SRC = $(shell find kernel -name "*.c")
 OBJ = $(SRC:.c=.o)
