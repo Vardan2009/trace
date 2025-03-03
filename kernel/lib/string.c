@@ -85,6 +85,15 @@ char *strcat(char *dest, const char *src) {
     return dest;
 }
 
+char *strncat(char *dest, const char *src, size_t n) {
+    char *ptr = dest;
+    while (*ptr) { ptr++; }
+    while (n-- && (*ptr++ = *src++)) {}
+    *ptr = '\0';
+    return dest;
+}
+
+
 int memcmp(const void *ptr1, const void *ptr2, size_t num) {
     const unsigned char *p1 = (const unsigned char *)ptr1;
     const unsigned char *p2 = (const unsigned char *)ptr2;

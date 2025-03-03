@@ -12,6 +12,7 @@ char *strcpy(char *dest, const char *src);
 char *strncpy(char *dest, const char *src, size_t n);
 size_t strlen(const char *s);
 char *strcat(char *dest, const char *src);
+char *strncat(char *dest, const char *src, size_t n);
 int memcmp(const void *ptr1, const void *ptr2, size_t num);
 char *strchr(const char *str, int c);
 const char* strrchr(const char* str, int ch);
