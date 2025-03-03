@@ -108,7 +108,7 @@ int tracefs_dir_exists(const char *dirpath) {
 	return 0;
 }
 
-void tracefs_create_file(const char *path) {
+int tracefs_create_file(const char *path) {
 	char dirpath[32];
 	char filename[16];
 	get_directory(path, dirpath);
@@ -120,14 +120,14 @@ void tracefs_create_file(const char *path) {
 		ata_read_sector(i, lbuffer);
 		f_entry = (tracefs_file_entry_t *)lbuffer;
 		if(f_entry->directory[0] != '/' || f_entry->directory[0] == 'd') {
-			//write
 			strcpy(f_entry->directory, dirpath);
 			strcpy(f_entry->filename, filename);
-			strcpy(f_entry->content, "test content");
+			strcpy(f_entry->content, "");
 			ata_write_sector(i, (char*)f_entry);
-			return;
+			return 0;
 		}
 	}
+    return -1;
 }
 
 int tracefs_remove_file(const char *path) {

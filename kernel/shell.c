@@ -5,7 +5,7 @@
 
 #include "driver/diskio.h"
 
-#define NCMDS 14
+#define NCMDS 13
 builtin_command_t builtin_commands[NCMDS] = {
     {"help", "help", "lists all built-in commands", &builtin_command_help},
     {"echo", "echo <text>", "prints given text to screen", &builtin_command_echo},
@@ -16,14 +16,13 @@ builtin_command_t builtin_commands[NCMDS] = {
     {"ls", "ls", "lists current directory", &builtin_command_ls},
     {"cd", "cd <relative path>", "changes directory", &builtin_command_cd},
     {"cat", "cat <relative path>", "reads file", &builtin_command_cat},
-    {"setdisk", "setdisk <disk num>", "sets current disk", &builtin_command_setdisk},
     {"touch", "touch <relative path>", "creates new file", &builtin_command_touch},
     {"rm", "rm <relative path>", "removes file", &builtin_command_rm},
     {"fwrite", "fwrite <relative path> <new data>", "writes to file", &builtin_command_fwrite},
     {"mkdir", "mkdir <relative path>", "creates new folder", &builtin_command_mkdir},
 };
 
-char user_pwd[256] = "/";
+char user_pwd[256] = "0:/";
 
 const char *prompt() {
     static char input[512];

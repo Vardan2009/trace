@@ -4,10 +4,25 @@
 #include "driver/fs/tracefs.h"
 #include "lib/stdio.h"
 #include "shell.h"
+#include "driver/diskio.h"
+#include "lib/path.h"
 
 fs_type_t fs_type;
 
-int read_file(const char * path, uint8_t *buffer, uint32_t buffer_sz) {
+#define CHECK_DRIVENUM() int disk_idx = -1; \
+	char path[256]; \
+	strncpy(path, skip_disk_index(raw_path, &disk_idx), sizeof(path)); \
+	if(disk_idx == -1) { \
+		print_err("Invalid disk number `%d`", disk_idx); \
+		return -1; \
+	} \
+	if(drive_num != disk_idx) { \
+		set_drive_controller(disk_idx); \
+		init_fs(); \
+	}
+
+int read_file(const char *raw_path, uint8_t *buffer, uint32_t buffer_sz) {
+	CHECK_DRIVENUM();
 	switch(fs_type) {
 	case ISO9660: return i9660_read_file_from_path(path, buffer, buffer_sz);
 	case FAT32: return fat32_read_file_from_path(path, buffer, buffer_sz);
@@ -16,7 +31,8 @@ int read_file(const char * path, uint8_t *buffer, uint32_t buffer_sz) {
 	}
 }
 
-int read_directory_listing(const char *path, fs_entry_t dirs[256]) {
+int read_directory_listing(const char *raw_path, fs_entry_t dirs[256]) {
+	CHECK_DRIVENUM();
 	switch(fs_type) {
 	case ISO9660: return i9660_read_directory(path, dirs);
 	case FAT32: return fat32_list_directory(path, dirs);
@@ -25,7 +41,8 @@ int read_directory_listing(const char *path, fs_entry_t dirs[256]) {
 	}
 }
 
-int dir_exists(const char *path) {
+int dir_exists(const char *raw_path) {
+	CHECK_DRIVENUM();
 	switch(fs_type) {
 	case ISO9660: return i9660_dir_from_path(path) != NULL;
 	case FAT32: return fat32_traverse_path(path, NULL, 1, 1) == 0;
@@ -34,29 +51,32 @@ int dir_exists(const char *path) {
 	}
 }
 
-void create_directory(const char *path) {
+int create_directory(const char *raw_path) {
+	CHECK_DRIVENUM();
 	switch(fs_type) {
 	case TRACEFS:
 		print_err("TRACEFS: Empty directories not supported\n");
-		return;
-	case FAT32: fat32_create_directory(path); break;
+		return -1;
+	case FAT32: return fat32_create_directory(path);
 	default:
 		print_err("Not available for this filesystem\n");
-		return;
+		return -1;
 	}
 }
 
-void create_file(const char *path) {
+int create_file(const char *raw_path) {
+	CHECK_DRIVENUM();
 	switch(fs_type) {
 	case TRACEFS: return tracefs_create_file(path);
-	case FAT32: fat32_create_file(path); break;
+	case FAT32: return fat32_create_file(path);
 	default:
 		print_err("Not available for this filesystem\n");
-		return;
+		return -1;
 	}
 }
 
-int remove_file(const char *path) {
+int remove_file(const char *raw_path) {
+	CHECK_DRIVENUM();
 	switch(fs_type) {
 	case TRACEFS: return tracefs_remove_file(path);
 	case FAT32: return fat32_remove_file(path);
@@ -66,7 +86,8 @@ int remove_file(const char *path) {
 	}
 }
 
-int write_file(const char *path, const char *content) {
+int write_file(const char *raw_path, const char *content) {
+	CHECK_DRIVENUM();
 	switch(fs_type) {
 	case TRACEFS: return tracefs_write_file(path, content);
 	case FAT32: return fat32_write_file_from_path(path, content, strlen(content));
@@ -83,18 +104,18 @@ void init_fs() {
 
 	if(strncmp(pvd.id, "CD001", 5) == 0 && pvd.type == 1) {
 		fs_type = ISO9660;
-		printf("Detected ISO9660 Filesystem\n");
+		// print_ok("Detected ISO9660 Filesystem");
 	}
 	else if(strncmp(fat32_boot_sector->BS_FilSysType, "FAT32   ", 8) == 0) {
 		fs_type = FAT32;
-		printf("Detected FAT32 Filesystem\n");
+		// print_ok("Detected FAT32 Filesystem");
 	}
 	else if(strncmp(tracefs_header_sector->fsid, "TRACEFS", 7) == 0) {
 		fs_type = TRACEFS;
-		printf("Detected TRACEFS Filesystem\n");
+		// print_ok("Detected TRACEFS Filesystem");
 	}
 	else {
-		printf("Unknown filesystem!");
+		print_err("Unknown filesystem!");
 		fs_type = UNKNOWN;
 		for(;;);
 	}
