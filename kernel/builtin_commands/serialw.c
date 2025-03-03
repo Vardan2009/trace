@@ -6,7 +6,7 @@
 
 void builtin_command_serialw(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
     if (tokc != 3) {
-        print_info("USAGE: serialw com<1-8> <data>\n");
+        print_info("USAGE: serialw com<1-8> <data>");
         return;
     }
     uint16_t port;

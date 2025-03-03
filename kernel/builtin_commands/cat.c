@@ -12,7 +12,7 @@ int isprint(char c) {
 
 void builtin_command_cat(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
     if (tokc != 2 && tokc != 3) {
-        print_info("USAGE: cat <relative filepath> [-x]\n");
+        print_info("USAGE: cat <relative filepath> [-x]");
         return;
     }
     

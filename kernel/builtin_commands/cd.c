@@ -4,7 +4,7 @@
 
 void builtin_command_cd(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
     if (tokc != 2) {
-        print_info("USAGE: cd <relative filepath>\n");
+        print_info("USAGE: cd <relative filepath>");
         return;
     }
     char new_pwd[256];

@@ -4,7 +4,7 @@
 
 void builtin_command_fwrite(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
     if (tokc != 3) {
-        print_info("USAGE: fwrite <relative filepath> <data>\n");
+        print_info("USAGE: fwrite <relative filepath> <data>");
         return;
     }
     char path[256];

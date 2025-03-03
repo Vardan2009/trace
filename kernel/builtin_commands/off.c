@@ -4,10 +4,10 @@
 
 void builtin_command_off(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
     if (tokc != 1) {
-        print_info("USAGE: off\n");
+        print_info("USAGE: off");
         return;
     }
     prepare_shutdown();
-    print_info("It is now safe to power off\n");
+    print_info("It is now safe to power off");
     for (;;);
 }

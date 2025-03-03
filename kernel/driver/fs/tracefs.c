@@ -142,7 +142,7 @@ int tracefs_remove_file(const char *path) {
         ata_read_sector(i, lbuffer);
         f_entry = (tracefs_file_entry_t *)lbuffer;
         if (f_entry->directory[0] == 0) {
-            print_err("TRACEFS: File not found\n");
+            print_err("TRACEFS: File not found");
             return -1;
         }
         if (strcmp(dirpath, f_entry->directory) == 0 &&
@@ -153,7 +153,7 @@ int tracefs_remove_file(const char *path) {
             return 0;
         }
     }
-    print_err("TRACEFS: File not found\n");
+    print_err("TRACEFS: File not found");
     return -1;
 }
 
@@ -169,7 +169,7 @@ int tracefs_write_file(const char *path, const char *content) {
         ata_read_sector(i, lbuffer);
         f_entry = (tracefs_file_entry_t *)lbuffer;
         if (f_entry->directory[0] == 0) {
-            print_err("TRACEFS: File not found\n");
+            print_err("TRACEFS: File not found");
             return -1;
         }
         if (strcmp(dirpath, f_entry->directory) == 0 &&
@@ -179,6 +179,6 @@ int tracefs_write_file(const char *path, const char *content) {
             return 0;
         }
     }
-    print_err("TRACEFS: File not found\n");
+    print_err("TRACEFS: File not found");
     return -1;
 }

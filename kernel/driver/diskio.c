@@ -40,14 +40,14 @@ void ata_read_sector(uint32_t lba, uint8_t *buffer) {
     // Wait for the BSY (busy) bit to clear
     while (inb(base_port + 7) & 0x80) {
         if (--timeout <= 0) {
-            print_err("Disk read timeout (BSY)!\n");
+            print_err("Disk read timeout (BSY)!");
             for(;;);
         }
     }
 
     uint8_t status = inb(base_port + 7);
     if (status & 0x01) {  // Check for error flag
-        print_err("Disk error!\n");
+        print_err("Disk error!");
         for(;;);
     }
 
@@ -55,7 +55,7 @@ void ata_read_sector(uint32_t lba, uint8_t *buffer) {
     // Wait for the DRQ (data request) bit to be set
     while (!(inb(base_port + 7) & 0x08)) {
         if (--timeout <= 0) {
-            print_err("Disk read timeout (DRQ)!\n");
+            print_err("Disk read timeout (DRQ)!");
             for(;;);
         }
     }
@@ -85,7 +85,7 @@ void ata_write_sector(uint32_t lba, uint8_t *buffer) {
     // Wait for the BSY (busy) bit to clear
     while (inb(base_port + 7) & 0x80) {
         if (--timeout <= 0) {
-            print_err("Disk write timeout (BSY)!\n");
+            print_err("Disk write timeout (BSY)!");
             for(;;);
         }
     }
@@ -100,7 +100,7 @@ void ata_write_sector(uint32_t lba, uint8_t *buffer) {
     // Wait for the DRQ (data request) bit to be set
     while (!(inb(base_port + 7) & 0x08)) {
         if (--timeout <= 0) {
-            print_err("Disk write timeout (DRQ)!\n");
+            print_err("Disk write timeout (DRQ)!");
             for(;;);
         }
     }
@@ -117,7 +117,7 @@ void ata_write_sector(uint32_t lba, uint8_t *buffer) {
     // Wait for the BSY (busy) bit to clear after flush
     while (inb(base_port + 7) & 0x80) {
         if (--timeout <= 0) {
-            print_err("Disk write timeout (FLUSH)!\n");
+            print_err("Disk write timeout (FLUSH)!");
             for(;;);
         }
     }
