@@ -21,6 +21,7 @@ void builtin_command_cat(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
         print_type = PRINT_TYPE_HEX;
     
     char path[256];
+    memset(path, 0, 256);
     relative_to_user_pwd(tokv[1], path);
     
     static const int buflen = 60000;

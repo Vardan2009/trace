@@ -10,8 +10,7 @@
 fs_type_t fs_type;
 
 #define CHECK_DRIVENUM() int disk_idx = -1; \
-	char path[256]; \
-	strncpy(path, skip_disk_index(raw_path, &disk_idx), sizeof(path)); \
+	char *path = skip_disk_index(raw_path, &disk_idx); \
 	if(disk_idx == -1) { \
 		print_err("Invalid disk number `%d`", disk_idx); \
 		return -1; \

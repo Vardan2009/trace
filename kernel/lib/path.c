@@ -31,8 +31,14 @@ void get_directory(const char *path, char *dir) {
             dir[1] = 0;
             strncat(dir, ":", 1);
         }
-        if(disk_index != -1) strncat(dir, skipped_path, len);
-        else strncpy(dir, skipped_path, len);
+        if(disk_index != -1) {
+            strncat(dir, skipped_path, len);
+            dir[len + 2] = 0;
+        }
+        else {
+            strncpy(dir, skipped_path, len);
+            dir[len] = 0;
+        }
     } else dir[0] = '\0';
 }
 
