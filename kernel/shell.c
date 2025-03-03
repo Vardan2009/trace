@@ -39,30 +39,50 @@ const char *prompt() {
 
 void spltoks(const char *input, char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH],
              int *token_count) {
-    bool in_quotes = false;
     int token_index = 0;
-    int char_index = 0;
-
-    for (int i = 0; input[i] != '\0'; i++) {
-        if (input[i] == '\"')
-            in_quotes = !in_quotes;
-        else if (input[i] == ' ' && !in_quotes) {
-            if (char_index > 0) {
-                tokens[token_index][char_index] = '\0';
-                token_index++;
-                char_index = 0;
+    int i = 0;
+    
+    while (input[i] != '\0') {
+        while (input[i] == ' ') i++;
+        if (input[i] == '\0') break;
+        
+        int char_index = 0;
+        
+        if (input[i] == 'f' && input[i+1] == '"') {
+            i += 2;
+            while (input[i] != '\0' && input[i] != '"') {
+                if (input[i] == '\\') {
+                    i++;
+                    if (input[i] == 'n')
+                        tokens[token_index][char_index++] = '\n';
+                    else if (input[i] == 't')
+                        tokens[token_index][char_index++] = '\t';
+                    else if (input[i] == '\\')
+                        tokens[token_index][char_index++] = '\\';
+                    else if (input[i] == '"')
+                        tokens[token_index][char_index++] = '"';
+                    else
+                        tokens[token_index][char_index++] = input[i];
+                    i++;
+                } else
+                    tokens[token_index][char_index++] = input[i++];
             }
-        } else
-            tokens[token_index][char_index++] = input[i];
-    }
-
-    if (char_index > 0) {
+            if (input[i] == '"') i++;
+        }
+        else if (input[i] == '"') {
+            i++;
+            while (input[i] != '\0' && input[i] != '"')
+                tokens[token_index][char_index++] = input[i++];
+            if (input[i] == '"') i++;
+        }
+        else while (input[i] != '\0' && input[i] != ' ')
+            tokens[token_index][char_index++] = input[i++];
         tokens[token_index][char_index] = '\0';
         token_index++;
     }
-
     *token_count = token_index;
 }
+
 
 void print_help() {
     for(int i = 0; i < NCMDS; ++i)
