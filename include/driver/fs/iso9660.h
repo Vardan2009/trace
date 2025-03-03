@@ -108,5 +108,6 @@ int i9660_read_directory(const char *path, fs_entry_t dirs[256]);
 int i9660_read_file_from_path(const char *path, uint8_t *buffer, uint32_t buffer_size);
 void i9660_read_pvd(i9660_pvd_t *);
 
+fs_info_t i9660_fs_info();
 
 #endif // ISO9660_H

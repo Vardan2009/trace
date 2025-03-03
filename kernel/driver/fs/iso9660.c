@@ -186,3 +186,12 @@ int i9660_read_file_from_path(const char *path, uint8_t *buffer, uint32_t buffer
 
     return file_length;
 }
+
+fs_info_t i9660_fs_info() {
+    return (fs_info_t) {
+        ISO9660,
+        pvd.vol_id,
+        32,
+        ((uint64_t)pvd.vol_space_size_msb << 32) | pvd.vol_space_size_lsb
+    };
+}

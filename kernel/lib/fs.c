@@ -119,3 +119,12 @@ void init_fs() {
 		for(;;);
 	}
 }
+
+fs_info_t get_fs_info() {
+	switch(fs_type) {
+	case ISO9660: return i9660_fs_info();
+	case FAT32: return fat32_fs_info();
+	case TRACEFS: return tracefs_info();
+	default: return (fs_info_t){ 0 };
+	}
+}

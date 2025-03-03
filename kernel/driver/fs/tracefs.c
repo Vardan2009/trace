@@ -182,3 +182,12 @@ int tracefs_write_file(const char *path, const char *content) {
     print_err("TRACEFS: File not found");
     return -1;
 }
+
+fs_info_t tracefs_info() {
+    return (fs_info_t) {
+        TRACEFS,
+        NULL,
+        0,
+        -1
+    };
+}

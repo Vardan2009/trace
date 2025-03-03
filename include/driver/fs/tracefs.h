@@ -26,4 +26,6 @@ int tracefs_create_file(const char *);
 int tracefs_remove_file(const char *);
 int tracefs_write_file(const char *, const char *);
 
+fs_info_t tracefs_info();
+
 #endif // TRACEFS_H

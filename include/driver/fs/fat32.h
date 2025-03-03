@@ -88,4 +88,6 @@ int fat32_remove_file(const char *);
 
 int fat32_create_directory(const char *);
 
+fs_info_t fat32_fs_info();
+
 #endif // FAT32_H

@@ -599,3 +599,12 @@ int fat32_create_directory(const char *path) {
 
     return 0;
 }
+
+fs_info_t fat32_fs_info() {
+    return (fs_info_t) {
+        FAT32,
+        fat32_boot_sector->BS_VolLab,
+        11,
+        (uint64_t)((fat32_boot_sector->BPB_TotSec16 != 0) ? fat32_boot_sector->BPB_TotSec16 : fat32_boot_sector->BPB_TotSec32) * fat32_boot_sector->BPB_BytsPerSec,
+    };
+}
