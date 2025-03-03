@@ -8,6 +8,7 @@ void kernel_main(uint32_t magic, multiboot_info *b_inf) {
     init_all();
 
     set_color_fg(COLOR_AQUA);
+    printf(TRACE_LOGO);
     printf("TRACE Operating System (ver. %s)\n\n", TRACE_VER);
     shell();
 }

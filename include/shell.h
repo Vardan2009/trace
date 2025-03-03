@@ -7,6 +7,13 @@
 #include "builtin_commands/all.h"
 #include "lib/stdio.h"
 
+#define TRACE_LOGO "  __________  ___   ____________ \n\
+ /_  __/ __ \\/   | / ____/ ____/\n\
+  / / / /_/ / /| |/ /   / __/   \n\
+ / / / _, _/ ___ / /___/ /___   \n\
+/_/ /_/ |_/_/  |_\\____/_____/   \n\
+                                "
+
 typedef void (*builtin_command_func_ptr_t)(
     char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH], int token_count);
 
