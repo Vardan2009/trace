@@ -27,8 +27,10 @@ char user_pwd[256] = "0:/";
 const char *prompt() {
     static char input[512];
     set_color(COLOR_LYELLOW, COLOR_BLACK);
-    printf("[DISK %d] %s -> ", drive_num, user_pwd);
+    puts(user_pwd);
     set_color_fg(COLOR_GREEN);
+    puts(" -> ");
+    set_color_fg(COLOR_WHITE);
     scanl(input, 512);
     set_color_fg(COLOR_WHITE);
     return input;
