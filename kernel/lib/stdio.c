@@ -49,6 +49,7 @@ void putc(char c) {
         shift_down();
     } else if (c == '\b')
         putb();
+    else if (c == '\t') for(int i = 0; i < 4; ++i) putc(' ');
     else {
         vmem[cury * VGA_WIDTH * 2 + curx * 2] = c;
         vmem[cury * VGA_WIDTH * 2 + curx * 2 + 1] = color;
@@ -224,7 +225,10 @@ void scanl(char *buffer, unsigned int size) {
         char c = kb_readc();
         if (c == '\b') {
             if (i > 0) {
-                putb();
+                if(buffer[i - 1] == '\t')
+                    for(int i = 0; i < 4; ++i) putb();
+                else
+                    putb();
                 i--;
             }
             continue;
