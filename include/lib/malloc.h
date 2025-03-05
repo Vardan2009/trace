@@ -14,7 +14,8 @@ typedef struct Block {
 } Block;
 
 void init_malloc();
-void* malloc(size_t size);
-void free(void* ptr);
+void* malloc(size_t);
+void *realloc(void *, size_t);
+void free(void *);
 
 #endif  // MALLOC_H

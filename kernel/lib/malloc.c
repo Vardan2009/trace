@@ -1,4 +1,5 @@
 #include "lib/malloc.h"
+#include "lib/string.h"
 
 static uint8_t memory_pool[MEMORY_POOL_SIZE];
 static Block* free_list = NULL;
@@ -40,6 +41,33 @@ void* malloc(size_t size) {
 
     return NULL;
 }
+
+void *realloc(void *ptr, size_t size) {
+    if (!ptr) return malloc(size);
+    if (size == 0) {
+        free(ptr);
+        return NULL;
+    }
+
+    Block* block = (Block*)((uint8_t*)ptr - sizeof(Block));
+    if (block->size >= size) return ptr;
+
+    if (block->next && block->next->free && (block->size + sizeof(Block) + block->next->size) >= size) {
+        Block* next_block = block->next;
+        block->size += sizeof(Block) + next_block->size;
+        block->next = next_block->next;
+        block->free = false;
+        return ptr;
+    }
+
+    void* new_ptr = malloc(size);
+    if (!new_ptr) return NULL;
+    
+    memcpy(new_ptr, ptr, block->size);
+    free(ptr);
+    return new_ptr;
+}
+
 
 void free(void* ptr) {
     if (!ptr) return;
