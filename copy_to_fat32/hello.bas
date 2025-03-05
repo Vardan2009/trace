@@ -1,1 +1,1 @@
-print $name ; "test" + 1
+PRINT 1 + 1
