@@ -10,13 +10,11 @@
 typedef struct Block {
     size_t size;
     bool free;
+    struct Block* next;
 } Block;
 
-static uint8_t memory_pool[MEMORY_POOL_SIZE];
-static bool memory_allocated[MEMORY_POOL_SIZE];
-
 void init_malloc();
-void *malloc(size_t);
-void free(void *);
+void* malloc(size_t size);
+void free(void* ptr);
 
 #endif  // MALLOC_H
