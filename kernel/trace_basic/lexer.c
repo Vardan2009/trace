@@ -3,14 +3,8 @@
 #include "lib/stdio.h"
 #include "shell.h"
 
-basic_token_t basic_tokens[BASIC_MAX_TOKENS];
-int basic_tokens_len = 0;
-
 int is_ident(char chr) { return (chr >= 'A' && chr <= 'Z') || (chr >= 'a' && chr <= 'z'); }
 int is_digit(char chr) { return (chr >= '0' && chr <= '9'); }
-int is_operator(char chr) {
-    return chr == '+' || chr == '-' || chr == '*' || chr == '/' || chr == '%' || chr == ';';
-}
 
 char *srcptr;
 char *endptr;
@@ -49,13 +43,14 @@ void skip_comment() {
     }
 }
 
-void basic_lex(const char *srcbuf, int srcl) {
+void basic_lex(const char *srcbuf, int srcl, basic_token_t *basic_tokens, int *final_len) {
     if (!srcbuf) {
         print_err("BASIC: Lexer received NULL pointer");
+        return;
     }
 
-    basic_tokens_len = 0;
-    memset(basic_tokens, 0, sizeof(basic_tokens));
+    int basic_tokens_len = 0;
+    memset(basic_tokens, 0, sizeof(basic_token_t[BASIC_MAX_TOKENS]));
 
     srcptr = (char *)srcbuf;
     endptr = srcptr + srcl;
@@ -86,22 +81,15 @@ void basic_lex(const char *srcbuf, int srcl) {
             basic_tokens[basic_tokens_len++] = var_token;
             continue;
         } 
-        else if (is_operator(chr)) {
-            basic_token_t op_token = { .type = OPERATOR, .value = { chr, '\0' } };
-            ++srcptr;
-            basic_tokens[basic_tokens_len++] = op_token;
-            continue;
-        } 
-        else if (chr == '(') {
-            basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = LPAREN, .value = "(" };
-            ++srcptr;
-            continue;
-        } 
-        else if (chr == ')') {
-            basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = RPAREN, .value = ")" };
-            ++srcptr;
-            continue;
-        } 
+        else if (chr == '+') basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = PLUS, .value = "+" };
+        else if (chr == '-') basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = MINUS, .value = "-" };
+        else if (chr == '*') basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = MUL, .value = "*" };
+        else if (chr == '/') basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = DIV, .value = "/" };
+        else if (chr == '%') basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = MOD, .value = "%" };
+        else if (chr == '=') basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = ASSIGN, .value = "=" };
+        else if (chr == '(') basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = LPAREN, .value = "(" };
+        else if (chr == ')') basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = RPAREN, .value = ")" };
+        else if (chr == ';') basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = CONCAT, .value = ";" };
         else if (chr == '"') {
             basic_token_t str_token = { .type = STRING, .value = "" };
             read_string(str_token.value);
@@ -112,16 +100,14 @@ void basic_lex(const char *srcbuf, int srcl) {
             skip_comment();
             continue;
         } 
-        else if ((chr == '<' || chr == '>') && (*(srcptr + 1) == '=' || (chr == '<' && *(srcptr + 1) == '>'))) {
-            basic_token_t op_token = { .type = OPERATOR, .value = { chr, *(srcptr + 1), '\0' } };
-            srcptr += 2;
-            basic_tokens[basic_tokens_len++] = op_token;
-            continue;
-        } 
-        else {
-            print_err("BASIC: Unexpected Symbol `%c`, skipping...", chr);
-            ++srcptr;
-            continue;
-        }
+        else if (chr == '<') basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = LT, .value = "<" };
+        else if (chr == '>') basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = GT, .value = ">" };
+        else if (strncmp(srcptr, "<=", 2) == 0) { basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = LTE, .value = "<=" }; srcptr++; }
+        else if (strncmp(srcptr, ">=", 2) == 0) { basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = GTE, .value = ">=" }; srcptr++; }
+        else if (strncmp(srcptr, "<>", 2) == 0) { basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = NEQ, .value = "<>" }; srcptr++; }
+        else if (strncmp(srcptr, "==", 2) == 0) { basic_tokens[basic_tokens_len++] = (basic_token_t) { .type = EQ, .value = "==" }; srcptr++; }
+        else { print_err("BASIC: Unexpected Symbol `%c`", chr); }
+        ++srcptr;
     }
+    *final_len = basic_tokens_len;
 }

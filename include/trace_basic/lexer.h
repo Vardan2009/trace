@@ -1,7 +1,7 @@
 #ifndef BASIC_LEXER_H
 #define BASIC_LEXER_H
 
-#define BASIC_MAX_TOKENS 2048
+#define BASIC_MAX_TOKENS 512
 #define BASIC_MAX_TOKEN_LEN 128
 
 typedef enum {
@@ -9,7 +9,19 @@ typedef enum {
 	NUMBER,
 	STRING,
 	VARIABLE,
-	OPERATOR,
+	PLUS,
+	MINUS,
+	DIV,
+	MUL,
+	MOD,
+	ASSIGN,
+	EQ,
+	NEQ,
+	GT,
+	LT,
+	GTE,
+	LTE,
+	CONCAT,
 	LPAREN,
 	RPAREN,
 } basic_token_type_t;
@@ -19,8 +31,6 @@ typedef struct {
 	char value[BASIC_MAX_TOKEN_LEN];
 } basic_token_t;
 
-extern basic_token_t basic_tokens[BASIC_MAX_TOKENS];
-extern int basic_tokens_len;
-void basic_lex(const char *, int);
+void basic_lex(const char *, int, basic_token_t *, int *);
 
 #endif // BASIC_LEXER_H
