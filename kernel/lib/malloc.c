@@ -1,87 +1,82 @@
-#include "lib/malloc.h"
+#include "lib/stdio.h"
 #include "lib/string.h"
+#include "lib/malloc.h"
 
-static uint8_t memory_pool[MEMORY_POOL_SIZE];
-static Block* free_list = NULL;
+#define HEAP_SIZE (1024 * 1024)
+#define BLOCK_SIZE 16
+#define NUM_BLOCKS (HEAP_SIZE / BLOCK_SIZE)
+#define SET_BIT(b, i) ((b) |= (1 << (i)))
+#define CLEAR_BIT(b, i) ((b) &= ~(1 << (i)))
+#define CHECK_BIT(b, i) ((b) & (1 << (i)))
+typedef struct { int blocks; } header_t;
 
-void init_malloc() {
-    free_list = (Block*)memory_pool;
-    free_list->size = MEMORY_POOL_SIZE - sizeof(Block);
-    free_list->free = true;
-    free_list->next = NULL;
-}
+static char heap[HEAP_SIZE];
+static unsigned char bitmap[NUM_BLOCKS / 8];
 
-void* malloc(size_t size) {
-    if (size == 0) return NULL;
-
-    size_t total_size = size + sizeof(Block);
-    Block* prev = NULL;
-    Block* current = free_list;
-
-    while (current) {
-        if (current->free && current->size >= total_size) {
-            // Split if there is enough space left
-            if (current->size >= total_size + sizeof(Block)) {
-                Block* new_block = (Block*)((uint8_t*)current + total_size);
-                new_block->size = current->size - total_size;
-                new_block->free = true;
-                new_block->next = current->next;
-
-                current->size = size;
-                current->next = new_block;
-            }
-
-            current->free = false;
-            return (void*)((uint8_t*)current + sizeof(Block));
+static int find_free_blocks(int num_blocks) {
+    int free_count = 0, start_index = -1;
+    for (int i = 0; i < NUM_BLOCKS; i++) {
+        int bi = i / 8, bj = i % 8;
+        if (!CHECK_BIT(bitmap[bi], bj)) {
+            if (free_count == 0) start_index = i;
+            free_count++;
+            if (free_count == num_blocks) return start_index;
+        } else {
+            free_count = 0;
         }
-
-        prev = current;
-        current = current->next;
     }
-
-    return NULL;
+    return -1;
 }
 
-void *realloc(void *ptr, size_t size) {
-    if (!ptr) return malloc(size);
-    if (size == 0) {
-        free(ptr);
-        return NULL;
+void *malloc(size_t size) {
+    if (!size || size + sizeof(header_t) > HEAP_SIZE) return 0;
+    size_t total = sizeof(header_t) + size;
+    int num_blocks = (total + BLOCK_SIZE - 1) / BLOCK_SIZE;
+    int start = find_free_blocks(num_blocks);
+    if (start == -1) return 0;
+    for (int i = start; i < start + num_blocks; i++) {
+        int bi = i / 8, bj = i % 8;
+        SET_BIT(bitmap[bi], bj);
     }
+    header_t *h = (header_t *)(heap + start * BLOCK_SIZE);
+    h->blocks = num_blocks;
+    return (void *)((char *)h + sizeof(header_t));
+}
 
-    Block* block = (Block*)((uint8_t*)ptr - sizeof(Block));
-    if (block->size >= size) return ptr;
-
-    if (block->next && block->next->free && (block->size + sizeof(Block) + block->next->size) >= size) {
-        Block* next_block = block->next;
-        block->size += sizeof(Block) + next_block->size;
-        block->next = next_block->next;
-        block->free = false;
-        return ptr;
+void free(void *ptr) {
+    if (!ptr || ptr < (void *)heap || ptr >= (void *)(heap + HEAP_SIZE)) return;
+    header_t *h = (header_t *)((char *)ptr - sizeof(header_t));
+    int start = ((char *)h - heap) / BLOCK_SIZE;
+    int num_blocks = h->blocks;
+    for (int i = start; i < start + num_blocks; i++) {
+        int bi = i / 8, bj = i % 8;
+        CLEAR_BIT(bitmap[bi], bj);
     }
+}
 
-    void* new_ptr = malloc(size);
-    if (!new_ptr) return NULL;
-    
-    memcpy(new_ptr, ptr, block->size);
+size_t allocated_size(void *ptr) {
+    if (!ptr) return 0;
+    header_t *h = (header_t *)((char *)ptr - sizeof(header_t));
+    return h->blocks * BLOCK_SIZE - sizeof(header_t);
+}
+
+void *realloc(void *ptr, size_t new_size) {
+    if (!ptr) return malloc(new_size);
+    if (!new_size) { free(ptr); return 0; }
+    size_t old_size = allocated_size(ptr);
+    void *new_ptr = malloc(new_size);
+    if (!new_ptr) return 0;
+    size_t copy_size = old_size < new_size ? old_size : new_size;
+    memcpy(new_ptr, ptr, copy_size);
     free(ptr);
     return new_ptr;
 }
 
-
-void free(void* ptr) {
-    if (!ptr) return;
-
-    Block* block = (Block*)((uint8_t*)ptr - sizeof(Block));
-    block->free = true;
-
-    Block* current = free_list;
-    while (current) {
-        if (current->free && current->next && current->next->free) {
-            current->size += current->next->size + sizeof(Block);
-            current->next = current->next->next;
-        } else {
-            current = current->next;
-        }
+void print_bitmap() {
+    for (int i = 0; i < NUM_BLOCKS / 8; i++) {
+        for (int j = 0; j < 8; j++)
+            printf("%d", CHECK_BIT(bitmap[i], j) ? 1 : 0);
+        printf(" ");
     }
+    printf("\n");
 }
