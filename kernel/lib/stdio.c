@@ -98,8 +98,8 @@ void set_color_bg(unsigned char _bg) {
 
 #include <stdarg.h>
 
-void putc(char c); // Assume putc() is implemented
-void puts(const char *s); // Assume puts() is implemented
+void putc(char c);
+void puts(const char *s);
 
 void printi(int value) {
     if (value < 0) {
@@ -151,12 +151,29 @@ void printhx(unsigned int value, int width, char padChar) {
     while (i > 0) putc(buffer[--i]);
 }
 
+void printfloat(float value, int width, int precision, char padChar) {
+    if (value < 0) {
+        putc('-');
+        value = -value;
+    }
+    int intPart = (int)value;
+    float fracPart = value - intPart;
+
+    printi(intPart);
+    putc('.');
+    for (int i = 0; i < precision; i++) {
+        fracPart *= 10;
+        int digit = (int)fracPart;
+        putc(digit + '0');
+        fracPart -= digit;
+    }
+}
+
 void vprintf_impl(const char *format, va_list args) {
     for (const char *p = format; *p != '\0'; p++) {
         if (*p == '%') {
             p++;
 
-            // Parse flags and width
             char padChar = ' ';
             if (*p == '0') {
                 padChar = '0';
@@ -195,6 +212,12 @@ void vprintf_impl(const char *format, va_list args) {
                     printhx(num, width, padChar);
                     break;
                 }
+                case 'f': {
+                    float num = va_arg(args, double);  // float is promoted to double in variadic functions
+                    int precision = 6;  // Default precision
+                    printfloat(num, width, precision, padChar);
+                    break;
+                }
                 default:
                     putc('%');
                     putc(*p);
@@ -205,6 +228,7 @@ void vprintf_impl(const char *format, va_list args) {
         }
     }
 }
+
 
 void vprintf(const char *format, va_list args) {
     vprintf_impl(format, args);
