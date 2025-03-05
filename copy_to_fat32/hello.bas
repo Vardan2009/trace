@@ -1,0 +1,1 @@
+print $name ; "test" + 1
