@@ -3,17 +3,17 @@
 #include "lib/malloc.h"
 
 #define HEAP_SIZE (1024 * 1024)
-#define BLOCK_SIZE 16
+#define BLOCK_SIZE 64
 #define NUM_BLOCKS (HEAP_SIZE / BLOCK_SIZE)
 #define SET_BIT(b, i) ((b) |= (1 << (i)))
 #define CLEAR_BIT(b, i) ((b) &= ~(1 << (i)))
 #define CHECK_BIT(b, i) ((b) & (1 << (i)))
 typedef struct { int blocks; } header_t;
 
-static char heap[HEAP_SIZE];
-static unsigned char bitmap[NUM_BLOCKS / 8];
+char heap[HEAP_SIZE];
+unsigned char bitmap[NUM_BLOCKS / 8];
 
-static int find_free_blocks(int num_blocks) {
+int find_free_blocks(int num_blocks) {
     int free_count = 0, start_index = -1;
     for (int i = 0; i < NUM_BLOCKS; i++) {
         int bi = i / 8, bj = i % 8;
