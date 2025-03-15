@@ -1,14 +1,15 @@
 #include "driver/diskio.h"
+
 #include "lib/io.h"
 #include "lib/stdio.h"
 #include "shell.h"
 
-#define ATA_PRIMARY_IO  0x1F0
+#define ATA_PRIMARY_IO 0x1F0
 #define ATA_PRIMARY_CTRL 0x3F6
 #define TIMEOUT 100000
 
-#define ATA_PRIMARY_IO 0x1F0     // Primary controller I/O base port
-#define ATA_SECONDARY_IO 0x170   // Secondary controller I/O base port
+#define ATA_PRIMARY_IO 0x1F0    // Primary controller I/O base port
+#define ATA_SECONDARY_IO 0x170  // Secondary controller I/O base port
 
 uint8_t drive = 0;
 uint8_t controller = 0;
@@ -30,25 +31,25 @@ void ata_read_sector(uint32_t lba, uint8_t *buffer) {
 
     // Set the drive and LBA address
     outb(base_port + 6, drive_select | ((lba >> 24) & 0x0F));
-    outb(base_port + 2, 1);  // Number of sectors to read
-    outb(base_port + 3, (uint8_t) lba);  // LBA (low byte)
-    outb(base_port + 4, (uint8_t) (lba >> 8));  // LBA (middle byte)
-    outb(base_port + 5, (uint8_t) (lba >> 16));  // LBA (high byte)
-    outb(base_port + 7, 0x20);  // Command to read the sector
+    outb(base_port + 2, 1);                     // Number of sectors to read
+    outb(base_port + 3, (uint8_t)lba);          // LBA (low byte)
+    outb(base_port + 4, (uint8_t)(lba >> 8));   // LBA (middle byte)
+    outb(base_port + 5, (uint8_t)(lba >> 16));  // LBA (high byte)
+    outb(base_port + 7, 0x20);                  // Command to read the sector
 
     int timeout = TIMEOUT;
     // Wait for the BSY (busy) bit to clear
     while (inb(base_port + 7) & 0x80) {
         if (--timeout <= 0) {
             print_err("Disk read timeout (BSY)!");
-            for(;;);
+            for (;;);
         }
     }
 
     uint8_t status = inb(base_port + 7);
     if (status & 0x01) {  // Check for error flag
         print_err("Disk error!");
-        for(;;);
+        for (;;);
     }
 
     timeout = TIMEOUT;
@@ -56,7 +57,7 @@ void ata_read_sector(uint32_t lba, uint8_t *buffer) {
     while (!(inb(base_port + 7) & 0x08)) {
         if (--timeout <= 0) {
             print_err("Disk read timeout (DRQ)!");
-            for(;;);
+            for (;;);
         }
     }
 
@@ -75,25 +76,25 @@ void ata_write_sector(uint32_t lba, uint8_t *buffer) {
 
     // Set the drive and LBA address
     outb(base_port + 6, drive_select | ((lba >> 24) & 0x0F));
-    outb(base_port + 2, 1);  // Number of sectors to write
-    outb(base_port + 3, (uint8_t) lba);  // LBA (low byte)
-    outb(base_port + 4, (uint8_t) (lba >> 8));  // LBA (middle byte)
-    outb(base_port + 5, (uint8_t) (lba >> 16));  // LBA (high byte)
-    outb(base_port + 7, 0x30);  // Command to write a sector
+    outb(base_port + 2, 1);                     // Number of sectors to write
+    outb(base_port + 3, (uint8_t)lba);          // LBA (low byte)
+    outb(base_port + 4, (uint8_t)(lba >> 8));   // LBA (middle byte)
+    outb(base_port + 5, (uint8_t)(lba >> 16));  // LBA (high byte)
+    outb(base_port + 7, 0x30);                  // Command to write a sector
 
     int timeout = TIMEOUT;
     // Wait for the BSY (busy) bit to clear
     while (inb(base_port + 7) & 0x80) {
         if (--timeout <= 0) {
             print_err("Disk write timeout (BSY)!");
-            for(;;);
+            for (;;);
         }
     }
 
     uint8_t status = inb(base_port + 7);
     if (status & 0x01) {  // Check for error flag
         print_err("Disk error!\n");
-        for(;;);
+        for (;;);
     }
 
     timeout = TIMEOUT;
@@ -101,7 +102,7 @@ void ata_write_sector(uint32_t lba, uint8_t *buffer) {
     while (!(inb(base_port + 7) & 0x08)) {
         if (--timeout <= 0) {
             print_err("Disk write timeout (DRQ)!");
-            for(;;);
+            for (;;);
         }
     }
 
@@ -118,7 +119,7 @@ void ata_write_sector(uint32_t lba, uint8_t *buffer) {
     while (inb(base_port + 7) & 0x80) {
         if (--timeout <= 0) {
             print_err("Disk write timeout (FLUSH)!");
-            for(;;);
+            for (;;);
         }
     }
 }

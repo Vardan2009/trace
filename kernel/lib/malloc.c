@@ -1,6 +1,7 @@
+#include "lib/malloc.h"
+
 #include "lib/stdio.h"
 #include "lib/string.h"
-#include "lib/malloc.h"
 
 #define HEAP_SIZE (1024 * 1024)
 #define BLOCK_SIZE 64
@@ -8,7 +9,9 @@
 #define SET_BIT(b, i) ((b) |= (1 << (i)))
 #define CLEAR_BIT(b, i) ((b) &= ~(1 << (i)))
 #define CHECK_BIT(b, i) ((b) & (1 << (i)))
-typedef struct { int blocks; } header_t;
+typedef struct {
+    int blocks;
+} header_t;
 
 char heap[HEAP_SIZE];
 unsigned char bitmap[NUM_BLOCKS / 8];
@@ -62,7 +65,10 @@ size_t allocated_size(void *ptr) {
 
 void *realloc(void *ptr, size_t new_size) {
     if (!ptr) return malloc(new_size);
-    if (!new_size) { free(ptr); return 0; }
+    if (!new_size) {
+        free(ptr);
+        return 0;
+    }
     size_t old_size = allocated_size(ptr);
     void *new_ptr = malloc(new_size);
     if (!new_ptr) return 0;

@@ -1,4 +1,5 @@
 #include "lib/string.h"
+
 #include "lib/malloc.h"
 
 void *memset(void *s, int c, size_t n) {
@@ -50,10 +51,10 @@ char *strcpy(char *dest, const char *src) {
     return dest;
 }
 
-const char* strrchr(const char* str, int ch) {
-    const char* last = NULL;
+const char *strrchr(const char *str, int ch) {
+    const char *last = NULL;
     while (*str) {
-        if (*str == (char)ch) last = str; 
+        if (*str == (char)ch) last = str;
         str++;
     }
     return last;
@@ -65,7 +66,7 @@ char *strncpy(char *dest, const char *src, size_t n) {
         *ptr++ = *src++;
         --n;
     }
-    while (n > 0) { 
+    while (n > 0) {
         *ptr++ = '\0';
         --n;
     }
@@ -92,7 +93,6 @@ char *strncat(char *dest, const char *src, size_t n) {
     *ptr = '\0';
     return dest;
 }
-
 
 int memcmp(const void *ptr1, const void *ptr2, size_t num) {
     const unsigned char *p1 = (const unsigned char *)ptr1;
@@ -126,9 +126,7 @@ char *strtok(char *str, const char *delim) {
 
     // Skip leading delimiters
     char *start = next_token;
-    while (*start && strchr(delim, *start)) {
-        start++;
-    }
+    while (*start && strchr(delim, *start)) { start++; }
 
     if (*start == '\0') {
         next_token = NULL;  // No tokens left
@@ -137,27 +135,25 @@ char *strtok(char *str, const char *delim) {
 
     // Find the end of the token
     char *end = start;
-    while (*end && !strchr(delim, *end)) {
-        end++;
-    }
+    while (*end && !strchr(delim, *end)) { end++; }
 
     if (*end == '\0') {
         next_token = NULL;  // No more tokens after this one
     } else {
-        *end = '\0';  // Null-terminate the token
+        *end = '\0';           // Null-terminate the token
         next_token = end + 1;  // Move the pointer to the next token
     }
 
     return start;
 }
 
-char* strdup(const char* str) {
+char *strdup(const char *str) {
     if (str == NULL) {
         return NULL;  // Return NULL if the input string is NULL
     }
 
-    size_t len = strlen(str) + 1;  // +1 for the null terminator
-    char* copy = (char*)malloc(len);  // Allocate memory for the copy
+    size_t len = strlen(str) + 1;      // +1 for the null terminator
+    char *copy = (char *)malloc(len);  // Allocate memory for the copy
 
     if (copy == NULL) {
         return NULL;  // Return NULL if memory allocation fails

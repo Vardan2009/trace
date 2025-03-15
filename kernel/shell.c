@@ -4,7 +4,7 @@
 #include "lib/malloc.h"
 #include "lib/stdio.h"
 
-#define NCMDS 15
+#define NCMDS 14
 builtin_command_t builtin_commands[NCMDS] = {
     {"help", "help", "lists all built-in commands", &builtin_command_help},
     {"echo", "echo <text>", "prints given text to screen",

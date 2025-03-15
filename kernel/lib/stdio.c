@@ -49,7 +49,8 @@ void putc(char c) {
         shift_down();
     } else if (c == '\b')
         putb();
-    else if (c == '\t') for(int i = 0; i < 4; ++i) putc(' ');
+    else if (c == '\t')
+        for (int i = 0; i < 4; ++i) putc(' ');
     else {
         vmem[cury * VGA_WIDTH * 2 + curx * 2] = c;
         vmem[cury * VGA_WIDTH * 2 + curx * 2 + 1] = color;
@@ -127,7 +128,7 @@ void printui(unsigned int value, int width, char padChar) {
         value /= 10;
     } while (value > 0);
 
-    while (i < width) buffer[i++] = padChar; // Apply padding
+    while (i < width) buffer[i++] = padChar;  // Apply padding
 
     while (i > 0) putc(buffer[--i]);
 }
@@ -146,7 +147,7 @@ void printhx(unsigned int value, int width, char padChar) {
         }
     }
 
-    while (i < width) buffer[i++] = padChar; // Apply padding
+    while (i < width) buffer[i++] = padChar;  // Apply padding
 
     while (i > 0) putc(buffer[--i]);
 }
@@ -213,8 +214,10 @@ void vprintf_impl(const char *format, va_list args) {
                     break;
                 }
                 case 'f': {
-                    float num = va_arg(args, double);  // float is promoted to double in variadic functions
-                    int precision = 6;  // Default precision
+                    float num =
+                        va_arg(args, double);  // float is promoted to double in
+                                               // variadic functions
+                    int precision = 6;         // Default precision
                     printfloat(num, width, precision, padChar);
                     break;
                 }
@@ -229,7 +232,6 @@ void vprintf_impl(const char *format, va_list args) {
     }
 }
 
-
 void vprintf(const char *format, va_list args) {
     vprintf_impl(format, args);
 }
@@ -241,7 +243,6 @@ void printf(const char *format, ...) {
     va_end(args);
 }
 
-
 void scanl(char *buffer, unsigned int size) {
     int i = 0;
 
@@ -249,8 +250,8 @@ void scanl(char *buffer, unsigned int size) {
         char c = kb_readc();
         if (c == '\b') {
             if (i > 0) {
-                if(buffer[i - 1] == '\t')
-                    for(int i = 0; i < 4; ++i) putb();
+                if (buffer[i - 1] == '\t')
+                    for (int i = 0; i < 4; ++i) putb();
                 else
                     putb();
                 i--;

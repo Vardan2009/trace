@@ -5,4 +5,4 @@ int isdigit(char);
 void itoa(int, char *);
 int stoi(const char *);
 
-#endif // STDLIB_H
+#endif  // STDLIB_H

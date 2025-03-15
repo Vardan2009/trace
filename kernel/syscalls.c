@@ -15,7 +15,9 @@ void handle_syscall(int_regs* regs) {
         default:
             curx = cury = 0;
             set_color(COLOR_WHITE, COLOR_RED);
-            printf("--- TRACE ---\nException: Invalid Syscall Number %d\nSystem Halted.",
+            printf(
+                "--- TRACE ---\nException: Invalid Syscall Number %d\nSystem "
+                "Halted.",
                 regs->eax);
             for (;;);
     }

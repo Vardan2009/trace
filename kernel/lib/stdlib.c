@@ -31,8 +31,7 @@ void itoa(int value, char *buffer) {
     if (is_negative) temp[i++] = '-';
 
     int a = 0;
-    for (int j = i - 1; j >= 0; --j)
-        buffer[a++] = temp[j];
+    for (int j = i - 1; j >= 0; --j) buffer[a++] = temp[j];
     buffer[a] = '\0';
 }
 

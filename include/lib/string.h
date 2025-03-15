@@ -15,8 +15,8 @@ char *strcat(char *dest, const char *src);
 char *strncat(char *dest, const char *src, size_t n);
 int memcmp(const void *ptr1, const void *ptr2, size_t num);
 char *strchr(const char *str, int c);
-const char* strrchr(const char* str, int ch);
+const char *strrchr(const char *str, int ch);
 char *strtok(char *str, const char *delim);
-char* strdup(const char* str);
+char *strdup(const char *str);
 
 #endif  // STRING_H

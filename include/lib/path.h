@@ -1,7 +1,7 @@
 #ifndef PATH_H
 #define PATH_H
 
-#include <stddef.h> 
+#include <stddef.h>
 
 int has_disk_index(const char *);
 char *skip_disk_index(const char *, int *);
@@ -14,4 +14,4 @@ void normalize_path(char *);
 void get_filename(const char *, char *);
 void relative_to_user_pwd(const char *, char *);
 
-#endif // PATH_H
+#endif  // PATH_H

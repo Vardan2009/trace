@@ -7,7 +7,8 @@
 #include "builtin_commands/all.h"
 #include "lib/stdio.h"
 
-#define TRACE_LOGO "  __________  ___   ____________ \n\
+#define TRACE_LOGO \
+    "  __________  ___   ____________ \n\
  /_  __/ __ \\/   | / ____/ ____/\n\
   / / / /_/ / /| |/ /   / __/   \n\
  / / / _, _/ ___ / /___/ /___   \n\
