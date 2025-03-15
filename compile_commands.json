@@ -1,0 +1,587 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/timer.o",
+      "kernel/timer.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/timer.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/timer.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/gdt.o",
+      "kernel/gdt.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/gdt.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/gdt.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/kernel.o",
+      "kernel/kernel.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/kernel.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/kernel.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/builtin_commands/help.o",
+      "kernel/builtin_commands/help.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/builtin_commands/help.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/builtin_commands/help.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/builtin_commands/serialw.o",
+      "kernel/builtin_commands/serialw.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/builtin_commands/serialw.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/builtin_commands/serialw.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/builtin_commands/echo.o",
+      "kernel/builtin_commands/echo.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/builtin_commands/echo.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/builtin_commands/echo.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/builtin_commands/fwrite.o",
+      "kernel/builtin_commands/fwrite.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/builtin_commands/fwrite.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/builtin_commands/fwrite.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/builtin_commands/touch.o",
+      "kernel/builtin_commands/touch.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/builtin_commands/touch.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/builtin_commands/touch.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/builtin_commands/ls.o",
+      "kernel/builtin_commands/ls.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/builtin_commands/ls.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/builtin_commands/ls.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/builtin_commands/cat.o",
+      "kernel/builtin_commands/cat.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/builtin_commands/cat.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/builtin_commands/cat.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/builtin_commands/basic.o",
+      "kernel/builtin_commands/basic.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/builtin_commands/basic.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/builtin_commands/basic.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/builtin_commands/fsinfo.o",
+      "kernel/builtin_commands/fsinfo.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/builtin_commands/fsinfo.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/builtin_commands/fsinfo.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/builtin_commands/clear.o",
+      "kernel/builtin_commands/clear.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/builtin_commands/clear.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/builtin_commands/clear.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/builtin_commands/serialr.o",
+      "kernel/builtin_commands/serialr.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/builtin_commands/serialr.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/builtin_commands/serialr.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/builtin_commands/off.o",
+      "kernel/builtin_commands/off.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/builtin_commands/off.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/builtin_commands/off.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/builtin_commands/mkdir.o",
+      "kernel/builtin_commands/mkdir.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/builtin_commands/mkdir.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/builtin_commands/mkdir.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/builtin_commands/cd.o",
+      "kernel/builtin_commands/cd.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/builtin_commands/cd.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/builtin_commands/cd.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/builtin_commands/rm.o",
+      "kernel/builtin_commands/rm.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/builtin_commands/rm.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/builtin_commands/rm.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/syscalls.o",
+      "kernel/syscalls.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/syscalls.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/syscalls.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/lib/stdlib.o",
+      "kernel/lib/stdlib.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/lib/stdlib.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/lib/stdlib.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/lib/kmalloc.o",
+      "kernel/lib/kmalloc.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/lib/kmalloc.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/lib/kmalloc.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/lib/string.o",
+      "kernel/lib/string.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/lib/string.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/lib/string.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/lib/io.o",
+      "kernel/lib/io.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/lib/io.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/lib/io.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/lib/fs.o",
+      "kernel/lib/fs.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/lib/fs.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/lib/fs.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/lib/console.o",
+      "kernel/lib/console.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/lib/console.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/lib/console.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/lib/malloc.o",
+      "kernel/lib/malloc.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/lib/malloc.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/lib/malloc.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/lib/stdio.o",
+      "kernel/lib/stdio.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/lib/stdio.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/lib/stdio.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/lib/path.o",
+      "kernel/lib/path.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/lib/path.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/lib/path.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/driver/fs/tracefs.o",
+      "kernel/driver/fs/tracefs.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/driver/fs/tracefs.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/driver/fs/tracefs.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/driver/fs/fat32.o",
+      "kernel/driver/fs/fat32.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/driver/fs/fat32.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/driver/fs/fat32.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/driver/fs/iso9660.o",
+      "kernel/driver/fs/iso9660.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/driver/fs/iso9660.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/driver/fs/iso9660.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/driver/keyboard.o",
+      "kernel/driver/keyboard.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/driver/keyboard.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/driver/keyboard.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/driver/diskio.o",
+      "kernel/driver/diskio.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/driver/diskio.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/driver/diskio.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/idt.o",
+      "kernel/idt.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/idt.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/idt.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/shell.o",
+      "kernel/shell.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/shell.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/shell.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/trace_basic/lexer.o",
+      "kernel/trace_basic/lexer.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/trace_basic/lexer.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/trace_basic/lexer.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/trace_basic/parser.o",
+      "kernel/trace_basic/parser.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/trace_basic/parser.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/trace_basic/parser.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/trace_basic/basic.o",
+      "kernel/trace_basic/basic.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/trace_basic/basic.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/trace_basic/basic.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-m32",
+      "-ffreestanding",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "kernel/mem.o",
+      "kernel/mem.c"
+    ],
+    "directory": "/home/vardan/GitRepos/trace",
+    "file": "/home/vardan/GitRepos/trace/kernel/mem.c",
+    "output": "/home/vardan/GitRepos/trace/kernel/mem.o"
+  }
+]

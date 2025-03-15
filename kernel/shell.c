@@ -1,27 +1,31 @@
 #include "shell.h"
 
+#include "driver/diskio.h"
 #include "lib/malloc.h"
 #include "lib/stdio.h"
-
-#include "driver/diskio.h"
 
 #define NCMDS 15
 builtin_command_t builtin_commands[NCMDS] = {
     {"help", "help", "lists all built-in commands", &builtin_command_help},
-    {"echo", "echo <text>", "prints given text to screen", &builtin_command_echo},
+    {"echo", "echo <text>", "prints given text to screen",
+     &builtin_command_echo},
     {"clear", "clear", "clears screen", &builtin_command_clear},
     {"off", "off", "prepares system for power off", &builtin_command_off},
-    {"serialw", "serialw <port> <text>", "writes data to serial port", &builtin_command_serialw},
-    {"serialr", "serialr <port>", "listens to data in serial port", &builtin_command_serialr},
+    {"serialw", "serialw <port> <text>", "writes data to serial port",
+     &builtin_command_serialw},
+    {"serialr", "serialr <port>", "listens to data in serial port",
+     &builtin_command_serialr},
     {"ls", "ls", "lists current directory", &builtin_command_ls},
     {"cd", "cd <relative path>", "changes directory", &builtin_command_cd},
     {"cat", "cat <relative path>", "reads file", &builtin_command_cat},
-    {"touch", "touch <relative path>", "creates new file", &builtin_command_touch},
+    {"touch", "touch <relative path>", "creates new file",
+     &builtin_command_touch},
     {"rm", "rm <relative path>", "removes file", &builtin_command_rm},
-    {"fwrite", "fwrite <relative path> <new data>", "writes to file", &builtin_command_fwrite},
-    {"mkdir", "mkdir <relative path>", "creates new folder", &builtin_command_mkdir},
+    {"fwrite", "fwrite <relative path> <new data>", "writes to file",
+     &builtin_command_fwrite},
+    {"mkdir", "mkdir <relative path>", "creates new folder",
+     &builtin_command_mkdir},
     {"fsinfo", "fsinfo", "get info about filesystem", &builtin_command_fsinfo},
-    {"basic", "basic <relative path>", "execute trace basic code", &builtin_command_basic},
 };
 
 char user_pwd[256] = "0:/";
@@ -42,14 +46,14 @@ void spltoks(const char *input, char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH],
              int *token_count) {
     int token_index = 0;
     int i = 0;
-    
+
     while (input[i] != '\0') {
         while (input[i] == ' ') i++;
         if (input[i] == '\0') break;
-        
+
         int char_index = 0;
-        
-        if (input[i] == 'f' && input[i+1] == '"') {
+
+        if (input[i] == 'f' && input[i + 1] == '"') {
             i += 2;
             while (input[i] != '\0' && input[i] != '"') {
                 if (input[i] == '\\') {
@@ -69,31 +73,28 @@ void spltoks(const char *input, char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH],
                     tokens[token_index][char_index++] = input[i++];
             }
             if (input[i] == '"') i++;
-        }
-        else if (input[i] == '"') {
+        } else if (input[i] == '"') {
             i++;
             while (input[i] != '\0' && input[i] != '"')
                 tokens[token_index][char_index++] = input[i++];
             if (input[i] == '"') i++;
-        }
-        else while (input[i] != '\0' && input[i] != ' ')
-            tokens[token_index][char_index++] = input[i++];
+        } else
+            while (input[i] != '\0' && input[i] != ' ')
+                tokens[token_index][char_index++] = input[i++];
         tokens[token_index][char_index] = '\0';
         token_index++;
     }
     *token_count = token_index;
 }
 
-
 void print_help() {
-    for(int i = 0; i < NCMDS; ++i)
-            print_help_cmd(builtin_commands[i]);
+    for (int i = 0; i < NCMDS; ++i) print_help_cmd(builtin_commands[i]);
 }
 
 void print_err(const char *msg, ...) {
     va_list args;
     va_start(args, msg);
-    
+
     set_color(COLOR_WHITE, COLOR_RED);
     printf("[ ERR ] ");
     vprintf(msg, args);
@@ -143,8 +144,8 @@ void print_ok(const char *msg, ...) {
 }
 
 void print_help_cmd_str(const char *command) {
-    for(int i = 0; i < NCMDS; ++i) {
-        if(strcmp(builtin_commands[i].name, command) == 0) {
+    for (int i = 0; i < NCMDS; ++i) {
+        if (strcmp(builtin_commands[i].name, command) == 0) {
             print_help_cmd(builtin_commands[i]);
             return;
         }
@@ -163,7 +164,7 @@ void print_help_cmd(builtin_command_t cmd) {
 void parse_command(char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH], int token_count) {
     for (int i = 0; i < NCMDS; ++i) {
         if (strcmp(builtin_commands[i].name, tokens[0]) == 0) {
-            if(token_count == 2 && strcmp(tokens[1], "-?") == 0) {
+            if (token_count == 2 && strcmp(tokens[1], "-?") == 0) {
                 print_help_cmd(builtin_commands[i]);
                 return;
             }

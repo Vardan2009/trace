@@ -18,6 +18,5 @@ DEFCMD(fwrite)
 DEFCMD(mkdir)
 DEFCMD(help)
 DEFCMD(fsinfo)
-DEFCMD(basic)
 
 #endif  // BUILTIN_COMMANDS_H
