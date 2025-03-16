@@ -25,8 +25,8 @@ builtin_command_t builtin_commands[NCMDS] = {
      &builtin_command_fwrite},
     {"mkdir", "mkdir <relative path>", "creates new folder",
      &builtin_command_mkdir},
-    {"fsinfo", "fsinfo", "get info about filesystem", &builtin_command_fsinfo},
-    {"basic", "basic <realtive filepath>", "execute basic code",
+    {"fsinfo", "fsinfo", "fetches info about filesystem", &builtin_command_fsinfo},
+    {"basic", "basic [relative filepath]", "executes basic code",
      &builtin_command_basic},
 };
 
