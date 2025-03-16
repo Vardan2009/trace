@@ -1,0 +1,25 @@
+00 REM BASIC, Fibonacci sequence
+
+10  LET I, 0
+20  LET N, 0
+
+30  LET T1, 0
+40  LET T2, 1
+
+50  LET NEXTTERM, T1 + T2
+
+60  PRINT "Enter the number of terms"
+70  INPUT N, INT 
+
+80  PRINT "Fibonacci Series: "
+90  PRINT T1
+100 PRINT T2
+
+110 LET I, 3
+120 IF I > N, 200
+140 PRINT NEXTTERM
+150 LET T1, T2
+160 LET T2, NEXTTERM
+170 LET NEXTTERM, T1 + T2
+180 LET I, I + 1 
+190 GOTO 120

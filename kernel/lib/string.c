@@ -162,3 +162,58 @@ char *strdup(const char *str) {
     strcpy(copy, str);  // Copy the original string into the new memory location
     return copy;
 }
+
+
+long strtol(const char *str, char **endptr, int base) {
+    long result = 0;
+    int sign = 1;
+    
+    while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r') {
+        str++;
+    }
+    
+    // Handle sign
+    if (*str == '-') {
+        sign = -1;
+        str++;
+    } else if (*str == '+') {
+        str++;
+    }
+    
+    if (base == 0) {
+        if (*str == '0') {
+            str++;
+            if (*str == 'x' || *str == 'X') {
+                base = 16;  // hexadecimal
+                str++;
+            } else {
+                base = 8;  // octal
+            }
+        } else {
+            base = 10;  // decimal
+        }
+    }
+    
+    while ((*str >= '0' && *str <= '9') || (*str >= 'a' && *str <= 'f') || (*str >= 'A' && *str <= 'F')) {
+        int digit;
+        if (*str >= '0' && *str <= '9') {
+            digit = *str - '0';
+        } else if (*str >= 'a' && *str <= 'f') {
+            digit = *str - 'a' + 10;
+        } else {
+            digit = *str - 'A' + 10;
+        }
+
+        if (digit >= base) {
+            break;
+        }
+
+        result = result * base + digit;
+        str++;
+    }
+    
+    if (endptr != NULL)
+        *endptr = (char *)str;
+
+    return result * sign;
+}

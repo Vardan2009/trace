@@ -18,5 +18,6 @@ char *strchr(const char *str, int c);
 const char *strrchr(const char *str, int ch);
 char *strtok(char *str, const char *delim);
 char *strdup(const char *str);
+long strtol(const char *str, char **endptr, int base);
 
 #endif  // STRING_H

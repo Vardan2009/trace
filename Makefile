@@ -3,14 +3,15 @@ AS = nasm
 LD = ld
 VM = qemu-system-i386
 
-CFLAGS = -m32 -ffreestanding -nostdlib -Iinclude
+CFLAGS = -m32 -ffreestanding -nostdlib -Iinclude -g
 ASFLAGS = -felf32
 LDFLAGS = -m elf_i386 -T linker.ld
 VMFLAGS = -cdrom trace.iso \
           -drive file=fat32-disk.img,format=raw \
           -drive file=tracefs-disk.img,format=raw \
           -boot order=d \
-          -serial mon:stdio
+          -serial mon:stdio \
+      	  # -S -s
 
 SRC = $(shell find kernel -name "*.c")
 OBJ = $(SRC:.c=.o)
@@ -56,7 +57,7 @@ fat32-disk:
 	mkdir -p smnt
 	dd if=/dev/zero of=fat32-disk.img bs=1M count=100
 	mkfs.fat -F 32 fat32-disk.img
-	sudo mount fat32-disk.img smnt
+	sudo mount fat32-disk.img smnt -o uid=1000,gid=1000
 	sudo cp -a copy_to_fat32/. smnt/
 	sudo umount smnt
 

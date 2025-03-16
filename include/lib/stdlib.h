@@ -4,5 +4,6 @@ char toupper(char);
 int isdigit(char);
 void itoa(int, char *);
 int stoi(const char *);
+double stof(const char *);
 
 #endif  // STDLIB_H
