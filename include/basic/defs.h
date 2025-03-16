@@ -58,7 +58,6 @@ typedef struct {
     basic_value_t val;
 } basic_var_t;
 
-void basic_exit(int);
 void basic_shell();
 
 #endif  // DEFS_H
