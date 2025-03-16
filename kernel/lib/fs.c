@@ -25,11 +25,11 @@ fs_type_t fs_type;
 int read_file(const char *raw_path, uint8_t *buffer, uint32_t buffer_sz) {
     CHECK_DRIVENUM();
 
-    if(fs_type == UNKNOWN) {
+    if (fs_type == UNKNOWN) {
         print_err("Unknown filesystem");
         return -1;
     }
-    
+
     switch (fs_type) {
         case ISO9660: return i9660_read_file_from_path(path, buffer, buffer_sz);
         case FAT32: return fat32_read_file_from_path(path, buffer, buffer_sz);
@@ -42,11 +42,10 @@ int read_file(const char *raw_path, uint8_t *buffer, uint32_t buffer_sz) {
 int read_directory_listing(const char *raw_path, fs_entry_t dirs[256]) {
     CHECK_DRIVENUM();
 
-    if(fs_type == UNKNOWN) {
+    if (fs_type == UNKNOWN) {
         print_err("Unknown filesystem");
         return -1;
     }
-
 
     switch (fs_type) {
         case ISO9660: return i9660_read_directory(path, dirs);
@@ -59,8 +58,7 @@ int read_directory_listing(const char *raw_path, fs_entry_t dirs[256]) {
 int dir_exists(const char *raw_path) {
     CHECK_DRIVENUM();
 
-
-    if(fs_type == UNKNOWN) {
+    if (fs_type == UNKNOWN) {
         print_err("Unknown filesystem");
         return -1;
     }
@@ -76,7 +74,7 @@ int dir_exists(const char *raw_path) {
 int create_directory(const char *raw_path) {
     CHECK_DRIVENUM();
 
-    if(fs_type == UNKNOWN) {
+    if (fs_type == UNKNOWN) {
         print_err("Unknown filesystem");
         return -1;
     }
@@ -93,7 +91,7 @@ int create_directory(const char *raw_path) {
 int create_file(const char *raw_path) {
     CHECK_DRIVENUM();
 
-    if(fs_type == UNKNOWN) {
+    if (fs_type == UNKNOWN) {
         print_err("Unknown filesystem");
         return -1;
     }
@@ -108,11 +106,10 @@ int create_file(const char *raw_path) {
 int remove_file(const char *raw_path) {
     CHECK_DRIVENUM();
 
-    if(fs_type == UNKNOWN) {
+    if (fs_type == UNKNOWN) {
         print_err("Unknown filesystem");
         return -1;
     }
-
 
     switch (fs_type) {
         case TRACEFS: return tracefs_remove_file(path);
@@ -124,7 +121,7 @@ int remove_file(const char *raw_path) {
 int write_file(const char *raw_path, const char *content) {
     CHECK_DRIVENUM();
 
-    if(fs_type == UNKNOWN) {
+    if (fs_type == UNKNOWN) {
         print_err("Unknown filesystem");
         return -1;
     }
@@ -158,7 +155,7 @@ void init_fs() {
 }
 
 fs_info_t get_fs_info() {
-    if(fs_type == UNKNOWN) {
+    if (fs_type == UNKNOWN) {
         print_err("Unknown filesystem");
         return (fs_info_t){0};
     }

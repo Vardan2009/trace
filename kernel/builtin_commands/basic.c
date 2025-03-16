@@ -11,7 +11,7 @@ void builtin_command_basic(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
         return;
     }
 
-    if(tokc == 2) {
+    if (tokc == 2) {
         char path[256];
         memset(path, 0, 256);
         relative_to_user_pwd(tokv[1], path);
@@ -19,9 +19,9 @@ void builtin_command_basic(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
         static const int buflen = 60000;
         char buffer[buflen];
         int bytesread = read_file(path, buffer, buflen);
-        if (bytesread == -1)
-            return;
+        if (bytesread == -1) return;
         buffer[bytesread] = '\0';
         run_basic(buffer);
-    } else basic_shell();
+    } else
+        basic_shell();
 }

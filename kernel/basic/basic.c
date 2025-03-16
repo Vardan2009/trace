@@ -3,12 +3,12 @@
 #include "basic/defs.h"
 #include "basic/lexer.h"
 #include "basic/parser.h"
+#include "lib/fs.h"
 #include "lib/malloc.h"
+#include "lib/path.h"
 #include "lib/stdio.h"
 #include "lib/stdlib.h"
 #include "lib/string.h"
-#include "lib/fs.h"
-#include "lib/path.h"
 
 #define BASIC_MAX_STMTS 512
 #define BASIC_MAX_VARS 128
@@ -32,7 +32,10 @@ void set_var(const char *name, basic_value_t val) {
 
 int get_var(const char *name, basic_value_t *out) {
     for (int i = 0; i < varcount; ++i)
-        if (strcmp(name, vars[i].name) == 0) {*out = vars[i].val; return 0;}
+        if (strcmp(name, vars[i].name) == 0) {
+            *out = vars[i].val;
+            return 0;
+        }
     printf("Variable `%s` undefined\n", name);
     return 1;
 }
@@ -65,9 +68,9 @@ basic_stmt_type_t extract_stmt_type(char **str, int rln, int *exitcode) {
         *str += 4;
         return LET;
     } else {
-        if(rln != -1)
+        if (rln != -1)
             printf("Invalid Statement `%s` on line %d\n", *str, rln);
-        else 
+        else
             printf("Invalid Statement `%s`\n", *str);
         *exitcode = 1;
         return 0;
@@ -107,7 +110,7 @@ basic_ast_node_t *extract_param(char **params, int *exitcode) {
 
     int ec = 0;
     basic_ast_node_t *node = basic_parse(tokens, sz, &ec);
-    if(ec) {
+    if (ec) {
         *exitcode = 1;
         return NULL;
     }
@@ -126,80 +129,76 @@ int visit_node(basic_ast_node_t *node, basic_value_t *out) {
                 case '+': {
                     basic_value_t lval, rval;
                     if (visit_node(node->children[0], &lval)) return 1;
-                    if (visit_node(node->children[1], &rval)) return 1; 
-                    *out = (basic_value_t){ false, lval.fval + rval.fval }; 
+                    if (visit_node(node->children[1], &rval)) return 1;
+                    *out = (basic_value_t){false, lval.fval + rval.fval};
                     return 0;
                 }
                 case '-': {
                     basic_value_t lval, rval;
                     if (visit_node(node->children[0], &lval)) return 1;
                     if (visit_node(node->children[1], &rval)) return 1;
-                    *out = (basic_value_t){ false, lval.fval - rval.fval }; 
+                    *out = (basic_value_t){false, lval.fval - rval.fval};
                     return 0;
                 }
                 case '*': {
                     basic_value_t lval, rval;
-                    if (visit_node(node->children[0], &lval)) return 1; 
-                    if (visit_node(node->children[1], &rval)) return 1; 
-                    *out = (basic_value_t){ false, lval.fval * rval.fval }; 
+                    if (visit_node(node->children[0], &lval)) return 1;
+                    if (visit_node(node->children[1], &rval)) return 1;
+                    *out = (basic_value_t){false, lval.fval * rval.fval};
                     return 0;
                 }
                 case '/': {
                     basic_value_t lval, rval;
-                    if (visit_node(node->children[0], &lval)) return 1; 
+                    if (visit_node(node->children[0], &lval)) return 1;
                     if (visit_node(node->children[1], &rval)) return 1;
                     if (rval.fval == 0) {
                         printf("Zero division error!\n");
-                        return 1; 
+                        return 1;
                     }
-                    *out = (basic_value_t){ false, lval.fval / rval.fval }; 
+                    *out = (basic_value_t){false, lval.fval / rval.fval};
                     return 0;
                 }
                 case '=': {
                     basic_value_t lval, rval;
-                    if (visit_node(node->children[0], &lval)) return 1; 
-                    if (visit_node(node->children[1], &rval)) return 1; 
-                    *out = (basic_value_t){ false, lval.fval == rval.fval }; 
+                    if (visit_node(node->children[0], &lval)) return 1;
+                    if (visit_node(node->children[1], &rval)) return 1;
+                    *out = (basic_value_t){false, lval.fval == rval.fval};
                     return 0;
                 }
                 case '~': {
                     basic_value_t lval, rval;
                     if (visit_node(node->children[0], &lval)) return 1;
                     if (visit_node(node->children[1], &rval)) return 1;
-                    *out = (basic_value_t){ false, lval.fval != rval.fval };
+                    *out = (basic_value_t){false, lval.fval != rval.fval};
                     return 0;
                 }
                 case '<': {
                     basic_value_t lval, rval;
                     if (visit_node(node->children[0], &lval)) return 1;
                     if (visit_node(node->children[1], &rval)) return 1;
-                    *out = (basic_value_t){ false, lval.fval < rval.fval };
+                    *out = (basic_value_t){false, lval.fval < rval.fval};
                     return 0;
                 }
                 case '>': {
                     basic_value_t lval, rval;
                     if (visit_node(node->children[0], &lval)) return 1;
                     if (visit_node(node->children[1], &rval)) return 1;
-                    *out = (basic_value_t){ false, lval.fval > rval.fval };
+                    *out = (basic_value_t){false, lval.fval > rval.fval};
                     return 0;
                 }
-                default:
-                    return 1;
+                default: return 1;
             }
             break;
         case NUM:
-        case STR:
-            *out = node->value;
-            return 0;
+        case STR: *out = node->value; return 0;
         case VAR: return get_var(node->value.sval, out);
         default: return 1;
     }
 }
 
-
-
 void basic_rec_free(basic_ast_node_t *node) {
-    for (int i = 0; i < node->childrenln; ++i) basic_rec_free(node->children[i]);
+    for (int i = 0; i < node->childrenln; ++i)
+        basic_rec_free(node->children[i]);
     free(node);
 }
 
@@ -215,14 +214,14 @@ void basic_free_code() {
 void exec_loaded_basic() {
     memset(vars, 0, sizeof(vars));
     varcount = 0;
-    
+
     for (int i = 0; i < BASIC_MAX_STMTS; ++i) {
         switch (code[i].type) {
             case NONE: continue;
             case PRINT:
                 for (int j = 0; j < code[i].paramln; ++j) {
                     basic_value_t val;
-                    if(visit_node(code[i].params[j], &val)) return;
+                    if (visit_node(code[i].params[j], &val)) return;
                     if (val.is_string)
                         printf("%s", val.sval);
                     else if (val.fval == (int)val.fval)
@@ -240,8 +239,7 @@ void exec_loaded_basic() {
                 basic_value_t condition, jmpcode;
                 visit_node(code[i].params[0], &condition);
                 visit_node(code[i].params[1], &jmpcode);
-                if (condition.fval != 0)
-                    i = (int)jmpcode.fval - 1;
+                if (condition.fval != 0) i = (int)jmpcode.fval - 1;
                 break;
             }
             case GOTO: {
@@ -287,13 +285,12 @@ void exec_loaded_basic() {
 
                 break;
             }
-            case LET:
-                {
-                    basic_value_t val;
-                if(visit_node(code[i].params[1], &val)) return;
+            case LET: {
+                basic_value_t val;
+                if (visit_node(code[i].params[1], &val)) return;
                 set_var(code[i].params[0]->value.sval, val);
                 break;
-                }
+            }
         }
     }
 }
@@ -304,12 +301,13 @@ int process_line(char *ln, int *rln, int *stmtlen) {
     char *pln;
     long int line_num = extract_line_num(ln, &pln);
 
-    if(stmtlen) ++(*stmtlen);
+    if (stmtlen) ++(*stmtlen);
 
     if (line_num == -1) {
-        if(rln)
+        if (rln)
             printf("Missing line number on line %d\n", *rln);
-        else printf("Missing line number\n");
+        else
+            printf("Missing line number\n");
         return 1;
     }
 
@@ -318,13 +316,14 @@ int process_line(char *ln, int *rln, int *stmtlen) {
     strncpy(code_str[line_num], ln, 128);
 
     if (strncmp(pln, "REM ", 4) == 0) {
-        if(rln) ++(*rln);
+        if (rln) ++(*rln);
         return 0;
     }
 
     int exitcode = 0;
-    basic_stmt_type_t type = extract_stmt_type(&pln, rln ? *rln : -1, &exitcode);
-    if(exitcode) return 1;
+    basic_stmt_type_t type =
+        extract_stmt_type(&pln, rln ? *rln : -1, &exitcode);
+    if (exitcode) return 1;
 
     while (*pln == ' ' || *pln == '\t') ++pln;
 
@@ -333,11 +332,11 @@ int process_line(char *ln, int *rln, int *stmtlen) {
     basic_ast_node_t *param;
 
     while ((param = extract_param(&pln, &exitcode))) {
-        if(exitcode) return 1;
+        if (exitcode) return 1;
         code[line_num].params[code[line_num].paramln++] = param;
     }
 
-    if(rln) ++(*rln);
+    if (rln) ++(*rln);
     return 0;
 }
 
@@ -349,8 +348,7 @@ void load_basic_from_file(const char *relpath) {
     static const int buflen = 60000;
     char buffer[buflen];
     int bytesread = read_file(path, buffer, buflen);
-    if (bytesread == -1)
-        return;
+    if (bytesread == -1) return;
     buffer[bytesread] = '\0';
 
     memset(code, 0, sizeof(code));
@@ -359,9 +357,9 @@ void load_basic_from_file(const char *relpath) {
     int stmtlen = 0;
     char *ln = strtok((char *)buffer, "\n");
     int rln = 1;
-    
+
     while (ln) {
-        if(process_line(ln, &rln, &stmtlen)) return;
+        if (process_line(ln, &rln, &stmtlen)) return;
         ln = strtok(NULL, "\n");
     }
 }
@@ -373,9 +371,9 @@ void run_basic(char *src) {
     int stmtlen = 0;
     char *ln = strtok((char *)src, "\n");
     int rln = 1;
-    
+
     while (ln) {
-        if(process_line(ln, &rln, &stmtlen)) return;
+        if (process_line(ln, &rln, &stmtlen)) return;
         ln = strtok(NULL, "\n");
     }
 
@@ -384,9 +382,8 @@ void run_basic(char *src) {
 }
 
 void list_basic_code() {
-    for(int i = 0; i < BASIC_MAX_STMTS; ++i)
-        if(strlen(code_str[i]) > 0)
-            printf("%s\n", code_str[i]);
+    for (int i = 0; i < BASIC_MAX_STMTS; ++i)
+        if (strlen(code_str[i]) > 0) printf("%s\n", code_str[i]);
 }
 
 void basic_shell() {
@@ -397,19 +394,23 @@ void basic_shell() {
     char cmdbuf[512];
     memset(cmdbuf, 0, sizeof(cmdbuf));
 
-    while(true) {
+    while (true) {
         printf("[BASIC] ");
         scanl(cmdbuf, 512);
 
-        if(strcmp(cmdbuf, "EXIT") == 0) break;
-        else if (strcmp(cmdbuf, "RUN") == 0) exec_loaded_basic();
+        if (strcmp(cmdbuf, "EXIT") == 0)
+            break;
+        else if (strcmp(cmdbuf, "RUN") == 0)
+            exec_loaded_basic();
         else if (strcmp(cmdbuf, "CLEAR") == 0) {
             memset(code, 0, sizeof(code));
             memset(code_str, 0, sizeof(code_str));
-        }
-        else if (strcmp(cmdbuf, "LIST") == 0) list_basic_code();
-        else if (strncmp(cmdbuf, "LOAD ", 5) == 0) load_basic_from_file(cmdbuf + 5);
-        else process_line(cmdbuf, NULL, NULL);
+        } else if (strcmp(cmdbuf, "LIST") == 0)
+            list_basic_code();
+        else if (strncmp(cmdbuf, "LOAD ", 5) == 0)
+            load_basic_from_file(cmdbuf + 5);
+        else
+            process_line(cmdbuf, NULL, NULL);
     }
     basic_free_code();
 }
