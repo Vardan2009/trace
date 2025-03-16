@@ -24,6 +24,12 @@ fs_type_t fs_type;
 
 int read_file(const char *raw_path, uint8_t *buffer, uint32_t buffer_sz) {
     CHECK_DRIVENUM();
+
+    if(fs_type == UNKNOWN) {
+        print_err("Unknown filesystem");
+        return -1;
+    }
+    
     switch (fs_type) {
         case ISO9660: return i9660_read_file_from_path(path, buffer, buffer_sz);
         case FAT32: return fat32_read_file_from_path(path, buffer, buffer_sz);
@@ -35,6 +41,13 @@ int read_file(const char *raw_path, uint8_t *buffer, uint32_t buffer_sz) {
 
 int read_directory_listing(const char *raw_path, fs_entry_t dirs[256]) {
     CHECK_DRIVENUM();
+
+    if(fs_type == UNKNOWN) {
+        print_err("Unknown filesystem");
+        return -1;
+    }
+
+
     switch (fs_type) {
         case ISO9660: return i9660_read_directory(path, dirs);
         case FAT32: return fat32_list_directory(path, dirs);
@@ -45,6 +58,13 @@ int read_directory_listing(const char *raw_path, fs_entry_t dirs[256]) {
 
 int dir_exists(const char *raw_path) {
     CHECK_DRIVENUM();
+
+
+    if(fs_type == UNKNOWN) {
+        print_err("Unknown filesystem");
+        return -1;
+    }
+
     switch (fs_type) {
         case ISO9660: return i9660_dir_from_path(path) != NULL;
         case FAT32: return fat32_traverse_path(path, NULL, 1, 1) == 0;
@@ -55,6 +75,12 @@ int dir_exists(const char *raw_path) {
 
 int create_directory(const char *raw_path) {
     CHECK_DRIVENUM();
+
+    if(fs_type == UNKNOWN) {
+        print_err("Unknown filesystem");
+        return -1;
+    }
+
     switch (fs_type) {
         case TRACEFS:
             print_err("TRACEFS: Empty directories not supported\n");
@@ -66,6 +92,12 @@ int create_directory(const char *raw_path) {
 
 int create_file(const char *raw_path) {
     CHECK_DRIVENUM();
+
+    if(fs_type == UNKNOWN) {
+        print_err("Unknown filesystem");
+        return -1;
+    }
+
     switch (fs_type) {
         case TRACEFS: return tracefs_create_file(path);
         case FAT32: return fat32_create_file(path);
@@ -75,6 +107,13 @@ int create_file(const char *raw_path) {
 
 int remove_file(const char *raw_path) {
     CHECK_DRIVENUM();
+
+    if(fs_type == UNKNOWN) {
+        print_err("Unknown filesystem");
+        return -1;
+    }
+
+
     switch (fs_type) {
         case TRACEFS: return tracefs_remove_file(path);
         case FAT32: return fat32_remove_file(path);
@@ -84,6 +123,12 @@ int remove_file(const char *raw_path) {
 
 int write_file(const char *raw_path, const char *content) {
     CHECK_DRIVENUM();
+
+    if(fs_type == UNKNOWN) {
+        print_err("Unknown filesystem");
+        return -1;
+    }
+
     switch (fs_type) {
         case TRACEFS: return tracefs_write_file(path, content);
         case FAT32:
@@ -109,11 +154,14 @@ void init_fs() {
     } else {
         print_err("Unknown filesystem!");
         fs_type = UNKNOWN;
-        for (;;);
     }
 }
 
 fs_info_t get_fs_info() {
+    if(fs_type == UNKNOWN) {
+        print_err("Unknown filesystem");
+        return (fs_info_t){0};
+    }
     switch (fs_type) {
         case ISO9660: return i9660_fs_info();
         case FAT32: return fat32_fs_info();
