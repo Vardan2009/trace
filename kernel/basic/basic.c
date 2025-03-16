@@ -7,11 +7,14 @@
 #include "lib/stdio.h"
 #include "lib/stdlib.h"
 #include "lib/string.h"
+#include "lib/fs.h"
+#include "lib/path.h"
 
 #define BASIC_MAX_STMTS 512
 #define BASIC_MAX_VARS 128
 
 basic_stmt_t code[BASIC_MAX_STMTS];
+char code_str[128][BASIC_MAX_STMTS];
 
 basic_var_t vars[BASIC_MAX_VARS];
 int varcount = 0;
@@ -31,7 +34,7 @@ basic_value_t get_var(const char *name) {
     for (int i = 0; i < varcount; ++i)
         if (strcmp(name, vars[i].name) == 0) return vars[i].val;
     printf("Variable `%s` is undefined\n", name);
-    exit(1);
+    basic_exit(1);
 }
 
 long int extract_line_num(const char *str, char **remainingStr) {
@@ -61,8 +64,11 @@ basic_stmt_type_t extract_stmt_type(char **str, int rln) {
         *str += 4;
         return LET;
     } else {
-        printf("Invalid Statement `%s` on line %d\n", *str, rln);
-        exit(1);
+        if(rln != -1)
+            printf("Invalid Statement `%s` on line %d\n", *str, rln);
+        else 
+            printf("Invalid Statement `%s`\n", *str);
+        basic_exit(1);
     }
 }
 
@@ -151,12 +157,28 @@ basic_value_t visit_node(basic_ast_node_t *node) {
     return (basic_value_t){0};
 }
 
-void rec_free(basic_ast_node_t *node) {
-    for (int i = 0; i < node->childrenln; ++i) rec_free(node->children[i]);
+void basic_rec_free(basic_ast_node_t *node) {
+    for (int i = 0; i < node->childrenln; ++i) basic_rec_free(node->children[i]);
     free(node);
 }
 
+void basic_free_stmt(int i) {
+    if (code[i].type == NONE) return;
+    for (int j = 0; j < code[i].paramln; ++j) basic_rec_free(code[i].params[j]);
+}
+
+void basic_free_code() {
+    for (int i = 0; i < BASIC_MAX_STMTS; ++i) basic_free_stmt(i);
+}
+
+void basic_exit(int a) {
+    for (;;);
+}
+
 void exec_loaded_basic() {
+    memset(vars, 0, sizeof(vars));
+    varcount = 0;
+    
     for (int i = 0; i < BASIC_MAX_STMTS; ++i) {
         switch (code[i].type) {
             case NONE: continue;
@@ -175,7 +197,7 @@ void exec_loaded_basic() {
             case IF: {
                 if (code[i].paramln != 2) {
                     printf("BASIC: IF takes two paramters, CONDITION, GOTO\n");
-                    exit(1);
+                    basic_exit(1);
                 }
                 if (visit_node(code[i].params[0]).fval != 0)
                     i = visit_node(code[i].params[1]).fval - 1;
@@ -184,11 +206,11 @@ void exec_loaded_basic() {
             case GOTO: {
                 if (code[i].paramln != 1) {
                     printf("BASIC: GOTO takes one INT parameter\n");
-                    exit(1);
+                    basic_exit(1);
                 }
                 if (code[i].params[0]->value.is_string) {
                     printf("BASIC: GOTO takes one INT parameter\n");
-                    exit(1);
+                    basic_exit(1);
                 }
                 i = (int)visit_node(code[i].params[0]).fval - 1;
                 break;
@@ -200,7 +222,7 @@ void exec_loaded_basic() {
 
                 if (code[i].paramln != 2) {
                     printf("BASIC: INPUT takes two parameters, VAR, TYPE\n");
-                    exit(1);
+                    basic_exit(1);
                 }
 
                 const char *varname = code[i].params[0]->value.sval;
@@ -228,52 +250,116 @@ void exec_loaded_basic() {
                 break;
         }
     }
+}
 
-    for (int i = 0; i < BASIC_MAX_STMTS; ++i) {
-        if (code[i].type == NONE) continue;
-        for (int j = 0; j < code[i].paramln; ++j) rec_free(code[i].params[j]);
+int process_line(char *ln, int *rln, int *stmtlen) {
+    while (*ln == ' ' || *ln == '\t') ++ln;
+
+    char *pln;
+    long int line_num = extract_line_num(ln, &pln);
+
+    if(stmtlen) ++(*stmtlen);
+
+    if (line_num == -1) {
+        if(rln)
+            printf("Missing line number on line %d\n", *rln);
+        else printf("Missing line number\n");
+        return 1;
+    }
+
+    basic_free_stmt(line_num);
+    code[line_num] = (basic_stmt_t){0};
+    strncpy(code_str[line_num], ln, 128);
+
+    if (strncmp(pln, "REM ", 4) == 0) {
+        if(rln) ++(*rln);
+        return 0;
+    }
+
+    basic_stmt_type_t type = extract_stmt_type(&pln, rln ? *rln : -1);
+
+    while (*pln == ' ' || *pln == '\t') ++pln;
+
+    code[line_num].type = type;
+
+    basic_ast_node_t *param;
+
+    while ((param = extract_param(&pln)))
+        code[line_num].params[code[line_num].paramln++] = param;
+
+    if(rln) ++(*rln);
+    return 0;
+}
+
+void load_basic_from_file(const char *relpath) {
+    char path[256];
+    memset(path, 0, 256);
+    relative_to_user_pwd(relpath, path);
+
+    static const int buflen = 60000;
+    char buffer[buflen];
+    int bytesread = read_file(path, buffer, buflen);
+    if (bytesread == -1)
+        return;
+    buffer[bytesread] = '\0';
+
+    memset(code, 0, sizeof(code));
+    memset(code_str, 0, sizeof(code_str));
+
+    int stmtlen = 0;
+    char *ln = strtok((char *)buffer, "\n");
+    int rln = 1;
+    
+    while (ln) {
+        if(process_line(ln, &rln, &stmtlen)) return;
+        ln = strtok(NULL, "\n");
     }
 }
 
 void run_basic(char *src) {
-    varcount = 0;
+    memset(code, 0, sizeof(code));
+    memset(code_str, 0, sizeof(code_str));
+
     int stmtlen = 0;
     char *ln = strtok((char *)src, "\n");
     int rln = 1;
+    
     while (ln) {
-        while (*ln == ' ' || *ln == '\t') ++ln;
-
-        char *pln;
-        long int line_num = extract_line_num(ln, &pln);
-
-        ++stmtlen;
-
-        if (line_num == -1) {
-            printf("Missing line number on line %d\n", rln);
-            return;
-        }
-
-        code[line_num] = (basic_stmt_t){0};
-
-        if (strncmp(pln, "REM ", 4) == 0) {
-            ln = strtok(NULL, "\n");
-            ++rln;
-            continue;
-        }
-
-        basic_stmt_type_t type = extract_stmt_type(&pln, rln);
-        while (*pln == ' ' || *pln == '\t') ++pln;
-
-        code[line_num].type = type;
-
-        basic_ast_node_t *param;
-
-        while ((param = extract_param(&pln)))
-            code[line_num].params[code[line_num].paramln++] = param;
-
-        ++rln;
+        if(process_line(ln, &rln, &stmtlen)) return;
         ln = strtok(NULL, "\n");
     }
 
     exec_loaded_basic();
+    basic_free_code();
+}
+
+void list_basic_code() {
+    for(int i = 0; i < BASIC_MAX_STMTS; ++i)
+        if(strlen(code_str[i]) > 0)
+            printf("%s\n", code_str[i]);
+}
+
+void basic_shell() {
+    printf("TRACE BASIC\nSimple BASIC Interpreter for TRACE\n\n");
+    memset(code, 0, sizeof(code));
+    memset(code_str, 0, sizeof(code_str));
+
+    char cmdbuf[512];
+    memset(cmdbuf, 0, sizeof(cmdbuf));
+
+    while(true) {
+        printf("[BASIC] ");
+        scanl(cmdbuf, 512);
+
+        if(strcmp(cmdbuf, "EXIT") == 0) break;
+        else if (strcmp(cmdbuf, "RUN") == 0) exec_loaded_basic();
+        else if (strcmp(cmdbuf, "CLEAR") == 0) {
+            memset(code, 0, sizeof(code));
+            memset(code_str, 0, sizeof(code_str));
+        }
+        else if (strcmp(cmdbuf, "LIST") == 0) list_basic_code();
+        else if (strncmp(cmdbuf, "LOAD ", 5) == 0) load_basic_from_file(cmdbuf + 5);
+        else process_line(cmdbuf, NULL, NULL);
+    }
+    basic_free_code();
 }

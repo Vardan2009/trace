@@ -42,7 +42,7 @@ basic_ast_node_t *basic_factor(basic_token_t *tokens, int tokens_sz,
         }
         default: {
             printf("Invalid factor of type %d\n", tokens[*tokenptr].type);
-            exit(0);
+            basic_exit(0);
         }
     }
     return NULL;
