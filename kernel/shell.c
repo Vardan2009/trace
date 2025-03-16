@@ -1,7 +1,6 @@
 #include "shell.h"
 
-#include "driver/diskio.h"
-#include "lib/malloc.h"
+#include "driver/pcspk.h"
 #include "lib/stdio.h"
 
 #define NCMDS 15
@@ -25,7 +24,8 @@ builtin_command_t builtin_commands[NCMDS] = {
      &builtin_command_fwrite},
     {"mkdir", "mkdir <relative path>", "creates new folder",
      &builtin_command_mkdir},
-    {"fsinfo", "fsinfo", "fetches info about filesystem", &builtin_command_fsinfo},
+    {"fsinfo", "fsinfo", "fetches info about filesystem",
+     &builtin_command_fsinfo},
     {"basic", "basic [relative filepath]", "executes basic code",
      &builtin_command_basic},
 };
@@ -93,6 +93,9 @@ void print_help() {
     for (int i = 0; i < NCMDS; ++i) print_help_cmd(builtin_commands[i]);
 }
 
+#define SHELL_ERR_SOUND_FREQ 500
+#define SHELL_ERR_SOUND_DUR 50
+
 void print_err(const char *msg, ...) {
     va_list args;
     va_start(args, msg);
@@ -101,6 +104,8 @@ void print_err(const char *msg, ...) {
     printf("[ ERR ] ");
     vprintf(msg, args);
     printf("\n");
+
+    pcspk_beep_dur(SHELL_ERR_SOUND_FREQ, SHELL_ERR_SOUND_DUR);
 
     va_end(args);
     set_color(COLOR_WHITE, COLOR_BLACK);
@@ -115,6 +120,8 @@ void print_warn(const char *msg, ...) {
     vprintf(msg, args);
     printf("\n");
 
+    pcspk_beep_dur(SHELL_ERR_SOUND_FREQ, SHELL_ERR_SOUND_DUR);
+
     va_end(args);
     set_color(COLOR_WHITE, COLOR_BLACK);
 }
@@ -128,6 +135,8 @@ void print_info(const char *msg, ...) {
     vprintf(msg, args);
     printf("\n");
 
+    pcspk_beep_dur(SHELL_ERR_SOUND_FREQ, SHELL_ERR_SOUND_DUR);
+
     va_end(args);
     set_color(COLOR_WHITE, COLOR_BLACK);
 }
@@ -140,6 +149,8 @@ void print_ok(const char *msg, ...) {
     printf("[ OK ] ");
     vprintf(msg, args);
     printf("\n");
+
+    pcspk_beep_dur(SHELL_ERR_SOUND_FREQ, SHELL_ERR_SOUND_DUR);
 
     va_end(args);
     set_color(COLOR_WHITE, COLOR_BLACK);
