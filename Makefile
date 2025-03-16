@@ -1,9 +1,10 @@
 CC = gcc
+DB = gdb
 AS = nasm
 LD = ld
 VM = qemu-system-i386
 
-CFLAGS = -m32 -ffreestanding -nostdlib -Iinclude -g
+CFLAGS = -m32 -ffreestanding -nostdlib -Iinclude
 ASFLAGS = -felf32
 LDFLAGS = -m elf_i386 -T linker.ld
 VMFLAGS = -cdrom trace.iso \
@@ -11,7 +12,14 @@ VMFLAGS = -cdrom trace.iso \
           -drive file=tracefs-disk.img,format=raw \
           -boot order=d \
           -serial mon:stdio \
-      	  # -S -s
+
+VMFLAGS_EXTRA :=
+CFLAGS_EXTRA :=
+
+ifeq ($(DEBUG), true)
+	VMFLAGS_EXTRA = -s -S
+	CFLAGS_EXTRA  = -g
+endif 
 
 SRC = $(shell find kernel -name "*.c")
 OBJ = $(SRC:.c=.o)
@@ -28,7 +36,7 @@ idt.o: idt.s
 	$(AS) $(ASFLAGS) -o idt.o idt.s
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(CFLAGS_EXTRA) -c -o $@ $<
 
 kernel.bin: boot.o gdt.o idt.o $(OBJ)
 	$(LD) $(LDFLAGS) -o kernel.bin boot.o gdt.o idt.o $(OBJ)
@@ -47,8 +55,11 @@ clean:
 	rm trace.iso
 
 test-qemu:
-	$(VM) $(VMFLAGS)
+	$(VM) $(VMFLAGS) $(VMFLAGS_EXTRA)
 
+run-db:
+	$(DB) iso/boot/kernel.bin
+	
 tracefs-disk:
 	dd if=/dev/zero of=tracefs-disk.img bs=1M count=100
 	printf "TRACEFS" | dd of=tracefs-disk.img bs=1 seek=0 conv=notrunc
