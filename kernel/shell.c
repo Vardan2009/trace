@@ -26,7 +26,8 @@ builtin_command_t builtin_commands[NCMDS] = {
     {"mkdir", "mkdir <relative path>", "creates new folder",
      &builtin_command_mkdir},
     {"fsinfo", "fsinfo", "get info about filesystem", &builtin_command_fsinfo},
-    {"basic", "basic <realtive filepath>", "execute basic code", &builtin_command_basic},
+    {"basic", "basic <realtive filepath>", "execute basic code",
+     &builtin_command_basic},
 };
 
 char user_pwd[256] = "0:/";

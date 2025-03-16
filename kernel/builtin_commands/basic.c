@@ -1,9 +1,9 @@
+#include "basic/basic.h"
+
+#include "basic/defs.h"
 #include "lib/fs.h"
 #include "lib/path.h"
 #include "shell.h"
-#include "basic/basic.h"
-#include "basic/defs.h"
-
 
 void builtin_command_basic(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
     if (tokc != 2 && tokc != 3) {
@@ -24,9 +24,9 @@ void builtin_command_basic(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
     }
     buffer[bytesread] = '\0';
 
-    run_basic(buffer);  
+    run_basic(buffer);
 }
 
 void exit(int a) {
-    for(;;);
+    for (;;);
 }

@@ -1,8 +1,7 @@
 #include "basic/defs.h"
-
+#include "lib/malloc.h"
 #include "lib/stdio.h"
 #include "lib/string.h"
-#include "lib/malloc.h"
 
 basic_ast_node_t *basic_expr(basic_token_t *tokens, int tokens_sz,
                              int *tokenptr);
@@ -10,41 +9,41 @@ basic_ast_node_t *basic_expr(basic_token_t *tokens, int tokens_sz,
 basic_ast_node_t *basic_factor(basic_token_t *tokens, int tokens_sz,
                                int *tokenptr) {
     switch (tokens[*tokenptr].type) {
-    case TOK_NUM: {
-        basic_token_t t = tokens[(*tokenptr)++];
-        basic_ast_node_t *res = malloc(sizeof(basic_ast_node_t));
-        res->type = NUM;
-        res->childrenln = 0;
-        res->value = t.value;
-        return res;
-    }
-    case TOK_STR: {
-        basic_token_t t = tokens[(*tokenptr)++];
-        basic_ast_node_t *res = malloc(sizeof(basic_ast_node_t));
-        res->type = STR;
-        res->childrenln = 0;
-        res->value = t.value;
-        return res;
-    }
-    case TOK_VAR: {
-        basic_token_t *t = &tokens[(*tokenptr)++];
-        basic_ast_node_t *res = malloc(sizeof(basic_ast_node_t));
-        res->type = VAR;
-        res->childrenln = 0;
-        res->value.is_string = true;
-        strncpy(res->value.sval, t->value.sval, 64);
-        return res;
-    }
-    case TOK_LPAREN: {
-        ++(*tokenptr);
-        basic_ast_node_t *res = basic_expr(tokens, tokens_sz, tokenptr);
-        ++(*tokenptr);
-        return res;
-    }
-    default: {
-        printf("Invalid factor of type %d\n", tokens[*tokenptr].type);
-        exit(0);
-    }
+        case TOK_NUM: {
+            basic_token_t t = tokens[(*tokenptr)++];
+            basic_ast_node_t *res = malloc(sizeof(basic_ast_node_t));
+            res->type = NUM;
+            res->childrenln = 0;
+            res->value = t.value;
+            return res;
+        }
+        case TOK_STR: {
+            basic_token_t t = tokens[(*tokenptr)++];
+            basic_ast_node_t *res = malloc(sizeof(basic_ast_node_t));
+            res->type = STR;
+            res->childrenln = 0;
+            res->value = t.value;
+            return res;
+        }
+        case TOK_VAR: {
+            basic_token_t *t = &tokens[(*tokenptr)++];
+            basic_ast_node_t *res = malloc(sizeof(basic_ast_node_t));
+            res->type = VAR;
+            res->childrenln = 0;
+            res->value.is_string = true;
+            strncpy(res->value.sval, t->value.sval, 64);
+            return res;
+        }
+        case TOK_LPAREN: {
+            ++(*tokenptr);
+            basic_ast_node_t *res = basic_expr(tokens, tokens_sz, tokenptr);
+            ++(*tokenptr);
+            return res;
+        }
+        default: {
+            printf("Invalid factor of type %d\n", tokens[*tokenptr].type);
+            exit(0);
+        }
     }
     return NULL;
 }
@@ -110,7 +109,7 @@ basic_ast_node_t *basic_expr(basic_token_t *tokens, int tokens_sz,
         } else
             break;
     }
-    
+
     return n;
 }
 

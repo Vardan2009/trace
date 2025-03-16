@@ -1,7 +1,8 @@
 #include "basic/lexer.h"
+
 #include "lib/stdio.h"
-#include "lib/string.h"
 #include "lib/stdlib.h"
+#include "lib/string.h"
 
 bool alpha(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
@@ -12,8 +13,7 @@ bool digit(char c) {
 }
 
 int basic_tokenize(char **ptr, basic_token_t *tokens) {
-    if (strlen(*ptr) == 0)
-        return 0;
+    if (strlen(*ptr) == 0) return 0;
     // printf("Tokenizing `%s`\n", *ptr);
     int token_count = 0;
     while (**ptr != 0 && **ptr != ',') {
@@ -27,11 +27,9 @@ int basic_tokenize(char **ptr, basic_token_t *tokens) {
             memset(buffer, 0, sizeof(buffer));
 
             int buflen = 0;
-            while (**ptr != '"' && **ptr != 0)
-                buffer[buflen++] = *((*ptr)++);
+            while (**ptr != '"' && **ptr != 0) buffer[buflen++] = *((*ptr)++);
             buffer[buflen] = 0;
-            if (**ptr == '"')
-                ++(*ptr);
+            if (**ptr == '"') ++(*ptr);
             int idx = token_count++;
             tokens[idx].type = TOK_STR;
             tokens[idx].value.is_string = true;
@@ -41,8 +39,7 @@ int basic_tokenize(char **ptr, basic_token_t *tokens) {
             char buffer[64];
             memset(buffer, 0, sizeof(buffer));
             int buflen = 0;
-            while (alpha(**ptr) || digit(**ptr))
-                buffer[buflen++] = *((*ptr)++);
+            while (alpha(**ptr) || digit(**ptr)) buffer[buflen++] = *((*ptr)++);
             int idx = token_count++;
             tokens[idx].type = TOK_VAR;
             tokens[idx].value.is_string = true;
@@ -53,8 +50,7 @@ int basic_tokenize(char **ptr, basic_token_t *tokens) {
             memset(buffer, 0, sizeof(buffer));
 
             int buflen = 0;
-            while (digit(**ptr))
-                buffer[buflen++] = *((*ptr)++);
+            while (digit(**ptr)) buffer[buflen++] = *((*ptr)++);
             int idx = token_count++;
             tokens[idx].type = TOK_NUM;
             tokens[idx].value.fval = stof(buffer);

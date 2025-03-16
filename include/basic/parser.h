@@ -5,4 +5,4 @@
 
 basic_ast_node_t *basic_parse(basic_token_t *, int);
 
-#endif // PARSER_H
+#endif  // PARSER_H

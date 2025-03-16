@@ -60,4 +60,4 @@ typedef struct {
 
 void exit(int);
 
-#endif // DEFS_H
+#endif  // DEFS_H

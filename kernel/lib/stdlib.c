@@ -59,21 +59,20 @@ int stoi(const char *str) {
 double stof(const char *str) {
     double result = 0.0;
     double factor = 1.0;
-    
-    while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r')
-        str++;
-    
+
+    while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r') str++;
+
     if (*str == '-') {
         factor = -1.0;
         str++;
     } else if (*str == '+')
         str++;
-    
+
     while (*str >= '0' && *str <= '9') {
         result = result * 10 + (*str - '0');
         str++;
     }
-    
+
     if (*str == '.') {
         str++;
         double decimal_place = 1.0;
@@ -83,6 +82,6 @@ double stof(const char *str) {
             str++;
         }
     }
-    
+
     return result * factor;
 }

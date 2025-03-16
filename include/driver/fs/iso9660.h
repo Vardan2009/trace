@@ -48,12 +48,12 @@ typedef struct {
     uint32_t path_table_sz_msb;  // Offset 136–139: Path Table Size (MSB part)
 
     /* 140–155: Path Table Locations */
-    uint32_t l_path_table;  // Offset 140–143: Location of Type-L Path Table
-                            // (little-endian)
+    uint32_t l_path_table;      // Offset 140–143: Location of Type-L Path Table
+                                // (little-endian)
     uint32_t opt_l_path_table;  // Offset 144–147: Location of Optional Type-L
                                 // Path Table (little-endian)
-    uint32_t m_path_table;  // Offset 148–151: Location of Type-M Path Table
-                            // (big-endian)
+    uint32_t m_path_table;      // Offset 148–151: Location of Type-M Path Table
+                                // (big-endian)
     uint32_t opt_m_path_table;  // Offset 152–155: Location of Optional Type-M
                                 // Path Table (big-endian)
 
@@ -82,8 +82,8 @@ typedef struct {
     char vol_mod_date[17];  // Offset 830–846: Volume Modification Date and Time
     char vol_expiration_date[17];  // Offset 847–863: Volume Expiration Date and
                                    // Time
-    char vol_effective_date[17];  // Offset 864–880: Volume Effective Date and
-                                  // Time
+    char vol_effective_date[17];   // Offset 864–880: Volume Effective Date and
+                                   // Time
 
     /* 881–882 */
     uint8_t file_structure_version;  // Offset 881: File Structure Version
