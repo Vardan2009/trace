@@ -42,14 +42,14 @@ void ata_read_sector(uint32_t lba, uint8_t *buffer) {
     while (inb(base_port + 7) & 0x80) {
         if (--timeout <= 0) {
             print_err("Disk read timeout (BSY)!");
-            for (;;);
+            return;
         }
     }
 
     uint8_t status = inb(base_port + 7);
     if (status & 0x01) {  // Check for error flag
         print_err("Disk error!");
-        for (;;);
+        return;
     }
 
     timeout = TIMEOUT;
@@ -57,7 +57,7 @@ void ata_read_sector(uint32_t lba, uint8_t *buffer) {
     while (!(inb(base_port + 7) & 0x08)) {
         if (--timeout <= 0) {
             print_err("Disk read timeout (DRQ)!");
-            for (;;);
+            return;
         }
     }
 
@@ -87,7 +87,7 @@ void ata_write_sector(uint32_t lba, uint8_t *buffer) {
     while (inb(base_port + 7) & 0x80) {
         if (--timeout <= 0) {
             print_err("Disk write timeout (BSY)!");
-            for (;;);
+            return;
         }
     }
 
@@ -102,7 +102,7 @@ void ata_write_sector(uint32_t lba, uint8_t *buffer) {
     while (!(inb(base_port + 7) & 0x08)) {
         if (--timeout <= 0) {
             print_err("Disk write timeout (DRQ)!");
-            for (;;);
+            return;
         }
     }
 
@@ -119,7 +119,7 @@ void ata_write_sector(uint32_t lba, uint8_t *buffer) {
     while (inb(base_port + 7) & 0x80) {
         if (--timeout <= 0) {
             print_err("Disk write timeout (FLUSH)!");
-            for (;;);
+            return;
         }
     }
 }
