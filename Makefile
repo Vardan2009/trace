@@ -53,7 +53,7 @@ iso: kernel.bin
 clean:
 	rm -f *.o $(OBJ) kernel.bin
 	rm -rf iso
-	rm trace.iso
+	rm -f trace.iso
 
 test-qemu:
 	$(VM) $(VMFLAGS) $(VMFLAGS_EXTRA)
