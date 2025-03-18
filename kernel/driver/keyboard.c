@@ -1,6 +1,6 @@
 #include "driver/keyboard.h"
 
-bool shift, caps;
+bool shift, caps, ctrl;
 
 #define INPUT_BUFFER_SIZE 128
 char input_buffer[INPUT_BUFFER_SIZE];
@@ -103,7 +103,6 @@ void handle_keyboard(int_regs *regs) {
     uint8_t state = inb(0x60) & 0x80;
     switch (scancode) {
         case 1:
-        case 29:
         case 56:
         case 59:
         case 60:
@@ -117,6 +116,7 @@ void handle_keyboard(int_regs *regs) {
         case 68:
         case 87:
         case 88: break;
+        case 29: ctrl = state == 0; break;
         case 42: shift = state == 0; break;
         case 58:
             if (state == 0) caps = !caps;
@@ -125,6 +125,13 @@ void handle_keyboard(int_regs *regs) {
             if (state == 0) {
                 char key =
                     (shift || caps) ? uppercase[scancode] : lowercase[scancode];
+                if (lowercase[scancode] == 'c' && ctrl) {
+                    uint8_t good = 0x02;
+                    while (good & 0x02) good = inb(0x64);
+                    outb(0x64, 0xfe);
+                    asm volatile("cli");
+                    asm volatile("hlt");
+                }
                 buffer_putc(key);
             }
             break;
