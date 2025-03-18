@@ -5,3 +5,4 @@
 *.img
 .vscode
 iso
+compile_commands.json
