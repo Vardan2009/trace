@@ -6,9 +6,11 @@
 #include "lib/fs.h"
 #include "lib/malloc.h"
 #include "lib/path.h"
+#include "lib/rand.h"
 #include "lib/stdio.h"
 #include "lib/stdlib.h"
 #include "lib/string.h"
+#include "timer.h"
 
 #define BASIC_MAX_STMTS 512
 #define BASIC_MAX_VARS 128
@@ -20,6 +22,16 @@ basic_var_t vars[BASIC_MAX_VARS];
 int varcount = 0;
 
 void set_var(const char *name, basic_value_t val) {
+    if (strcmp(name, "RND") == 0) {
+        printf("BASIC: RND is not modifiable\n");
+        return;
+    }
+
+    if (strcmp(name, "TIMER") == 0) {
+        printf("BASIC: TIMER is not modifiable\n");
+        return;
+    }
+
     for (int i = 0; i < varcount; ++i)
         if (strcmp(name, vars[i].name) == 0) {
             vars[i].val = val;
@@ -31,6 +43,16 @@ void set_var(const char *name, basic_value_t val) {
 }
 
 int get_var(const char *name, basic_value_t *out) {
+    if (strcmp(name, "RND") == 0) {
+        *out = (basic_value_t){false, rand()};
+        return 0;
+    }
+
+    if (strcmp(name, "TIMER") == 0) {
+        *out = (basic_value_t){false, ticks};
+        return 0;
+    }
+
     for (int i = 0; i < varcount; ++i)
         if (strcmp(name, vars[i].name) == 0) {
             *out = vars[i].val;
@@ -67,6 +89,9 @@ basic_stmt_type_t extract_stmt_type(char **str, int rln, int *exitcode) {
     } else if (strncmp(*str, "LET ", 4) == 0) {
         *str += 4;
         return LET;
+    } else if (strncmp(*str, "RANDOMIZE ", 10) == 0) {
+        *str += 10;
+        return SRAND;
     } else {
         if (rln != -1)
             printf("Invalid Statement `%s` on line %d\n", *str, rln);
@@ -289,6 +314,17 @@ void exec_loaded_basic() {
                 basic_value_t val;
                 if (visit_node(code[i].params[1], &val)) return;
                 set_var(code[i].params[0]->value.sval, val);
+                break;
+            }
+            case SRAND: {
+                basic_value_t seed;
+                if (visit_node(code[i].params[0], &seed)) return;
+                if (seed.is_string ||
+                    ((!seed.is_string) && ((int)seed.fval) != seed.fval)) {
+                    printf("BASIC: RANDOMIZE takes INT");
+                    return;
+                }
+                srand((int)seed.fval);
                 break;
             }
         }

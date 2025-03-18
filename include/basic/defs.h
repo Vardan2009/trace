@@ -22,7 +22,7 @@ typedef struct basic_ast_node {
     struct basic_ast_node *children[2];
 } basic_ast_node_t;
 
-typedef enum { NONE, PRINT, IF, GOTO, INPUT, LET } basic_stmt_type_t;
+typedef enum { NONE, PRINT, IF, GOTO, INPUT, LET, SRAND } basic_stmt_type_t;
 
 typedef struct {
     basic_stmt_type_t type;
