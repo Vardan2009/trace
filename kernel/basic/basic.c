@@ -155,60 +155,119 @@ int visit_node(basic_ast_node_t *node, basic_value_t *out) {
                     basic_value_t lval, rval;
                     if (visit_node(node->children[0], &lval)) return 1;
                     if (visit_node(node->children[1], &rval)) return 1;
-                    *out = (basic_value_t){false, lval.fval + rval.fval};
+
+                    if (lval.is_string || rval.is_string) {
+                        out->is_string = true;
+                        strcpy(out->sval, lval.sval);
+                        strcat(out->sval, rval.sval);
+                    } else {
+                        out->is_string = false;
+                        out->fval = lval.fval + rval.fval;
+                    }
                     return 0;
                 }
                 case '-': {
                     basic_value_t lval, rval;
                     if (visit_node(node->children[0], &lval)) return 1;
                     if (visit_node(node->children[1], &rval)) return 1;
-                    *out = (basic_value_t){false, lval.fval - rval.fval};
+                    if (lval.is_string || rval.is_string) {
+                        printf("BASIC: - not supported on strings\n");
+                        return 1;
+                    }
+                    out->is_string = 0;
+                    out->fval = lval.fval - rval.fval;
                     return 0;
                 }
                 case '*': {
                     basic_value_t lval, rval;
                     if (visit_node(node->children[0], &lval)) return 1;
                     if (visit_node(node->children[1], &rval)) return 1;
-                    *out = (basic_value_t){false, lval.fval * rval.fval};
+                    if (lval.is_string || rval.is_string) {
+                        printf(
+                            "BASIC: * not supported on "
+                            "strings\n");
+                        return 1;
+                    }
+                    out->is_string = 0;
+                    out->fval = lval.fval * rval.fval;
                     return 0;
                 }
                 case '/': {
                     basic_value_t lval, rval;
                     if (visit_node(node->children[0], &lval)) return 1;
                     if (visit_node(node->children[1], &rval)) return 1;
-                    if (rval.fval == 0) {
-                        printf("Zero division error!\n");
+                    if (lval.is_string || rval.is_string) {
+                        printf("BASIC: / not supported on strings\n");
                         return 1;
                     }
-                    *out = (basic_value_t){false, lval.fval / rval.fval};
+                    if (rval.fval == 0) {
+                        printf("BASIC: Zero division error\n");
+                        return 1;
+                    }
+                    out->is_string = 0;
+                    out->fval = lval.fval / rval.fval;
                     return 0;
                 }
                 case '=': {
                     basic_value_t lval, rval;
                     if (visit_node(node->children[0], &lval)) return 1;
                     if (visit_node(node->children[1], &rval)) return 1;
-                    *out = (basic_value_t){false, lval.fval == rval.fval};
+
+                    if (lval.is_string && rval.is_string) {
+                        out->is_string = 0;
+                        out->fval = strcmp(lval.sval, rval.sval) == 0;
+                    } else if (!lval.is_string && !rval.is_string) {
+                        out->is_string = 0;
+                        out->fval = lval.fval == rval.fval;
+                    } else {
+                        out->is_string = 0;
+                        out->fval = 0;
+                    }
                     return 0;
                 }
                 case '~': {
                     basic_value_t lval, rval;
                     if (visit_node(node->children[0], &lval)) return 1;
                     if (visit_node(node->children[1], &rval)) return 1;
-                    *out = (basic_value_t){false, lval.fval != rval.fval};
+
+                    if (lval.is_string && rval.is_string) {
+                        out->is_string = 0;
+                        out->fval = strcmp(lval.sval, rval.sval) != 0;
+                    } else if (!lval.is_string && !rval.is_string) {
+                        out->is_string = 0;
+                        out->fval = lval.fval != rval.fval;
+                    } else {
+                        out->is_string = 0;
+                        out->fval = 1;
+                    }
                     return 0;
                 }
                 case '<': {
                     basic_value_t lval, rval;
                     if (visit_node(node->children[0], &lval)) return 1;
                     if (visit_node(node->children[1], &rval)) return 1;
-                    *out = (basic_value_t){false, lval.fval < rval.fval};
+                    if (lval.is_string || rval.is_string) {
+                        printf(
+                            "BASIC: < not supported on "
+                            "strings\n");
+                        return 1;
+                    }
+                    out->is_string = 0;
+                    out->fval = lval.fval < rval.fval;
                     return 0;
                 }
                 case '>': {
                     basic_value_t lval, rval;
                     if (visit_node(node->children[0], &lval)) return 1;
                     if (visit_node(node->children[1], &rval)) return 1;
-                    *out = (basic_value_t){false, lval.fval > rval.fval};
+                    if (lval.is_string || rval.is_string) {
+                        printf(
+                            "Error: > not supported on "
+                            "strings!\n");
+                        return 1;
+                    }
+                    out->is_string = 0;
+                    out->fval = lval.fval > rval.fval;
                     return 0;
                 }
                 default: return 1;
