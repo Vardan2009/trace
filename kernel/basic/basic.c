@@ -208,6 +208,23 @@ int visit_node(basic_ast_node_t *node, basic_value_t *out) {
                     out->fval = lval.fval / rval.fval;
                     return 0;
                 }
+                case '%': {
+                    basic_value_t lval, rval;
+                    if (visit_node(node->children[0], &lval)) return 1;
+                    if (visit_node(node->children[1], &rval)) return 1;
+                    if (lval.is_string || rval.is_string) {
+                        printf("BASIC: %% not supported on strings\n");
+                        return 1;
+                    }
+                    if (rval.fval == 0) {
+                        printf("BASIC: Zero division error\n");
+                        return 1;
+                    }
+                    out->is_string = 0;
+                    out->fval = fmod(lval.fval, rval.fval);
+
+                    return 0;
+                }
                 case '=': {
                     basic_value_t lval, rval;
                     if (visit_node(node->children[0], &lval)) return 1;

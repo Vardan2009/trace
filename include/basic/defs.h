@@ -40,6 +40,7 @@ typedef enum {
     TOK_MINUS,
     TOK_MUL,
     TOK_DIV,
+    TOK_MOD,
     TOK_EQ,
     TOK_NEQ,
     TOK_LT,

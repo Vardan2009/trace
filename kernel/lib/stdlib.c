@@ -85,3 +85,22 @@ double stof(const char *str) {
 
     return result * factor;
 }
+
+float fmod(float x, float y) {
+    if (y == 0.0f) return 0.0f;
+
+    float quotient = x / y;
+    float integer_part;
+    float fractional_part = modff(quotient, &integer_part);
+
+    return x - (integer_part * y);
+}
+
+float modff(float value, float *iptr) {
+    if (value == 0.0f) {
+        *iptr = 0.0f;
+        return 0.0f;
+    }
+    *iptr = (float)((int)value);
+    return value - *iptr;
+}

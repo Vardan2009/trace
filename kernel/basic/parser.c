@@ -58,7 +58,8 @@ basic_ast_node_t *basic_term(basic_token_t *tokens, int tokens_sz,
             tokens[*tokenptr].type == TOK_EQ ||
             tokens[*tokenptr].type == TOK_NEQ ||
             tokens[*tokenptr].type == TOK_LT ||
-            tokens[*tokenptr].type == TOK_GT) {
+            tokens[*tokenptr].type == TOK_GT ||
+            tokens[*tokenptr].type == TOK_MOD) {
             basic_token_type_t op = tokens[(*tokenptr)++].type;
             basic_ast_node_t *r =
                 basic_factor(tokens, tokens_sz, tokenptr, exitcode);
@@ -70,6 +71,8 @@ basic_ast_node_t *basic_term(basic_token_t *tokens, int tokens_sz,
                 n->value.sval[0] = '*';
             else if (op == TOK_DIV)
                 n->value.sval[0] = '/';
+            else if (op == TOK_MOD)
+                n->value.sval[0] = '%';
             else if (op == TOK_EQ)
                 n->value.sval[0] = '=';
             else if (op == TOK_NEQ)
