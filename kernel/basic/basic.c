@@ -74,24 +74,30 @@ long int extract_line_num(const char *str, char **remainingStr) {
 
 basic_stmt_type_t extract_stmt_type(char **str, int rln, int *exitcode) {
     *exitcode = 0;
-    if (strncmp(*str, "PRINT ", 6) == 0) {
-        *str += 6;
-        return PRINT;
-    } else if (strncmp(*str, "IF ", 3) == 0) {
-        *str += 3;
-        return IF;
-    } else if (strncmp(*str, "GOTO ", 5) == 0) {
+    if (strncmp(*str, "PRINT", 5) == 0) {
         *str += 5;
-        return GOTO;
-    } else if (strncmp(*str, "INPUT ", 6) == 0) {
-        *str += 6;
-        return INPUT;
-    } else if (strncmp(*str, "LET ", 4) == 0) {
+        return PRINT;
+    } else if (strncmp(*str, "IF", 2) == 0) {
+        *str += 2;
+        return IF;
+    } else if (strncmp(*str, "GOTO", 4) == 0) {
         *str += 4;
+        return GOTO;
+    } else if (strncmp(*str, "INPUT", 5) == 0) {
+        *str += 5;
+        return INPUT;
+    } else if (strncmp(*str, "LET", 3) == 0) {
+        *str += 3;
         return LET;
-    } else if (strncmp(*str, "RANDOMIZE ", 10) == 0) {
-        *str += 10;
+    } else if (strncmp(*str, "RANDOMIZE", 9) == 0) {
+        *str += 9;
         return SRAND;
+    } else if (strncmp(*str, "CLEAR", 5) == 0) {
+        *str += 5;
+        return CLEAR;
+    } else if (strncmp(*str, "END", 3) == 0) {
+        *str += 3;
+        return END;
     } else {
         if (rln != -1)
             printf("Invalid Statement `%s` on line %d\n", *str, rln);
@@ -401,6 +407,22 @@ void exec_loaded_basic() {
                     return;
                 }
                 srand((int)seed.fval);
+                break;
+            }
+            case CLEAR: {
+                if (code[i].paramln != 0) {
+                    printf("BASIC: CLEAR takes no parameters\n");
+                    return;
+                }
+                clear_screen();
+                break;
+            }
+            case END: {
+                if (code[i].paramln != 0) {
+                    printf("BASIC: END takes no parameters\n");
+                    return;
+                }
+                return;
                 break;
             }
         }
