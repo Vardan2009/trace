@@ -34,10 +34,12 @@ char user_pwd[256] = "0:/";
 
 const char *prompt() {
     static char input[512];
-    set_color(COLOR_LYELLOW, COLOR_BLACK);
+    set_color(COLOR_LGREEN, COLOR_BLACK);
+    putc('[');
+    set_color_fg(COLOR_LYELLOW);
     puts(user_pwd);
-    set_color_fg(COLOR_GREEN);
-    puts(" -> ");
+    set_color_fg(COLOR_LGREEN);
+    puts("] ");
     set_color_fg(COLOR_WHITE);
     scanl(input, 512);
     set_color_fg(COLOR_WHITE);
