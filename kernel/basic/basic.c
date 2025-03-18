@@ -435,6 +435,22 @@ int process_line(char *ln, int *rln, int *stmtlen) {
     return 0;
 }
 
+void save_basic_to_file(const char *relpath) {
+    char path[256];
+    memset(path, 0, 256);
+    relative_to_user_pwd(relpath, path);
+
+    char buffer[60000];
+    memset(buffer, 0, 60000);
+    for (int i = 0; i < BASIC_MAX_STMTS; ++i)
+        if (strlen(code_str[i]) > 0) {
+            strcat(buffer, code_str[i]);
+            strcat(buffer, "\n");
+        }
+
+    write_file(path, buffer);
+}
+
 void load_basic_from_file(const char *relpath) {
     char path[256];
     memset(path, 0, 256);
@@ -442,7 +458,7 @@ void load_basic_from_file(const char *relpath) {
 
     static const int buflen = 60000;
     char buffer[buflen];
-    int bytesread = read_file(path, buffer, buflen);
+    int bytesread = read_file(path, (uint8_t *)(&buffer[0]), buflen);
     if (bytesread == -1) return;
     buffer[bytesread] = '\0';
 
@@ -504,6 +520,8 @@ void basic_shell() {
             list_basic_code();
         else if (strncmp(cmdbuf, "LOAD ", 5) == 0)
             load_basic_from_file(cmdbuf + 5);
+        else if (strncmp(cmdbuf, "SAVE ", 5) == 0)
+            save_basic_to_file(cmdbuf + 5);
         else
             process_line(cmdbuf, NULL, NULL);
     }
