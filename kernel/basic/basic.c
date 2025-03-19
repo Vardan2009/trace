@@ -89,6 +89,9 @@ basic_stmt_type_t extract_stmt_type(char **str, int rln, int *exitcode) {
     } else if (strncmp(*str, "LET", 3) == 0) {
         *str += 3;
         return LET;
+    } else if (strncmp(*str, "DIM", 3) == 0) {
+        *str += 3;
+        return DIM;
     } else if (strncmp(*str, "RANDOMIZE", 9) == 0) {
         *str += 9;
         return SRAND;
@@ -299,11 +302,43 @@ int visit_node(basic_ast_node_t *node, basic_value_t *out) {
         case NUM:
         case STR: *out = node->value; return 0;
         case VAR: return get_var(node->value.sval, out);
+        case VAR_DIM: {
+            basic_value_t val;
+            basic_value_t idx;
+
+            if (visit_node(node->children[0], &idx)) return 1;
+            if (get_var(node->value.sval, &val)) return 1;
+
+            if (!val.is_arr && !val.is_string) {
+                printf("BASIC: %s is not DIM or STRING\n", node->value.sval);
+                return 1;
+            }
+
+            if (val.is_string) {
+                if ((int)idx.fval >= strlen(val.sval)) {
+                    printf("BASIC: String %s out of bounds!\n",
+                           node->value.sval);
+                    return 1;
+                }
+
+                *out = (basic_value_t){false, val.sval[(int)idx.fval]};
+            } else {
+                if ((int)idx.fval >= val.arr_len) {
+                    printf("BASIC: Array %s out of bounds!\n",
+                           node->value.sval);
+                    return 1;
+                }
+
+                *out = val.arr[(int)idx.fval];
+            }
+            return 0;
+        }
         default: return 1;
     }
 }
 
 void basic_rec_free(basic_ast_node_t *node) {
+    if (node) return;
     for (int i = 0; i < node->childrenln; ++i)
         basic_rec_free(node->children[i]);
     free(node);
@@ -316,6 +351,9 @@ void basic_free_stmt(int i) {
 
 void basic_free_code() {
     for (int i = 0; i < BASIC_MAX_STMTS; ++i) basic_free_stmt(i);
+
+    for (int i = 0; i < varcount; ++i)
+        if (vars[i].val.is_arr) free(vars[i].val.arr);
 }
 
 void exec_loaded_basic() {
@@ -393,7 +431,34 @@ void exec_loaded_basic() {
             case LET: {
                 basic_value_t val;
                 if (visit_node(code[i].params[1], &val)) return;
-                set_var(code[i].params[0]->value.sval, val);
+                if (code[i].params[0]->type == VAR_DIM) {
+                    basic_value_t arr;
+                    basic_value_t idx;
+                    if (get_var(code[i].params[0]->value.sval, &arr)) return;
+                    if (visit_node(code[i].params[0]->children[0], &idx))
+                        return;
+                    arr.arr[(int)idx.fval] = val;
+                    set_var(code[i].params[0]->value.sval, arr);
+                } else if (code[i].params[0]->type == VAR) {
+                    set_var(code[i].params[0]->value.sval, val);
+                }
+                break;
+            }
+            case DIM: {
+                const char *dim_name = code[i].params[0]->value.sval;
+
+                basic_value_t dim_size;
+
+                if (visit_node(code[i].params[0]->children[0], &dim_size))
+                    return;
+
+                basic_value_t dim_val;
+                dim_val.is_arr = true;
+                dim_val.arr =
+                    malloc(sizeof(basic_value_t) * (int)dim_size.fval);
+                dim_val.arr_len = (int)dim_size.fval;
+
+                set_var(dim_name, dim_val);
                 break;
             }
             case SRAND: {

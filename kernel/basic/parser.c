@@ -28,10 +28,26 @@ basic_ast_node_t *basic_factor(basic_token_t *tokens, int tokens_sz,
         case TOK_VAR: {
             basic_token_t *t = &tokens[(*tokenptr)++];
             basic_ast_node_t *res = malloc(sizeof(basic_ast_node_t));
-            res->type = VAR;
-            res->childrenln = 0;
+            if (tokens[*tokenptr].type != TOK_LPAREN) {
+                res->type = VAR;
+                res->childrenln = 0;
+            } else {
+                res->type = VAR_DIM;
+                ++(*tokenptr);
+                res->childrenln = 1;
+                res->children[0] =
+                    basic_expr(tokens, tokens_sz, tokenptr, exitcode);
+                if (tokens[*tokenptr].type != TOK_RPAREN) {
+                    printf("BASIC: Only 1D Arrays are supported\n");
+                    *exitcode = 1;
+                    return NULL;
+                }
+                ++(*tokenptr);
+            }
+
             res->value.is_string = true;
             strncpy(res->value.sval, t->value.sval, 64);
+
             return res;
         }
         case TOK_LPAREN: {

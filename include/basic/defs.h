@@ -5,13 +5,16 @@
 
 #define BASIC_MAX_PARAM_COUNT 10
 
-typedef struct {
+typedef struct basic_value {
     bool is_string;
     float fval;
     char sval[64];
+    bool is_arr;
+    struct basic_value *arr;
+    int arr_len;
 } basic_value_t;
 
-typedef enum { BINOP, NUM, STR, VAR } basic_ast_node_type_t;
+typedef enum { BINOP, NUM, STR, VAR, VAR_DIM } basic_ast_node_type_t;
 
 typedef struct basic_ast_node {
     basic_ast_node_type_t type;
@@ -29,6 +32,7 @@ typedef enum {
     GOTO,
     INPUT,
     LET,
+    DIM,
     SRAND,
     CLEAR,
     END
