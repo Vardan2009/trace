@@ -1,0 +1,4 @@
+10 PRINT "Waiting 300 ms..."
+20 WAIT 300
+30 PRINT "Done!"
+40 GOTO 10
