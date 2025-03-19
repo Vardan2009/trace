@@ -28,6 +28,7 @@ typedef struct basic_ast_node {
 typedef enum {
     NONE,
     PRINT,
+    WAIT,
     IF,
     GOTO,
     INPUT,

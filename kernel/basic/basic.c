@@ -3,6 +3,7 @@
 #include "basic/defs.h"
 #include "basic/lexer.h"
 #include "basic/parser.h"
+#include "lib/console.h"
 #include "lib/fs.h"
 #include "lib/malloc.h"
 #include "lib/path.h"
@@ -77,6 +78,9 @@ basic_stmt_type_t extract_stmt_type(char **str, int rln, int *exitcode) {
     if (strncmp(*str, "PRINT", 5) == 0) {
         *str += 5;
         return PRINT;
+    } else if (strncmp(*str, "WAIT", 4) == 0) {
+        *str += 4;
+        return WAIT;
     } else if (strncmp(*str, "IF", 2) == 0) {
         *str += 2;
         return IF;
@@ -381,9 +385,28 @@ void exec_loaded_basic() {
                 }
                 printf("\n");
                 break;
+            case WAIT: {
+                basic_value_t ms;
+
+                if (code[i].paramln != 1) {
+                    printf("BASIC: WAIT takes one INT parameter (MS)\n");
+                    return;
+                }
+
+                if (visit_node(code[i].params[0], &ms)) return;
+
+                if (ms.is_string || ms.is_arr) {
+                    printf("BASIC: WAIT takes one INT parameter (MS)\n");
+                    return;
+                }
+
+                delay((int)ms.fval);
+
+                break;
+            }
             case IF: {
                 if (code[i].paramln != 2) {
-                    printf("BASIC: IF takes two paramters, CONDITION, GOTO\n");
+                    printf("BASIC: IF takes two parameters, CONDITION, GOTO\n");
                     return;
                 }
                 basic_value_t condition, jmpcode;
