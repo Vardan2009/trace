@@ -306,6 +306,9 @@ int visit_node(basic_ast_node_t *node, basic_value_t *out) {
             basic_value_t val;
             basic_value_t idx;
 
+            memset(&val, 0, sizeof(basic_value_t));
+            memset(&idx, 0, sizeof(basic_value_t));
+
             if (visit_node(node->children[0], &idx)) return 1;
             if (get_var(node->value.sval, &val)) return 1;
 
@@ -430,6 +433,8 @@ void exec_loaded_basic() {
             }
             case LET: {
                 basic_value_t val;
+                memset(&val, 0, sizeof(basic_value_t));
+
                 if (visit_node(code[i].params[1], &val)) return;
                 if (code[i].params[0]->type == VAR_DIM) {
                     basic_value_t arr;
@@ -454,6 +459,7 @@ void exec_loaded_basic() {
 
                 basic_value_t dim_val;
                 dim_val.is_arr = true;
+                dim_val.is_string = false;
                 dim_val.arr =
                     malloc(sizeof(basic_value_t) * (int)dim_size.fval);
                 dim_val.arr_len = (int)dim_size.fval;
