@@ -318,13 +318,15 @@ int visit_node(basic_ast_node_t *node, basic_value_t *out) {
             }
 
             if (val.is_string) {
-                if ((int)idx.fval >= strlen(val.sval)) {
+                if ((int)idx.fval > strlen(val.sval)) {
                     printf("BASIC: String %s out of bounds!\n",
                            node->value.sval);
                     return 1;
                 }
-
-                *out = (basic_value_t){false, val.sval[(int)idx.fval]};
+                if ((int)idx.fval == strlen(val.sval))
+                    *out = (basic_value_t){false, 0};
+                else
+                    *out = (basic_value_t){false, val.sval[(int)idx.fval]};
             } else {
                 if ((int)idx.fval >= val.arr_len) {
                     printf("BASIC: Array %s out of bounds!\n",
