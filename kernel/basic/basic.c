@@ -1,8 +1,11 @@
 #include "basic/basic.h"
 
+#include <stdint.h>
+
 #include "basic/defs.h"
 #include "basic/lexer.h"
 #include "basic/parser.h"
+#include "driver/pcspk.h"
 #include "lib/console.h"
 #include "lib/fs.h"
 #include "lib/malloc.h"
@@ -78,6 +81,9 @@ basic_stmt_type_t extract_stmt_type(char **str, int rln, int *exitcode) {
     if (strncmp(*str, "PRINT", 5) == 0) {
         *str += 5;
         return PRINT;
+    } else if (strncmp(*str, "BEEP", 4) == 0) {
+        *str += 4;
+        return BEEP;
     } else if (strncmp(*str, "WAIT", 4) == 0) {
         *str += 4;
         return WAIT;
@@ -385,6 +391,27 @@ void exec_loaded_basic() {
                 }
                 printf("\n");
                 break;
+            case BEEP: {
+                basic_value_t freq, dur;
+
+                if (code[i].paramln != 2) {
+                    printf("BASIC: BEEP takes two parameters, FREQ and DUR\n");
+                    return;
+                }
+
+                if (visit_node(code[i].params[0], &freq)) return;
+                if (visit_node(code[i].params[1], &dur)) return;
+
+                if (freq.is_string || freq.is_arr || dur.is_string ||
+                    dur.is_arr) {
+                    printf("BASIC: BEEP takes two parameters, FREQ and DUR\n");
+                    return;
+                }
+
+                pcspk_beep_dur((uint32_t)freq.fval, (uint32_t)dur.fval);
+
+                break;
+            }
             case WAIT: {
                 basic_value_t ms;
 
