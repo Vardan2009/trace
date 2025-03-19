@@ -16,7 +16,7 @@
 #define BASIC_MAX_VARS 128
 
 basic_stmt_t code[BASIC_MAX_STMTS];
-char code_str[128][BASIC_MAX_STMTS];
+char code_str[BASIC_MAX_STMTS][128];
 
 basic_var_t vars[BASIC_MAX_VARS];
 int varcount = 0;
@@ -364,14 +364,13 @@ void exec_loaded_basic() {
                 break;
             }
             case INPUT: {
-                static char inbuf[512];
-                scanl(inbuf, 512);
-                inbuf[strlen(inbuf)] = 0;
-
                 if (code[i].paramln != 2) {
                     printf("BASIC: INPUT takes two parameters, VAR, TYPE\n");
                     return;
                 }
+
+                char inbuf[512];
+                scanl(inbuf, 512);
 
                 const char *varname = code[i].params[0]->value.sval;
                 const char *typename = code[i].params[1]->value.sval;
@@ -389,7 +388,6 @@ void exec_loaded_basic() {
                 }
 
                 set_var(varname, val);
-
                 break;
             }
             case LET: {
@@ -427,6 +425,8 @@ void exec_loaded_basic() {
             }
         }
     }
+
+    basic_free_code();
 }
 
 int process_line(char *ln, int *rln, int *stmtlen) {
