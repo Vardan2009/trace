@@ -129,7 +129,8 @@ int write_file(const char *raw_path, const char *content) {
     switch (fs_type) {
         case TRACEFS: return tracefs_write_file(path, content);
         case FAT32:
-            return fat32_write_file_from_path(path, content, strlen(content));
+            return fat32_write_file_from_path(path, (const uint8_t *)content,
+                                              strlen(content));
         default: print_err("Not available for this filesystem\n"); return -1;
     }
 }
@@ -142,7 +143,8 @@ void init_fs() {
     if (strncmp(pvd.id, "CD001", 5) == 0 && pvd.type == 1) {
         fs_type = ISO9660;
         // print_ok("Detected ISO9660 Filesystem");
-    } else if (strncmp(fat32_boot_sector->BS_FilSysType, "FAT32   ", 8) == 0) {
+    } else if (strncmp((const char *)(fat32_boot_sector->BS_FilSysType),
+                       "FAT32   ", 8) == 0) {
         fs_type = FAT32;
         // print_ok("Detected FAT32 Filesystem");
     } else if (strncmp(tracefs_header_sector->fsid, "TRACEFS", 7) == 0) {

@@ -66,12 +66,10 @@ int basic_tokenize(char **ptr, basic_token_t *tokens) {
         } else if (**ptr == '/') {
             tokens[token_count++].type = TOK_DIV;
             ++(*ptr);
-        }
-        else if (**ptr == '%') {
+        } else if (**ptr == '%') {
             tokens[token_count++].type = TOK_MOD;
             ++(*ptr);
-        } 
-        else if (**ptr == '<') {
+        } else if (**ptr == '<') {
             tokens[token_count++].type = TOK_LT;
             ++(*ptr);
         } else if (**ptr == '>') {

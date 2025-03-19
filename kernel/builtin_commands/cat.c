@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #include "lib/fs.h"
 #include "lib/path.h"
 #include "shell.h"
@@ -18,13 +20,13 @@ void builtin_command_cat(char tokv[MAX_TOKENS][MAX_TOKEN_LENGTH], int tokc) {
     int print_type = PRINT_TYPE_STRING;
     if (tokc == 3 && strcmp(tokv[2], "-x") == 0) print_type = PRINT_TYPE_HEX;
 
-    char path[256];
+    uint8_t path[256];
     memset(path, 0, 256);
-    relative_to_user_pwd(tokv[1], path);
+    relative_to_user_pwd(tokv[1], (char *)path);
 
     static const int buflen = 60000;
-    char buffer[buflen];
-    int bytesread = read_file(path, buffer, buflen);
+    uint8_t buffer[buflen];
+    int bytesread = read_file((char *)path, buffer, buflen);
     if (bytesread == -1) return;
     buffer[bytesread] = '\0';
     switch (print_type) {

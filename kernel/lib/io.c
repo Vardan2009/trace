@@ -1,9 +1,5 @@
 #include "lib/io.h"
 
-#pragma diag_suppress 79
-#pragma diag_suppress 20
-#pragma diag_suppress 65
-
 uint8_t inb(uint16_t port) {
     uint8_t ret;
     asm volatile("inb %1, %0" : "=a"(ret) : "Nd"(port));
@@ -23,10 +19,6 @@ uint16_t inw(uint16_t port) {
 void outw(uint16_t port, uint16_t value) {
     asm volatile("outw %0, %1" : : "a"(value), "Nd"(port));
 }
-
-#pragma diag_default 79
-#pragma diag_default 20
-#pragma diag_defualt 65
 
 int is_transmit_empty(uint16_t port) {
     return inb(port + 5) & 0x20;

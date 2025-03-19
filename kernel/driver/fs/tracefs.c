@@ -1,5 +1,7 @@
 #include "driver/fs/tracefs.h"
 
+#include <stdint.h>
+
 #include "driver/diskio.h"
 #include "lib/path.h"
 #include "lib/stdio.h"
@@ -25,7 +27,7 @@ int tracefs_read_file_from_path(const char *path, uint8_t *buffer,
     char lbuffer[512];
     tracefs_file_entry_t *f_entry;
     for (int i = 1;; ++i) {
-        ata_read_sector(i, lbuffer);
+        ata_read_sector(i, (uint8_t *)lbuffer);
         f_entry = (tracefs_file_entry_t *)lbuffer;
         if (f_entry->directory[0] == 0) {
             print_err("TRACEFS: File not found");
@@ -33,8 +35,8 @@ int tracefs_read_file_from_path(const char *path, uint8_t *buffer,
         }
         if (strcmp(dirpath, f_entry->directory) == 0 &&
             strcmp(filename, f_entry->filename) == 0) {
-            strncpy(buffer, f_entry->content, buffer_sz);
-            return strlen(buffer);
+            strncpy((char *)buffer, f_entry->content, buffer_sz);
+            return strlen((const char *)buffer);
         }
     }
     print_err("TRACEFS: File not found");
@@ -56,7 +58,7 @@ int tracefs_list_directory(const char *dirpath, fs_entry_t dirs[256]) {
     }
 
     for (int i = 1;; ++i) {
-        ata_read_sector(i, lbuffer);
+        ata_read_sector(i, (uint8_t *)lbuffer);
         f_entry = (tracefs_file_entry_t *)lbuffer;
         if (f_entry->directory[0] == 'd') continue;
         if (f_entry->directory[0] != '/') break;
@@ -100,7 +102,7 @@ int tracefs_dir_exists(const char *dirpath) {
     char lbuffer[512];
     tracefs_file_entry_t *f_entry;
     for (int i = 1;; ++i) {
-        ata_read_sector(i, lbuffer);
+        ata_read_sector(i, (uint8_t *)lbuffer);
         f_entry = (tracefs_file_entry_t *)lbuffer;
         if (f_entry->directory[0] == 0) {
             print_err("TRACEFS: Directory not found");
@@ -121,13 +123,13 @@ int tracefs_create_file(const char *path) {
     char lbuffer[512];
     tracefs_file_entry_t *f_entry;
     for (int i = 1;; ++i) {
-        ata_read_sector(i, lbuffer);
+        ata_read_sector(i, (uint8_t *)lbuffer);
         f_entry = (tracefs_file_entry_t *)lbuffer;
         if (f_entry->directory[0] != '/' || f_entry->directory[0] == 'd') {
             strcpy(f_entry->directory, dirpath);
             strcpy(f_entry->filename, filename);
             strcpy(f_entry->content, "");
-            ata_write_sector(i, (char *)f_entry);
+            ata_write_sector(i, (uint8_t *)f_entry);
             return 0;
         }
     }
@@ -143,7 +145,7 @@ int tracefs_remove_file(const char *path) {
     char lbuffer[512];
     tracefs_file_entry_t *f_entry;
     for (int i = 1;; ++i) {
-        ata_read_sector(i, lbuffer);
+        ata_read_sector(i, (uint8_t *)lbuffer);
         f_entry = (tracefs_file_entry_t *)lbuffer;
         if (f_entry->directory[0] == 0) {
             print_err("TRACEFS: File not found");
@@ -153,7 +155,7 @@ int tracefs_remove_file(const char *path) {
             strcmp(filename, f_entry->filename) == 0) {
             memset(lbuffer, 0, 512);
             lbuffer[0] = 'd';
-            ata_write_sector(i, lbuffer);
+            ata_write_sector(i, (uint8_t *)lbuffer);
             return 0;
         }
     }
@@ -170,7 +172,7 @@ int tracefs_write_file(const char *path, const char *content) {
     char lbuffer[512];
     tracefs_file_entry_t *f_entry;
     for (int i = 1;; ++i) {
-        ata_read_sector(i, lbuffer);
+        ata_read_sector(i, (uint8_t *)lbuffer);
         f_entry = (tracefs_file_entry_t *)lbuffer;
         if (f_entry->directory[0] == 0) {
             print_err("TRACEFS: File not found");
@@ -179,7 +181,7 @@ int tracefs_write_file(const char *path, const char *content) {
         if (strcmp(dirpath, f_entry->directory) == 0 &&
             strcmp(filename, f_entry->filename) == 0) {
             strcpy(f_entry->content, content);
-            ata_write_sector(i, (char *)f_entry);
+            ata_write_sector(i, (uint8_t *)f_entry);
             return 0;
         }
     }

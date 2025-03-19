@@ -4,7 +4,7 @@ AS = nasm
 LD = ld
 VM = qemu-system-i386
 
-CFLAGS = -m32 -ffreestanding -nostdlib -Iinclude
+CFLAGS = -m32 -ffreestanding -nostdlib -Iinclude -Wall
 ASFLAGS = -felf32
 LDFLAGS = -m elf_i386 -T linker.ld
 VMFLAGS = -cdrom trace.iso \

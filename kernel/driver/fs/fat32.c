@@ -521,7 +521,7 @@ int fat32_create_directory_entry(const char *path, fat32_dir_entry_t *entry,
     memset(entry, 0, sizeof(fat32_dir_entry_t));
 
     get_filename(path, (char *)entry->DIR_Name);
-    if (strlen(entry->DIR_Name) > 8) return -1;
+    if (strlen((const char *)entry->DIR_Name) > 8) return -1;
     for (int i = 0; i < 8; ++i)
         entry->DIR_Name[i] = toupper(entry->DIR_Name[i]);
 
@@ -641,7 +641,7 @@ int fat32_create_directory(const char *path) {
 fs_info_t fat32_fs_info() {
     return (fs_info_t){
         FAT32,
-        fat32_boot_sector->BS_VolLab,
+        (char *)fat32_boot_sector->BS_VolLab,
         11,
         (uint64_t)((fat32_boot_sector->BPB_TotSec16 != 0)
                        ? fat32_boot_sector->BPB_TotSec16

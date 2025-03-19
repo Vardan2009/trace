@@ -91,7 +91,7 @@ float fmod(float x, float y) {
 
     float quotient = x / y;
     float integer_part;
-    float fractional_part = modff(quotient, &integer_part);
+    /* float fractional_part = */ modff(quotient, &integer_part);
 
     return x - (integer_part * y);
 }
