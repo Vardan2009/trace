@@ -36,6 +36,11 @@ void set_var(const char *name, basic_value_t val) {
         return;
     }
 
+    if (strcmp(name, "NEWLINE") == 0) {
+        printf("BASIC: NEWLINE is not modifiable\n");
+        return;
+    }
+
     for (int i = 0; i < varcount; ++i)
         if (strcmp(name, vars[i].name) == 0) {
             vars[i].val = val;
@@ -54,6 +59,12 @@ int get_var(const char *name, basic_value_t *out) {
 
     if (strcmp(name, "TIMER") == 0) {
         *out = (basic_value_t){false, ticks};
+        return 0;
+    }
+
+    if (strcmp(name, "NEWLINE") == 0) {
+        *out = (basic_value_t){true};
+        strncpy(out->sval, "\n\0", 2);
         return 0;
     }
 
@@ -389,7 +400,6 @@ void exec_loaded_basic() {
                     else
                         printf("%f", val.fval);
                 }
-                printf("\n");
                 break;
             case BEEP: {
                 basic_value_t freq, dur;
@@ -462,8 +472,8 @@ void exec_loaded_basic() {
                     return;
                 }
 
-                char inbuf[512];
-                scanl(inbuf, 512);
+                char inbuf[64];
+                scanl(inbuf, 64);
 
                 const char *varname = code[i].params[0]->value.sval;
                 const char *typename = code[i].params[1]->value.sval;

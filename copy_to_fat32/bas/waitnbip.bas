@@ -1,4 +1,4 @@
-10 PRINT "Waiting 300 ms..."
+10 PRINT "Waiting 300 ms... "
 20 WAIT 300
-30 PRINT "Done!"
+30 PRINT "Done!", NEWLINE
 40 GOTO 10
