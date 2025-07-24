@@ -6,7 +6,7 @@ VM = qemu-system-i386
 
 CFLAGS = -m32 -ffreestanding -nostdlib -nolibc -Iinclude -Wall
 ASFLAGS = -felf32
-LDFLAGS = -m elf_i386 -T linker.ld
+LDFLAGS = -m elf_i386 -T linker.ld -z noexecstack
 VMFLAGS = -cdrom trace.iso \
           -drive file=fat32-disk.img,format=raw \
           -drive file=tracefs-disk.img,format=raw \
