@@ -85,11 +85,11 @@ void *kmalloc(uint32_t size) {
     kmalloc_header_t *block = find_free_block(size);
     if (!block) {
         block = request_space(size);
-        printf("requested space\n");
+        // printf("requested space\n");
         if (!block) return NULL;
     }
 
-    printf("kmalloced %x\n", size);
+    // printf("kmalloced %x\n", size);
 
     return (void *)(block + 1);
 }
@@ -112,7 +112,7 @@ void kfree(void *ptr) {
 
     kmalloc_header_t *block = ((kmalloc_header_t *)ptr) - 1;
     block->is_free = true;
-    printf("kfreed %x\n", block->size);
+    // printf("kfreed %x\n", block->size);
 
     coalesce_free_blocks();
 }
