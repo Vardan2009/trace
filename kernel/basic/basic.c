@@ -8,7 +8,7 @@
 #include "driver/pcspk.h"
 #include "lib/console.h"
 #include "lib/fs.h"
-#include "lib/malloc.h"
+#include "lib/kmalloc.h"
 #include "lib/path.h"
 #include "lib/rand.h"
 #include "lib/stdio.h"
@@ -364,10 +364,10 @@ int visit_node(basic_ast_node_t *node, basic_value_t *out) {
 }
 
 void basic_rec_free(basic_ast_node_t *node) {
-    if (node) return;
+    if (!node) return;
     for (int i = 0; i < node->childrenln; ++i)
         basic_rec_free(node->children[i]);
-    free(node);
+    kfree(node);
 }
 
 void basic_free_stmt(int i) {
@@ -379,7 +379,7 @@ void basic_free_code() {
     for (int i = 0; i < BASIC_MAX_STMTS; ++i) basic_free_stmt(i);
 
     for (int i = 0; i < varcount; ++i)
-        if (vars[i].val.is_arr) free(vars[i].val.arr);
+        if (vars[i].val.is_arr) kfree(vars[i].val.arr);
 }
 
 void exec_loaded_basic() {
@@ -443,7 +443,9 @@ void exec_loaded_basic() {
             }
             case IF: {
                 if (code[i].paramln != 2) {
-                    printf("BASIC: IF takes two parameters, CONDITION, GOTO\n");
+                    printf(
+                        "BASIC: IF takes two parameters, CONDITION, "
+                        "GOTO\n");
                     return;
                 }
                 basic_value_t condition, jmpcode;
@@ -523,7 +525,7 @@ void exec_loaded_basic() {
                 dim_val.is_arr = true;
                 dim_val.is_string = false;
                 dim_val.arr =
-                    malloc(sizeof(basic_value_t) * (int)dim_size.fval);
+                    kmalloc(sizeof(basic_value_t) * (int)dim_size.fval);
                 dim_val.arr_len = (int)dim_size.fval;
 
                 set_var(dim_name, dim_val);

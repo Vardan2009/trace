@@ -1,7 +1,7 @@
 #include "driver/fs/fat32.h"
 
 #include "driver/diskio.h"
-#include "lib/malloc.h"
+#include "lib/kmalloc.h"
 #include "lib/path.h"
 #include "lib/stdio.h"
 #include "lib/stdlib.h"
@@ -127,7 +127,7 @@ int fat32_find_entry(uint32_t dir_cluster, const char *name,
     uint32_t sectors_per_cluster = fat32_boot_sector->BPB_SecPerClus;
     uint32_t bytes_per_sector = fat32_boot_sector->BPB_BytsPerSec;
     uint32_t cluster_size = sectors_per_cluster * bytes_per_sector;
-    uint8_t *cluster_buffer = (uint8_t *)malloc(cluster_size);
+    uint8_t *cluster_buffer = (uint8_t *)kmalloc(cluster_size);
     if (!cluster_buffer) return -1;
     uint32_t entries_per_cluster = cluster_size / 32;
 
@@ -137,7 +137,7 @@ int fat32_find_entry(uint32_t dir_cluster, const char *name,
             fat32_dir_entry_t *dentry =
                 (fat32_dir_entry_t *)(cluster_buffer + i * 32);
             if (dentry->DIR_Name[0] == 0x00) {  // No more entries.
-                free(cluster_buffer);
+                kfree(cluster_buffer);
                 return -1;
             }
             if (dentry->DIR_Name[0] == 0xE5) continue;  // Deleted entry.
@@ -147,7 +147,7 @@ int fat32_find_entry(uint32_t dir_cluster, const char *name,
             fat32_format_filename(formatted, dentry->DIR_Name);
             if (fat32_strcasecmp(formatted, name) == 0) {
                 memcpy(entry_out, dentry, sizeof(fat32_dir_entry_t));
-                free(cluster_buffer);
+                kfree(cluster_buffer);
                 return 0;
             }
         }
@@ -155,7 +155,7 @@ int fat32_find_entry(uint32_t dir_cluster, const char *name,
         if (next >= 0x0FFFFFF8) break;
         dir_cluster = next;
     }
-    free(cluster_buffer);
+    kfree(cluster_buffer);
     return -1;
 }
 
@@ -236,7 +236,7 @@ int fat32_list_directory(const char *path, fs_entry_t dirs[256]) {
     uint32_t sectors_per_cluster = fat32_boot_sector->BPB_SecPerClus;
     uint32_t bytes_per_sector = fat32_boot_sector->BPB_BytsPerSec;
     uint32_t cluster_size = sectors_per_cluster * bytes_per_sector;
-    uint8_t *cluster_buffer = (uint8_t *)malloc(cluster_size);
+    uint8_t *cluster_buffer = (uint8_t *)kmalloc(cluster_size);
     if (!cluster_buffer) return -1;
 
     uint32_t entries_per_cluster = cluster_size / 32;
@@ -263,7 +263,7 @@ int fat32_list_directory(const char *path, fs_entry_t dirs[256]) {
         dir_cluster = next_cluster;
     }
 
-    free(cluster_buffer);
+    kfree(cluster_buffer);
     return entry_count;
 }
 

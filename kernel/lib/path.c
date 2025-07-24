@@ -1,6 +1,6 @@
 #include "lib/path.h"
 
-#include "lib/malloc.h"
+#include "lib/kmalloc.h"
 #include "lib/stdio.h"
 #include "lib/stdlib.h"
 #include "lib/string.h"

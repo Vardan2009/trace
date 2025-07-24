@@ -1,5 +1,5 @@
 #include "basic/defs.h"
-#include "lib/malloc.h"
+#include "lib/kmalloc.h"
 #include "lib/stdio.h"
 #include "lib/string.h"
 
@@ -11,7 +11,7 @@ basic_ast_node_t *basic_factor(basic_token_t *tokens, int tokens_sz,
     switch (tokens[*tokenptr].type) {
         case TOK_NUM: {
             basic_token_t t = tokens[(*tokenptr)++];
-            basic_ast_node_t *res = malloc(sizeof(basic_ast_node_t));
+            basic_ast_node_t *res = kmalloc(sizeof(basic_ast_node_t));
             res->type = NUM;
             res->childrenln = 0;
             res->value = t.value;
@@ -19,7 +19,7 @@ basic_ast_node_t *basic_factor(basic_token_t *tokens, int tokens_sz,
         }
         case TOK_STR: {
             basic_token_t t = tokens[(*tokenptr)++];
-            basic_ast_node_t *res = malloc(sizeof(basic_ast_node_t));
+            basic_ast_node_t *res = kmalloc(sizeof(basic_ast_node_t));
             res->type = STR;
             res->childrenln = 0;
             res->value = t.value;
@@ -27,7 +27,7 @@ basic_ast_node_t *basic_factor(basic_token_t *tokens, int tokens_sz,
         }
         case TOK_VAR: {
             basic_token_t *t = &tokens[(*tokenptr)++];
-            basic_ast_node_t *res = malloc(sizeof(basic_ast_node_t));
+            basic_ast_node_t *res = kmalloc(sizeof(basic_ast_node_t));
             if (tokens[*tokenptr].type != TOK_LPAREN) {
                 res->type = VAR;
                 res->childrenln = 0;
@@ -80,7 +80,7 @@ basic_ast_node_t *basic_term(basic_token_t *tokens, int tokens_sz,
             basic_ast_node_t *r =
                 basic_factor(tokens, tokens_sz, tokenptr, exitcode);
             basic_ast_node_t *l = n;
-            n = malloc(sizeof(basic_ast_node_t));
+            n = kmalloc(sizeof(basic_ast_node_t));
             n->type = BINOP;
             n->value.is_string = true;
             if (op == TOK_MUL)
@@ -117,7 +117,7 @@ basic_ast_node_t *basic_expr(basic_token_t *tokens, int tokens_sz,
             basic_ast_node_t *r =
                 basic_term(tokens, tokens_sz, tokenptr, exitcode);
             basic_ast_node_t *l = n;
-            n = malloc(sizeof(basic_ast_node_t));
+            n = kmalloc(sizeof(basic_ast_node_t));
             n->type = BINOP;
             n->value.is_string = true;
             if (op == TOK_PLUS)

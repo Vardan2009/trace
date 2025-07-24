@@ -1,6 +1,6 @@
 #include "lib/string.h"
 
-#include "lib/malloc.h"
+#include "lib/kmalloc.h"
 
 void *memset(void *s, int c, size_t n) {
     unsigned char *ptr = s;
@@ -152,8 +152,8 @@ char *strdup(const char *str) {
         return NULL;  // Return NULL if the input string is NULL
     }
 
-    size_t len = strlen(str) + 1;      // +1 for the null terminator
-    char *copy = (char *)malloc(len);  // Allocate memory for the copy
+    size_t len = strlen(str) + 1;       // +1 for the null terminator
+    char *copy = (char *)kmalloc(len);  // Allocate memory for the copy
 
     if (copy == NULL) {
         return NULL;  // Return NULL if memory allocation fails

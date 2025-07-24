@@ -12,7 +12,8 @@ VMFLAGS = -cdrom trace.iso \
           -drive file=tracefs-disk.img,format=raw \
           -boot order=d \
           -serial mon:stdio \
-          -audiodev pa,id=pa1,server=/run/user/1000/pulse/native -machine pcspk-audiodev=pa1
+          -audiodev pa,id=pa1,server=/run/user/1000/pulse/native -machine pcspk-audiodev=pa1 \
+		  -m 4G
 
 VMFLAGS_EXTRA :=
 CFLAGS_EXTRA :=

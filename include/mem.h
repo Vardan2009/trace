@@ -15,6 +15,8 @@
 #define REC_PAGEDIR ((uint32_t *)0xfffff000)
 #define REC_PAGETABLE(i) ((uint32_t *)(0xffc00000 + ((i) << 12)))
 
+#define PAGE_SIZE 0x1000
+
 extern uint32_t initial_page_dir[1024];
 
 uint32_t pmm_alloc_page_frame();

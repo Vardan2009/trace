@@ -16,8 +16,8 @@ int mem_num_vpages;
 
 void pmm_init(uint32_t mem_low, uint32_t mem_high) {
     page_frame_min =
-        CEILDIV(mem_low, 0x1000);  // 1000 = 4096 : size of a single page
-    page_frame_max = mem_high / 0x1000;
+        CEILDIV(mem_low, PAGE_SIZE);  // 1000 = 4096 : size of a single page
+    page_frame_max = mem_high / PAGE_SIZE;
     total_alloc = 0;
 
     memset(phys_mem_bitmap, 0, sizeof(phys_mem_bitmap));
@@ -108,12 +108,14 @@ uint32_t pmm_alloc_page_frame() {
 
         for (uint32_t i = 0; i < 8; i++) {
             bool used = byte >> i & 1;
-            if (!used) byte ^= (-1 ^ byte) & (1 << i);
-            phys_mem_bitmap[b] = byte;
-            ++total_alloc;
+            if (!used) {
+                byte ^= (-1 ^ byte) & (1 << i);
+                phys_mem_bitmap[b] = byte;
+                ++total_alloc;
 
-            uint32_t addr = 8 * b * i * 0x1000;
-            return addr;
+                uint32_t addr = 8 * b * i * 0x1000;
+                return addr;
+            }
         }
     }
 
