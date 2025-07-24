@@ -1,5 +1,26 @@
 # TRACE Operating System
-TRACE (Targeted Resource Access and Control Engine) is a very simple and minimal operating system written in C for the 32-bit i386 CPU Architecture with the GRUB bootloader. It currently supports GDT, IDT, PIT, has a simple keyboard driver, paging, serial I/O, user I/O, e.t.c. Everything is currently running in Ring 0 (Kernel), but switching to Ring 3 and back will be implemented soon (probably). It also has its own syscalls that can be called with `int 0x80`
+TRACE (Targeted Resource Access and Control Engine) is a very simple and minimal operating system written in C for the 32-bit x86 CPU Architecture with the GRUB bootloader. It currently supports GDT, IDT, PIT, has a simple keyboard driver, paging, serial I/O, user I/O, *very* (currently) buggy FAT32, ISO9660 filesystem drivers, etc. It also has its own syscalls that can be called with `int 0x80`
+
+# Building (Linux)
+Requirements
+    - `gcc`: C Compiler
+    - `grub-common`: For creating GRUB image
+    - `grub-pc-bin`
+    - `xorriso`: Filesystem manipulator
+    - `make`: Build system
+Optional, but recommended:
+    - `qemu`: Virtual Machine
+    - `pulseaudio`: Audio server for `qemu`
+
+You can install the above packages with `apt` or your system's package manager.\
+To build, run the following commands
+```
+make fat32-disk
+make tracefs-disk
+make iso
+make test-qemu
+```
+
 
 # TRACE Syscall Table
 | Number | Name      | Arguments                | Description                                      |
